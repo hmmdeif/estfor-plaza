@@ -541,7 +541,7 @@ const getChunksForMulticall = async (
     gasLimit: bigint = BigInt(6000000)
 ) => {
     let attempts = 0
-    let actualChunks = chunks
+    let actualChunks = Math.min(chunks, data.length)
     let success = false
     while (!success) {
         try {
@@ -561,7 +561,7 @@ const getChunksForMulticall = async (
                 }
                 const result = await estimateGas(estimateConfig, payload)
                 if (result > gasLimit) {
-                    throw new Error("Gas estimate too high")
+                    throw new Error(`Gas estimate too high: ${result} >${gasLimit}`)
                 }
             }
             success = true
@@ -575,10 +575,7 @@ const getChunksForMulticall = async (
                 actualChunks -= 5
             }
             attempts++
-            if (actualChunks < 1) {
-                actualChunks = 1
-            }
-            if (attempts > 20) {
+            if (actualChunks < 1 || attempts > 20) {
                 throw new Error("Failed to estimate gas")
             }
         }
@@ -1936,34 +1933,69 @@ export const useFactoryStore = defineStore({
                         }
                         deposits.push(d)
                     }
-                    d.items.push(item)
+                    if (Number(item.amount) > 0) { 
+                        // multi user item nft could have overlapped token ids if fetched separately
+                        if (!d.items.find((it) => it.tokenId === item.tokenId)) {
+                            d.items.push(item)   
+                        }
+                    }
                 }
             }
 
             const factoryInterface = new Interface(factoryAbi)
             const itemInterface = new Interface(itemNFTAbi)
 
-            const selectorArray = deposits.filter(i => i.items.length > 0).map((i) =>
-                solidityPacked(
-                    ["bytes"],
-                    [
-                        factoryInterface.encodeFunctionData("execute", [
-                            i.proxy,
-                            itemAddress,
-                            itemInterface.encodeFunctionData(
-                                "safeBatchTransferFrom",
-                                [
-                                    i.proxy,
-                                    toAddress,
-                                    i.items.map((i) => i.tokenId),
-                                    i.items.map((i) => i.amount),
-                                    solidityPacked(["bytes"], ["0x"]),
-                                ]
-                            ),
-                        ]),
-                    ]
-                )
-            )
+            const selectorArray: string[] = []
+            for (const d of deposits) {
+                if (d.items.length === 0) {
+                    continue
+                }
+
+                if (d.items.length > 20) {
+                    for (let i = 0; i < d.items.length; i += 20) {
+                        const chunk = d.items.slice(i, i + 20)
+                        selectorArray.push(solidityPacked(
+                            ["bytes"],
+                            [
+                                factoryInterface.encodeFunctionData("execute", [
+                                    d.proxy,
+                                    itemAddress,
+                                    itemInterface.encodeFunctionData(
+                                        "safeBatchTransferFrom",
+                                        [
+                                            d.proxy,
+                                            toAddress,
+                                            chunk.map((it) => it.tokenId),
+                                            chunk.map((it) => it.amount),
+                                            solidityPacked(["bytes"], ["0x"]),
+                                        ]
+                                    ),
+                                ]),
+                            ]
+                        ))
+                    }
+                } else {
+                    selectorArray.push(solidityPacked(
+                        ["bytes"],
+                        [
+                            factoryInterface.encodeFunctionData("execute", [
+                                d.proxy,
+                                itemAddress,
+                                itemInterface.encodeFunctionData(
+                                    "safeBatchTransferFrom",
+                                    [
+                                        d.proxy,
+                                        toAddress,
+                                        d.items.map((it) => it.tokenId),
+                                        d.items.map((it) => it.amount),
+                                        solidityPacked(["bytes"], ["0x"]),
+                                    ]
+                                ),
+                            ]),
+                        ]
+                    ))
+                }
+            }
 
             if (selectorArray.length > 0) {
                 await this.multicall(selectorArray, chainId, false, 40)
