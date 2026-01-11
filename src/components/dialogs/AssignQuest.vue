@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <dialog :id="props.id" class="modal">
         <div class="modal-box bg-base-100 border-2 border-primary">
             <h3 class="font-bold text-lg text-center">
@@ -104,4 +104,4 @@ const assignHeroes = async () => {
 defineExpose({
     openDialog,
 })
-</script>
+</script> -->
