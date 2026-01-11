@@ -1,4 +1,4 @@
-import { injected, walletConnect } from "@wagmi/connectors"
+import { injected } from "@wagmi/connectors"
 import { http, fallback } from "@wagmi/core"
 import { sonic } from "@wagmi/core/chains"
   import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
@@ -16,7 +16,6 @@ export const wagmiAdapter = new WagmiAdapter({
     networks: [sonic],
     projectId,
     connectors: [
-        walletConnect({ projectId, metadata }),
         injected({ shimDisconnect: true }),
     ],
     transports: {
