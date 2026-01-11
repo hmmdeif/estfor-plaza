@@ -53,7 +53,7 @@ import {
     useSkillStore,
 } from "./skills"
 import { sleep } from "../utils/time"
-import { config, estimateConfig } from "../config"
+import { config } from "../config"
 import { useBroochStore } from "./brooch"
 import { useMonsterStore } from "./monsters"
 import {
@@ -559,7 +559,7 @@ const getChunksForMulticall = async (
                 if (value > BigInt(0)) {
                     payload.value = value
                 }
-                const result = await estimateGas(estimateConfig, payload)
+                const result = await estimateGas(config, payload)
                 if (result > gasLimit) {
                     throw new Error(`Gas estimate too high: ${result} >${gasLimit}`)
                 }

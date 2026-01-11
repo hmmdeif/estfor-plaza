@@ -2,15 +2,16 @@
 import { onMounted, provide } from "vue"
 import { useAppStore } from "./store/app"
 import Header from "./components/layout/Header.vue"
-import { createWeb3Modal } from "@web3modal/wagmi/vue"
 import { reconnect } from "@wagmi/core"
-import { config } from "./config"
+import { config, wagmiAdapter, metadata } from "./config"
 import {
     ApolloClient,
     createHttpLink,
     InMemoryCache,
 } from "@apollo/client/core"
 import { ApolloClients } from "@vue/apollo-composable"
+ import { createAppKit } from '@reown/appkit/vue' 
+import { sonic } from "viem/chains"
 
 const appStore = useAppStore()
 
@@ -26,12 +27,16 @@ const projectId = import.meta.env.VITE_PROJECT_ID
 
 reconnect(config)
 
-createWeb3Modal({
-    wagmiConfig: config,
+createAppKit({
+    adapters: [wagmiAdapter],
+    defaultNetwork: sonic,
     projectId,
+    networks: [sonic],
+    metadata,
     excludeWalletIds: [
         "19177a98252e07ddfc9af2083ba8e07ef627cb6103467ffebb3f8f4205fd7927",
-    ], // exclude ledger
+    ],
+    themeMode: "dark",
     themeVariables: {
         "--w3m-accent": "#214850",
     },

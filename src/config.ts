@@ -1,8 +1,9 @@
 import { injected, walletConnect } from "@wagmi/connectors"
-import { http, createConfig, fallback } from "@wagmi/core"
+import { http, fallback } from "@wagmi/core"
 import { sonic } from "@wagmi/core/chains"
+  import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 
-const metadata = {
+export const metadata = {
     name: "Deif's Estfor Plaza",
     description: "",
     url: "https://hmmdeif.github.io/estfor-plaza/",
@@ -11,8 +12,13 @@ const metadata = {
 
 const projectId = import.meta.env.VITE_PROJECT_ID
 
-export const config = createConfig({
-    chains: [sonic],
+export const wagmiAdapter = new WagmiAdapter({
+    networks: [sonic],
+    projectId,
+    connectors: [
+        walletConnect({ projectId, metadata }),
+        injected({ shimDisconnect: true }),
+    ],
     transports: {
         [sonic.id]: fallback(
             [
@@ -23,19 +29,6 @@ export const config = createConfig({
             { rank: { interval: 120_000 } }
         ),
     },
-    connectors: [
-        walletConnect({ projectId, metadata, showQrModal: false }),
-        injected({ shimDisconnect: true }),
-    ],
 })
 
-export const estimateConfig = createConfig({
-    chains: [sonic],
-    transports: {
-        [sonic.id]: http("https://rpc.soniclabs.com"),
-    },
-    connectors: [
-        walletConnect({ projectId, metadata, showQrModal: false }),
-        injected({ shimDisconnect: true }),
-    ],
-})
+export const config = wagmiAdapter.wagmiConfig;

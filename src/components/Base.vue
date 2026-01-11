@@ -119,40 +119,44 @@
 </template>
 
 <script setup lang="ts">
-import { getAccount, watchAccount } from "@wagmi/core"
-import { useWeb3Modal } from "@web3modal/wagmi/vue"
-import { computed, onMounted, ref } from "vue"
+import { getAccount } from "@wagmi/core"
+import { useAppKit, useAppKitAccount } from "@reown/appkit/vue";
+import { computed, onMounted, ref, watch } from "vue"
 import { useCoreStore } from "../store/core"
 import { useAppStore } from "../store/app"
 import { useBroochStore } from "../store/brooch"
 import { config } from "../config"
 import { useFactoryStore } from "../store/factory"
 import { useRoute } from "vue-router"
+import { sleep } from "../utils/time";
 
 const coreStore = useCoreStore()
 const broochStore = useBroochStore()
 const app = useAppStore()
 const loading = ref(false)
-const { open } = useWeb3Modal()
+const { open } = useAppKit()
+const accountData = useAppKitAccount({ namespace: "eip155" });
 
 const toasts = computed(() => app.toasts)
-const isConnected = ref(false)
+const isConnected = computed(() => accountData.value.isConnected)
 const route = useRoute()
 
 const init = async () => {
     try {
         const account = getAccount(config)
-        if (account.isConnected) {
+        if (account.isConnecting) {
+            await sleep(1000)
+            return await init()
+        }
+        if (isConnected.value) {
             loading.value = true
             useFactoryStore().reset()
             await coreStore.getActivePlayer()
             await broochStore.getBroochData(0, false)
             await broochStore.getBroochData(1, true)
-            isConnected.value = true
         } else if (account.isDisconnected) {
             coreStore.disconnect()
             useFactoryStore().reset()
-            isConnected.value = false
         }
     } catch (e) {
         console.log(e)
@@ -163,11 +167,7 @@ const init = async () => {
 
 onMounted(init)
 
-watchAccount(config, {
-    onChange() {
-        init()
-    },
-})
+watch(() => accountData.value.address, init)
 </script>
 
 <style>

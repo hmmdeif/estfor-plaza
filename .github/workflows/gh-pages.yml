@@ -39,17 +39,17 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: pnpm/action-setup@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - run: npm i
+          version: 10
+          cache: true
+      - run: pnpm i
       - name: Build
         env:
           NODE_ENV: production
         run: |
-          npm run build:scripts
-          npm run build
+          pnpm run build:scripts
+          pnpm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

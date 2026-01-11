@@ -348,7 +348,7 @@ watch(() => broochStore.hasAccess(0), init)
                     />
                 </datalist>
             </div>
-            <w3m-button />
+            <appkit-button size="sm" />
         </div>
     </nav>
     <Donate ref="donateRef" />
