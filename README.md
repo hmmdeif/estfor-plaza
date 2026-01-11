@@ -2,10 +2,10 @@
 
 ## Install
 
-`npm i`
+`pnpm i`
 
 ## Run
 
-Copy Estfor data locally from the submodule repo `npm run build:scripts`
+Copy Estfor data locally from the submodule repo `pnpm run build:scripts`
 
-`npm run dev`
+`pnpm run dev`
