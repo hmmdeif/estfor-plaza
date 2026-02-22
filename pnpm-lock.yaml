@@ -15,8 +15,8 @@ importers:
         specifier: ^2.0.18
         version: 2.2.0(vue@3.5.26(typescript@5.9.3))
       '@paintswap/estfor-definitions':
-        specifier: ^2.0.66
-        version: 2.0.88
+        specifier: ^2.0.104
+        version: 2.0.104
       '@reown/appkit':
         specifier: ^1.8.16
         version: 1.8.16(@types/react@19.2.8)(bufferutil@4.1.0)(react@18.3.1)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@18.3.1))(utf-8-validate@5.0.10)(zod@3.25.76)
@@ -610,8 +610,8 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@paintswap/estfor-definitions@2.0.88':
-    resolution: {integrity: sha512-Jg2atEH9pPhYZGc7QNXU6AadmLArvcMrCJuWaBqKM08k+GUOf+CDpAvOEiYPIxSVzLaZEJMQZ1vuCEl6lW8rfQ==}
+  '@paintswap/estfor-definitions@2.0.104':
+    resolution: {integrity: sha512-kPM5+KxQLQX3iuC8BesCaFOtfAArhVhnS3TnSbli8t0qzxNW63ybSbf8wYCEfvQsIczSMQfpbZPDUKFYGg9cQg==}
 
   '@phosphor-icons/webcomponents@2.1.5':
     resolution: {integrity: sha512-JcvQkZxvcX2jK+QCclm8+e8HXqtdFW9xV4/kk2aL9Y3dJA2oQVt+pzbv1orkumz3rfx4K9mn9fDoMr1He1yr7Q==}
@@ -4160,7 +4160,7 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.20.1
 
-  '@paintswap/estfor-definitions@2.0.88':
+  '@paintswap/estfor-definitions@2.0.104':
     dependencies:
       assemblyscript: 0.19.10
 

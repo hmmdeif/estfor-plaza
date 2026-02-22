@@ -13,7 +13,7 @@
   "dependencies": {
     "@apollo/client": "^3.9.6",
     "@heroicons/vue": "^2.0.18",
-    "@paintswap/estfor-definitions": "^2.0.66",
+    "@paintswap/estfor-definitions": "^2.0.104",
     "@reown/appkit": "^1.8.16",
     "@reown/appkit-adapter-wagmi": "^1.8.16",
     "@vue/apollo-composable": "^4.0.2",
