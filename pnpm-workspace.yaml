@@ -1,6 +1,11 @@
 overrides:
     wagmi: 3.7.6
 
+peerDependencyRules:
+    allowedVersions:
+        # Reown's transitive Solana packages cap their peer range at TypeScript 5.
+        typescript: "6"
+
 allowBuilds:
     "@reown/appkit": false
     bufferutil: true
