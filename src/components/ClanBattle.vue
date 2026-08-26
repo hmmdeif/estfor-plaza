@@ -42,7 +42,7 @@
             <div class="flex justify-start mt-5">
                 <label class="form-control w-full">
                     <div class="label">
-                        <span class="label-text">Simulations</span>
+                        <span class="text-sm">Simulations</span>
                     </div>
                     <input
                         type="number"
@@ -52,9 +52,9 @@
                         class="input input-sm input-bordered bg-base-100-50"
                         v-model="simulationCount"
                     />
-                    <div class="label">
-                        <span class="label-text-alt"></span>
-                        <span class="label-text-alt"
+                    <div class="label justify-between">
+                        <span></span>
+                        <span class="text-xs text-base-content/60"
                             >Increase for accuracy, takes longer</span
                         >
                     </div>
@@ -71,8 +71,8 @@
                 </select>
             </div>
             <div class="form-control items-end">
-                <label class="label cursor-pointer">
-                    <span class="label-text mr-2 items-center flex">
+                <label class="label w-full cursor-pointer justify-between">
+                    <span class="text-sm mr-2 items-center flex">
                         Use Sharpened Claw (+1 to max points for VAULT attacker)
                     </span>
                     <input

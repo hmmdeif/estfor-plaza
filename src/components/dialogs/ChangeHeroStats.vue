@@ -5,7 +5,7 @@
 
             <label class="form-control w-full">
                 <div class="label">
-                    <span class="label-text">Melee</span>
+                    <span class="text-sm">Melee</span>
                 </div>
                 <input
                     type="number"
@@ -19,7 +19,7 @@
 
             <label class="form-control w-full">
                 <div class="label">
-                    <span class="label-text">Ranged</span>
+                    <span class="text-sm">Ranged</span>
                 </div>
                 <input
                     type="number"
@@ -33,7 +33,7 @@
 
             <label class="form-control w-full">
                 <div class="label">
-                    <span class="label-text">Magic</span>
+                    <span class="text-sm">Magic</span>
                 </div>
                 <input
                     type="number"
@@ -47,7 +47,7 @@
 
             <label class="form-control w-full">
                 <div class="label">
-                    <span class="label-text">Defence</span>
+                    <span class="text-sm">Defence</span>
                 </div>
                 <input
                     type="number"

@@ -20,7 +20,7 @@
 
             <label class="form-control w-full mt-5">
                 <div class="label">
-                    <span class="label-text">Item to distribute</span>
+                    <span class="text-sm">Item to distribute</span>
                 </div>
                 <select class="select select-bordered w-full" v-model="item">
                     <option
@@ -36,7 +36,7 @@
 
             <label class="form-control w-full mt-5">
                 <div class="label">
-                    <span class="label-text">Amount to distribute</span>
+                    <span class="text-sm">Amount to distribute</span>
                 </div>
                 <div class="flex flex-row gap-2">
                     <input

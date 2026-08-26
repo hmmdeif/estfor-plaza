@@ -22,7 +22,7 @@
                         :key="i"
                     >
                         <div class="label">
-                            <span class="label-text">Hero #{{ i + 1 }}</span>
+                            <span class="text-sm">Hero #{{ i + 1 }}</span>
                         </div>
                         <div class="join items-center">
                             <input
@@ -59,7 +59,7 @@
                             </button>
                         </div>
                         <div class="label">
-                            <span class="label-text text-error">{{
+                            <span class="text-sm text-error">{{
                                 h.error
                             }}</span>
                         </div>
@@ -68,7 +68,7 @@
                 <div class="flex items-end gap-2">
                     <label class="form-control w-full">
                         <div class="label">
-                            <span class="label-text">Number of Heroes</span>
+                            <span class="text-sm">Number of Heroes</span>
                         </div>
                         <input
                             type="number"

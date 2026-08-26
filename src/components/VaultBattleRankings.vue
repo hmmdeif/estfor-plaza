@@ -15,8 +15,8 @@
                 </div>
             </div>
             <div class="form-control items-end">
-                <label class="label cursor-pointer">
-                    <span class="label-text mr-2 items-center flex">
+                <label class="label w-full cursor-pointer justify-between">
+                    <span class="text-sm mr-2 items-center flex">
                         Use Sharpened Claw (+1 to max points for VAULT attacker)
                     </span>
                     <input

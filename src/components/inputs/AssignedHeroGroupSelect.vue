@@ -1,7 +1,7 @@
 <template>
     <label class="form-control">
         <div v-if="$props.label" class="label">
-            <span class="label-text">{{ props.label }}</span>
+            <span class="text-sm">{{ props.label }}</span>
         </div>
         <select
             class="select select-bordered"

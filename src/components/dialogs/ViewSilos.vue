@@ -133,7 +133,7 @@
 
                 <label class="form-control w-full mt-5">
                     <div class="label">
-                        <span class="label-text">Hero Transfer Address</span>
+                        <span class="text-sm">Hero Transfer Address</span>
                     </div>
                     <input
                         type="text"
@@ -195,7 +195,7 @@
 
                 <label class="form-control w-full mt-5">
                     <div class="label">
-                        <span class="label-text">Item Transfer Address</span>
+                        <span class="text-sm">Item Transfer Address</span>
                     </div>
                     <input
                         type="text"
@@ -203,9 +203,9 @@
                         class="input input-bordered input-sm bg-base-100-50"
                         v-model="itemToAddress"
                     />
-                    <div class="label">
+                    <div class="label justify-between">
                         <span></span>
-                        <span class="label-text-alt"
+                        <span class="text-xs text-base-content/60"
                             >Defaults to your Item Bank</span
                         >
                     </div>

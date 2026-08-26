@@ -48,7 +48,7 @@
                 <div class="flex justify-start mt-5">
                     <label class="form-control w-full">
                         <div class="label">
-                            <span class="label-text">Silos to create</span>
+                            <span class="text-sm">Silos to create</span>
                         </div>
                         <input
                             type="number"

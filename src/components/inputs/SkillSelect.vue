@@ -1,7 +1,7 @@
 <template>
     <label class="form-control w-full">
         <div class="label">
-            <span class="label-text">Skill</span>
+            <span class="text-sm">Skill</span>
         </div>
         <select class="select select-bordered w-full" v-model="value">
             <option v-for="o in options" :key="o" :value="o">

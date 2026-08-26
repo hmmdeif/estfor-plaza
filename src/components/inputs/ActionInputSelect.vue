@@ -1,7 +1,7 @@
 <template>
     <label class="form-control w-full">
         <div class="label">
-            <span class="label-text">Action</span>
+            <span class="text-sm">Action</span>
         </div>
         <select class="select select-bordered w-full" v-model="value">
             <option v-for="o in options" :key="o.actionId" :value="o.actionId">
@@ -9,7 +9,7 @@
             </option>
         </select>
         <div v-if="minHeroXPForSkill > 0" class="label">
-            <span class="label-text"
+            <span class="text-sm"
                 >Minimum level of selected heroes:
                 {{ getLevel(minHeroXPForSkill.toString()) }}
             </span>

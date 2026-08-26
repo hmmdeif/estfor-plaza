@@ -164,8 +164,8 @@
 
             <ActionQueueStatusSelect class="mt-5" v-model="queueStatus" />
 
-            <label class="label cursor-pointer mt-5">
-                <span class="label-text text-xs mr-2 items-center flex">
+            <label class="label w-full cursor-pointer justify-between mt-5">
+                <span class="text-xs mr-2 items-center flex">
                     Set Active
                     <div
                         class="tooltip tooltip-primary tooltip-right ml-2"
@@ -193,8 +193,8 @@
                     v-model="active"
                 />
             </label>
-            <label class="label cursor-pointer">
-                <span class="label-text text-xs mr-2 items-center flex">
+            <label class="label w-full cursor-pointer justify-between">
+                <span class="text-xs mr-2 items-center flex">
                     Check Heroes Have Items
                 </span>
                 <input

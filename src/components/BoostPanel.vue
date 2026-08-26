@@ -162,7 +162,7 @@
                 </select>
                 <div class="form-control items-end">
                     <label class="label cursor-pointer">
-                        <span class="label-text text-xs mr-2 items-center flex">
+                        <span class="text-xs mr-2 items-center flex">
                             Wishing Well (+{{ wishingWellBoost.boostValue }}%
                             {{ boostTypeNames[wishingWellBoost.boostType] }})
                             <div
@@ -199,7 +199,7 @@
                 </div>
                 <div class="form-control items-end">
                     <label class="label cursor-pointer">
-                        <span class="label-text text-xs mr-2"
+                        <span class="text-xs mr-2"
                             >Apply boosts</span
                         >
                         <input

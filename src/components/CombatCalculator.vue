@@ -93,8 +93,8 @@
                     @update:model-value="onUpdate"
                     v-model="equippedItems.food"
                 />
-                <label class="label cursor-pointer">
-                    <span class="label-text text-xs mr-2 items-center flex">
+                <label class="label w-full cursor-pointer justify-between">
+                    <span class="text-xs mr-2 items-center flex">
                         Show Owned Pets Only
                     </span>
                     <input

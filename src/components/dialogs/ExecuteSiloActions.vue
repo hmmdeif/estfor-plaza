@@ -53,9 +53,9 @@
                 </button>
                 <label
                     v-if="silosWithActionChoicesOnly.length > 0"
-                    class="label cursor-pointer"
+                    class="label w-full cursor-pointer justify-between"
                 >
-                    <span class="label-text text-xs mr-2 items-center flex">
+                    <span class="text-xs mr-2 items-center flex">
                         Override missing items and execute anyway
                     </span>
                     <input
@@ -65,8 +65,8 @@
                         @change="missingItems = []"
                     />
                 </label>
-                <label class="label cursor-pointer">
-                    <span class="label-text text-xs mr-2 items-center flex">
+                <label class="label w-full cursor-pointer justify-between">
+                    <span class="text-xs mr-2 items-center flex">
                         Execute all transactions without waiting for
                         confirmation (can cause issues with some wallets)
                     </span>
@@ -151,7 +151,7 @@
                                 class="checkbox checkbox-primary card"
                             />
                             <span
-                                class="label-text mt-1 flex gap-2 items-center"
+                                class="text-sm mt-1 flex gap-2 items-center"
                             >
                                 {{ getItemName(token.tokenId) }}
                             </span>
