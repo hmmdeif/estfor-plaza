@@ -189,8 +189,7 @@
 
 <script setup lang="ts">
 import Avatar from "./Avatar.vue"
-import { ref, onMounted } from "vue"
-import { watchDebounced } from "@vueuse/core"
+import { ref, onMounted, watch } from "vue"
 import { getClanMembers, getPlayers } from "../utils/api"
 import { useAppStore } from "../store/app"
 import { getLevel, useCoreStore } from "../store/core"
@@ -211,25 +210,25 @@ const selectedClan = ref<Clan | null>(null)
 
 const emeraldBroochPaywallRef = ref<typeof EmeraldBroochPaywall>()
 
-watchDebounced(
-    heroSearch,
-    async () => {
-        if (heroSearch.value === "") {
+watch(heroSearch, (search, _previousSearch, onCleanup) => {
+    const timeout = window.setTimeout(async () => {
+        if (search === "") {
             heroSearchResults.value = []
             return
         }
         loading.value = true
         try {
-            const players = await getPlayers(heroSearch.value)
+            const players = await getPlayers(search)
             heroSearchResults.value = players.players
         } catch (e) {
-            console.error(`Failed to search ${heroSearch.value}`, e)
+            console.error(`Failed to search ${search}`, e)
         } finally {
             loading.value = false
         }
-    },
-    { debounce: 500 }
-)
+    }, 500)
+
+    onCleanup(() => window.clearTimeout(timeout))
+})
 
 const selectHero = async (player: Player) => {
     loading.value = true

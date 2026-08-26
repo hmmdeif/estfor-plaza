@@ -110,8 +110,7 @@ export const vrfActionIdNames = {
     [EstforConstants.INSTANT_VRF_ACTION_FORGING_ODLARIONS_WYSGRIF]: "Forging Odlarions Wysgrif",
 }
 
-export const useVRFActionsStore = defineStore({
-    id: "vrfActions",
+export const useVRFActionsStore = defineStore("vrfActions", {
     state: () => ({
         forging: allInstantVRFActions.filter(x => x.actionType === InstantVRFActionType.FORGING),
         generic: allInstantVRFActions.filter(x => x.actionType === InstantVRFActionType.GENERIC),

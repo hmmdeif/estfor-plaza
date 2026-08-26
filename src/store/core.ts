@@ -190,8 +190,7 @@ export const fullAttireMultiplier = (
     return fullAttireBonus.bonusXPPercent / 100
 }
 
-export const useCoreStore = defineStore({
-    id: "core",
+export const useCoreStore = defineStore("core", {
     state: () =>
         ({
             addresses: [

@@ -224,7 +224,7 @@ watch(() => broochStore.hasAccess(0), init)
                         </summary>
                         <ul
                             tabindex="0"
-                            class="z-[1] menu dropdown-content p-2 shadow bg-base-100 rounded-box w-52"
+                            class="z-[1] menu dropdown-content p-2 shadow-sm bg-base-100 rounded-box w-52"
                         >
                             <li @click="removeFocus">
                                 <router-link to="/hero-select"

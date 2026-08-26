@@ -113,8 +113,7 @@
 import { computed, ref, onBeforeMount } from "vue"
 import { useFactoryStore } from "../store/factory"
 import { useAppStore } from "../store/app"
-import { useQuery } from "@vue/apollo-composable"
-import gql from "graphql-tag"
+
 import EmptySilos from "./factory/EmptySilos.vue"
 import UnassignedSilos from "./factory/UnassignedSilos.vue"
 import AssignedSilos from "./factory/AssignedSilos.vue"
@@ -125,6 +124,7 @@ import { config } from "../config"
 import { useBroochStore } from "../store/brooch"
 import RubyBroochPaywall from "./dialogs/RubyBroochPaywall.vue"
 import { sleep } from "../utils/time"
+import { querySubgraph } from "../utils/graphql"
 
 const factoryStore = useFactoryStore()
 const app = useAppStore()
@@ -132,7 +132,7 @@ const broochStore = useBroochStore()
 const loading = ref(factoryStore.initialised === false)
 const creating = ref(false)
 const silosToCreate = ref(5)
-const previousCount = ref(0)
+
 const chainId = ref<146>(146)
 
 const viewSilosRef = ref<typeof ViewSilos>()
@@ -142,70 +142,75 @@ const factoryAccount = ref(getAccount(config))
 
 const rubyBroochPaywallRef = ref<typeof RubyBroochPaywall>()
 
-const { onError, refetch, fetchMore, onResult } = useQuery(
-    gql`
-        query getSonicProxys($offset: Int, $acc: String!) {
-            factoryRegistryCreateds(skip: $offset, where: { owner: $acc }) {
-                sender
-                owner
-                proxy
-                proxyId
+interface FactoryRegistryCreated {
+    sender: string
+    owner: string
+    proxy: string
+    proxyId: string
+}
+
+interface FactoryRegistryCreatedsData {
+    factoryRegistryCreateds: FactoryRegistryCreated[]
+}
+
+const GET_SONIC_PROXYS = `
+    query getSonicProxys($offset: Int, $acc: String!) {
+        factoryRegistryCreateds(skip: $offset, where: { owner: $acc }) {
+            sender
+            owner
+            proxy
+            proxyId
+        }
+    }
+`
+
+let proxyRequestId = 0
+
+const loadProxys = async (): Promise<boolean> => {
+    const requestId = ++proxyRequestId
+    const acc = factoryAccount.value.address
+    if (!acc) {
+        loading.value = false
+        return true
+    }
+
+    try {
+        const proxys: FactoryRegistryCreated[] = []
+        while (true) {
+            const data = await querySubgraph<
+                FactoryRegistryCreatedsData,
+                { offset: number; acc: string }
+            >(import.meta.env.VITE_SONIC_SUBGRAPH_URL, GET_SONIC_PROXYS, {
+                offset: proxys.length,
+                acc,
+            })
+            const page = data.factoryRegistryCreateds
+            proxys.push(...page)
+            if (page.length === 0) {
+                break
             }
         }
-    `,
-    () => ({
-        offset: 0,
-        acc: factoryAccount.value.address,
-    }),
-    {
-        clientId: "sonic",
-    }
-)
 
-onResult(async (v) => {
-    if (v.data) {
-        if (v?.data?.factoryRegistryCreateds?.length > 0) {
-            if (
-                v.data?.factoryRegistryCreateds.length !== previousCount.value
-            ) {
-                await fetchMore({
-                    variables: {
-                        offset: v?.data?.factoryRegistryCreateds?.length,
-                    },
-                    updateQuery: (previousResult, { fetchMoreResult }) => {
-                        if (!fetchMoreResult) {
-                            return previousResult
-                        }
-                        return {
-                            factoryRegistryCreateds: [
-                                ...previousResult.factoryRegistryCreateds,
-                                ...fetchMoreResult.factoryRegistryCreateds,
-                            ],
-                        }
-                    },
-                })
-            } else {
-                await factoryStore.setProxys(v.data?.factoryRegistryCreateds)
-                await factoryStore.getAllProxyStates(chainId.value)
-                loading.value = false
-            }
-            previousCount.value = v.data?.factoryRegistryCreateds.length
-        } else {
-            if (previousCount.value === 0) {
-                await factoryStore.setProxys(v.data?.factoryRegistryCreateds)                
-                await factoryStore.getAllProxyStates(chainId.value)
-            }
+        if (requestId !== proxyRequestId) {
+            return true
+        }
+
+        await factoryStore.setProxys(proxys)
+        await factoryStore.getAllProxyStates(chainId.value)
+        return true
+    } catch (error) {
+        console.error("Failed to load factory silos", error)
+        return false
+    } finally {
+        if (requestId === proxyRequestId) {
             loading.value = false
         }
     }
-})
+}
 
 const onCreateHeroes = async () => {
     await new Promise((resolve) => setTimeout(resolve, 2000))
-    await refetch({
-        offset: 0,
-        acc: factoryAccount.value.address,
-    })
+    await loadProxys()
 }
 
 const createSilos = async () => {
@@ -222,10 +227,9 @@ const createSilos = async () => {
         )
 
         while (factoryStore.proxys.length === originalProxyCount) {
-            await refetch({
-                offset: 0,
-                acc: factoryAccount.value.address,
-            })
+            if (!(await loadProxys())) {
+                throw new Error("Failed to refresh factory silos")
+            }
             await sleep(5000)
         }
     } catch {
@@ -243,25 +247,10 @@ const viewSilos = () => {
 watchAccount(config, {
     onChange() {
         factoryAccount.value = getAccount(config)
-        previousCount.value = 0
-        refetch({
-            offset: 0,
-            acc: factoryAccount.value.address,
-        })
+        void loadProxys()
     },
 })
 
-onError(async () => {
-    loading.value = true
-    try {
-        // await factoryStore.getProxys(chainId.value)
-        // await factoryStore.getAllProxyStates(chainId.value)
-    } catch (e) {
-        console.error(e)
-    } finally {
-        loading.value = false
-    }
-})
 
 onBeforeMount(() => {
     const account = getAccount(config)
@@ -270,6 +259,6 @@ onBeforeMount(() => {
             switchChain(config, { chainId: 146 })
         }
     }
-    previousCount.value = 0
+    void loadProxys()
 })
 </script>

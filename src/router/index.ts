@@ -1,4 +1,5 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router"
+import { createRouter, createWebHistory } from "vue-router"
+import type { RouteRecordRaw } from "vue-router"
 import { useBroochStore } from "../store/brooch"
 import Base from "../components/Base.vue"
 import { useAppStore } from "../store/app"
@@ -142,7 +143,7 @@ router.beforeEach(async (to) => {
             broochStore.brooch(0).balance === 0 &&
             broochStore.brooch(1).balance === 0
         ) {
-            return router.push("/")
+            return "/"
         }
     }
     if (to.meta.requiresRubyBrooch) {
@@ -151,7 +152,7 @@ router.beforeEach(async (to) => {
             await broochStore.getBroochData(1, true)
         }
         if (broochStore.brooch(1).balance === 0) {
-            return router.push("/")
+            return "/"
         }
     }
 })

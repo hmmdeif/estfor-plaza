@@ -583,8 +583,7 @@ const getChunksForMulticall = async (
     return actualChunks
 }
 
-export const useFactoryStore = defineStore({
-    id: "factory",
+export const useFactoryStore = defineStore("factory", {
     state: () =>
         ({
             proxys: [] as ProxySilo[],

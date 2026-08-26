@@ -230,8 +230,7 @@ export const calculateBattleChances = (
     }
 }
 
-export const useClanStore = defineStore({
-    id: "clan",
+export const useClanStore = defineStore("clan", {
     state: () =>
         ({
             clans: [] as Clan[],

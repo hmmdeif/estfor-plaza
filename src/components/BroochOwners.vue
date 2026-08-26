@@ -16,11 +16,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue"
-import gql from "graphql-tag"
-import { useQuery } from "@vue/apollo-composable"
+import { computed, onMounted, ref } from "vue"
+import { querySubgraph } from "../utils/graphql"
 
-const previousCount = ref(0)
+
 const loading = ref(false)
 const transferSingles = ref<any[]>([])
 
@@ -101,54 +100,55 @@ const currentOwners = computed(() => {
     return { emeraldBroochOwners: emeraldBroochOwners.filter((x: any) => x.value > 0), rubyBroochOwners: rubyBroochOwners.filter((x: any) => x.value > 0) }
 })
 
-const { fetchMore, onResult } = useQuery(
-    gql`
-        query getTransfers($offset: Int) {
-            transferSingles(skip: $offset) {
-                internal_id
-                blockNumber
-                from
-                to
-                value
-            }
-        }
-    `,
-    () => ({
-        offset: 0,
-    })
-)
+interface TransferSingle {
+    internal_id: string
+    blockNumber: string
+    from: string
+    to: string
+    value: string
+}
 
-onResult(async (v) => {
-    if (v.data) {
-        if (v?.data?.transferSingles?.length > 0) {
-            if (
-                v.data?.transferSingles.length !== previousCount.value
-            ) {
-                await fetchMore({
-                    variables: {
-                        offset: v?.data?.transferSingles?.length,
-                    },
-                    updateQuery: (previousResult, { fetchMoreResult }) => {
-                        if (!fetchMoreResult) {
-                            return previousResult
-                        }
-                        return {
-                            transferSingles: [
-                                ...previousResult.transferSingles,
-                                ...fetchMoreResult.transferSingles,
-                            ],
-                        }
-                    },
-                })
-            } else {
-                transferSingles.value = v.data?.transferSingles
-                loading.value = false
-            }
-            previousCount.value = v.data?.transferSingles.length
-        } else {
-            loading.value = false
+interface TransferSinglesData {
+    transferSingles: TransferSingle[]
+}
+
+const GET_TRANSFERS = `
+    query getTransfers($offset: Int) {
+        transferSingles(skip: $offset) {
+            internal_id
+            blockNumber
+            from
+            to
+            value
         }
     }
-})
+`
+
+const loadTransfers = async () => {
+    loading.value = true
+    try {
+        const transfers: TransferSingle[] = []
+        while (true) {
+            const data = await querySubgraph<
+                TransferSinglesData,
+                { offset: number }
+            >(import.meta.env.VITE_SUBGRAPH_URL, GET_TRANSFERS, {
+                offset: transfers.length,
+            })
+            const page = data.transferSingles
+            transfers.push(...page)
+            if (page.length === 0) {
+                break
+            }
+        }
+        transferSingles.value = transfers
+    } catch (error) {
+        console.error("Failed to load brooch transfers", error)
+    } finally {
+        loading.value = false
+    }
+}
+
+onMounted(() => void loadTransfers())
 </script>
 

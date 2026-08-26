@@ -20,8 +20,7 @@ export interface BroochState {
     brooches: Brooch[]
 }
 
-export const useBroochStore = defineStore({
-    id: "brooch",
+export const useBroochStore = defineStore("brooch", {
     state: () =>
         ({
             brooches: [] as Brooch[],
@@ -45,7 +44,7 @@ export const useBroochStore = defineStore({
                 let hasBrooch = false
                 for (let i = tokenId; i <= maxTokenId; i++) {
                     const brooch = state.brooches.find((x) => x.tokenId == i)
-                    if (brooch?.balance || 0 > 0) {
+                    if ((brooch?.balance || 0) > 0) {
                         hasBrooch = true
                     }
                 }

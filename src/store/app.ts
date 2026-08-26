@@ -15,8 +15,7 @@ export interface AppState {
     version: string
 }
 
-export const useAppStore = defineStore({
-    id: "app",
+export const useAppStore = defineStore("app", {
     state: () =>
         ({
             theme: localStorage.getItem("theme") || "notheme",

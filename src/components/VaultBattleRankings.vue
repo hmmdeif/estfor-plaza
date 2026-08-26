@@ -3,7 +3,7 @@
         class="card bg-base-100-50 shadow-xl rounded-lg mt-2 md:mt-10 mx-auto md:w-[760px]"
     >
         <div class="card-body">
-            <div role="tablist" class="tabs tabs-bordered tabs-lg mb-4">
+            <div role="tablist" class="tabs tabs-border tabs-lg mb-4">
                 <router-link
                     to="/territory-rankings"
                     role="tab"

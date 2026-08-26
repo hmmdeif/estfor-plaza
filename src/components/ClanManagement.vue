@@ -15,7 +15,7 @@
                 </div>
             </div>
             <div v-else>
-                <div role="tablist" class="tabs tabs-bordered tabs-lg mb-4">
+                <div role="tablist" class="tabs tabs-border tabs-lg mb-4">
                     <router-link
                         to="/clan-management/wishing-well"
                         role="tab"

@@ -1,7 +1,7 @@
 import { injected } from "@wagmi/connectors"
 import { http, fallback } from "@wagmi/core"
 import { sonic } from "@wagmi/core/chains"
-  import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
+import { WagmiAdapter } from "@reown/appkit-adapter-wagmi"
 
 export const metadata = {
     name: "Deif's Estfor Plaza",
@@ -15,9 +15,7 @@ const projectId = import.meta.env.VITE_PROJECT_ID
 export const wagmiAdapter = new WagmiAdapter({
     networks: [sonic],
     projectId,
-    connectors: [
-        injected({ shimDisconnect: true }),
-    ],
+    connectors: [injected({ shimDisconnect: true })],
     transports: {
         [sonic.id]: fallback(
             [
@@ -30,4 +28,4 @@ export const wagmiAdapter = new WagmiAdapter({
     },
 })
 
-export const config = wagmiAdapter.wagmiConfig;
+export const config = wagmiAdapter.wagmiConfig

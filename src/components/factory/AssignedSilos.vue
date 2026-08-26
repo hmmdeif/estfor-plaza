@@ -209,7 +209,7 @@
                     </div>
                     <ul
                         tabindex="0"
-                        class="dropdown-content z-[1] menu p-2 w-52 rounded-box shadow bg-base-100-50"
+                        class="dropdown-content z-[1] menu p-2 w-52 rounded-box shadow-sm bg-base-100-50"
                     >
                         <li>
                             <button

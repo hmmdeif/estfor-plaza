@@ -254,8 +254,7 @@ export const monsterImageMap = {
     [EstforConstants.ACTION_COMBAT_NIGHTMARE_UFFINCH]: "monster_hell_03.jpg",
 }
 
-export const useMonsterStore = defineStore({
-    id: "monsters",
+export const useMonsterStore = defineStore("monsters", {
     state: () =>
         ({
             monsters: allActions.filter(

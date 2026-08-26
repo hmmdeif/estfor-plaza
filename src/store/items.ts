@@ -483,8 +483,7 @@ export interface ItemState {
     itemSearch: string
 }
 
-export const useItemStore = defineStore({
-    id: "items",
+export const useItemStore = defineStore("items", {
     state: () =>
         ({
             items: allItems as ItemInput[],
@@ -973,7 +972,6 @@ export const useItemStore = defineStore({
         getTotalCombatStats(state: ItemState) {
             const coreStore = useCoreStore()
             const playerState = coreStore.playerState
-            coreStore.individualBoost
 
             const stats = new CombatStats()
             const localEquippedItems =

@@ -1,0 +1,9 @@
+overrides:
+    wagmi: 3.7.6
+
+allowBuilds:
+    "@reown/appkit": false
+    bufferutil: true
+    esbuild: true
+    utf-8-validate: true
+    vue-demi: false

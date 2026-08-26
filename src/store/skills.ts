@@ -741,8 +741,7 @@ export const getCombatActionChoiceById = (
     }
 }
 
-export const useSkillStore = defineStore({
-    id: "skills",
+export const useSkillStore = defineStore("skills", {
     state: () =>
         ({
             woodcutting: allActions.filter(
