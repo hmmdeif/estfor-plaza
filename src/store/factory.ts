@@ -17,7 +17,7 @@ import {
     UserItemNFT,
 } from "@paintswap/estfor-definitions/types"
 import { defineStore } from "pinia"
-import { ZeroAddress, solidityPacked, Interface } from "ethers"
+import { zeroAddress } from "viem"
 
 import {
     Address,
@@ -26,6 +26,8 @@ import {
     useCoreStore,
     safeDecode,
 } from "./core"
+import { encode } from "../utils/abi"
+import { describeTxError } from "../utils/errors"
 
 import estforPlayersAbi from "../abi/estforPlayer.json"
 import estforPlayerAbi from "../abi/estforPlayer.json"
@@ -98,17 +100,18 @@ export const proxyNeedsItem = (item: UserItemNFT, p: ProxySilo): boolean => {
     }
     for (const a of p.savedTransactions) {
         const decoded = safeDecode(a.data, "startActions")
+        const action = decoded?.[1]?.[0]
         const equippedItems: EquippedItems = {
-            rightHand: Number(decoded?.[1]?.[0]?.[4]),
-            leftHand: Number(decoded?.[1]?.[0]?.[5]),
-            food: Number(decoded?.[1]?.[0]?.[2]),
-            head: Number(decoded?.[1]?.[0]?.[0]?.[0]),
-            neck: Number(decoded?.[1]?.[0]?.[0]?.[1]),
-            body: Number(decoded?.[1]?.[0]?.[0]?.[2]),
-            arms: Number(decoded?.[1]?.[0]?.[0]?.[3]),
-            legs: Number(decoded?.[1]?.[0]?.[0]?.[4]),
-            feet: Number(decoded?.[1]?.[0]?.[0]?.[5]),
-            ring: Number(decoded?.[1]?.[0]?.[0]?.[6]),
+            rightHand: Number(action?.rightHandEquipmentTokenId),
+            leftHand: Number(action?.leftHandEquipmentTokenId),
+            food: Number(action?.regenerateId),
+            head: Number(action?.attire?.head),
+            neck: Number(action?.attire?.neck),
+            body: Number(action?.attire?.body),
+            arms: Number(action?.attire?.arms),
+            legs: Number(action?.attire?.legs),
+            feet: Number(action?.attire?.feet),
+            ring: Number(action?.attire?.ring),
             magicBag: 0,
             quiver: 0,
             playerId: 0,
@@ -175,8 +178,8 @@ export const getIncomingItems = (proxys: ProxySilo[]) => {
     const monsterStore = useMonsterStore()
     for (const s of proxys) {
         const decoded = safeDecode(s.savedTransactions[0].data, "startActions")
-        const actionId = decoded?.[1]?.[0]?.[1] || BigInt(0)
-        const actionChoiceId = decoded?.[1]?.[0]?.[3] || BigInt(0)
+        const actionId = decoded?.[1]?.[0]?.actionId || BigInt(0)
+        const actionChoiceId = decoded?.[1]?.[0]?.choiceId || BigInt(0)
         const action = allActions.find((a) => a.actionId === Number(actionId))
         const actionChoice = getActionChoiceById(
             Number(actionId),
@@ -274,9 +277,9 @@ export const getOutgoingItems = (proxys: ProxySilo[]) => {
     const monsterStore = useMonsterStore()
     for (const s of proxys) {
         const decoded = safeDecode(s.savedTransactions[0].data, "startActions")
-        const actionId = decoded?.[1]?.[0]?.[1] || BigInt(0)
-        const food = decoded?.[1]?.[0]?.[2] || BigInt(0)
-        const actionChoiceId = decoded?.[1]?.[0]?.[3] || BigInt(0)
+        const actionId = decoded?.[1]?.[0]?.actionId || BigInt(0)
+        const food = decoded?.[1]?.[0]?.regenerateId || BigInt(0)
+        const actionChoiceId = decoded?.[1]?.[0]?.choiceId || BigInt(0)
         const action = allActions.find((a) => a.actionId === Number(actionId))
         const actionChoice = getActionChoiceById(
             Number(actionId),
@@ -505,8 +508,8 @@ export const decodeTransaction = (savedTransactions: SavedTransaction[]) => {
     const decoded = safeDecode(savedTransactions[0].data, "startActions")
 
     // [playerId, actions[[attire, actionId, regenId, choiceId], [], []], action queue type]
-    const actionId = decoded?.[1]?.[0]?.[1] || BigInt(0)
-    const choiceId = decoded?.[1]?.[0]?.[3] || BigInt(0)
+    const actionId = decoded?.[1]?.[0]?.actionId || BigInt(0)
+    const choiceId = decoded?.[1]?.[0]?.choiceId || BigInt(0)
     return (
         actionNames[Number(actionId)] ||
         actionChoiceNames[Number(choiceId)] ||
@@ -526,7 +529,7 @@ export const decodeSkillFromTransaction = (
 
     // [playerId, actions[[attire, actionId, regenId, choiceId], [], []], action queue type]
 
-    const actionId = decoded?.[1]?.[0]?.[1] || BigInt(0)
+    const actionId = decoded?.[1]?.[0]?.actionId || BigInt(0)
     const action = allActions.find((a) => a.actionId === Number(actionId))
     return action?.info.skill || Skill.NONE
 }
@@ -534,7 +537,7 @@ export const decodeSkillFromTransaction = (
 const getChunksForMulticall = async (
     data: any[],
     to: string,
-    contract: Interface,
+    factoryAbi: any,
     chunks: number,
     value: bigint,
     chainId: SonicChainId,
@@ -550,9 +553,9 @@ const getChunksForMulticall = async (
                 const payload: any = {
                     account: getAccount(config).address,
                     to: to as `0x${string}`,
-                    data: contract.encodeFunctionData("multicall", [
+                    data: encode(factoryAbi, "multicall", [
                         data.slice(i * actualChunks, (i + 1) * actualChunks),
-                    ]) as `0x${string}`,
+                    ]),
                     chainId,
                     type: "legacy", // ftm is lame
                 }
@@ -566,7 +569,6 @@ const getChunksForMulticall = async (
             }
             success = true
         } catch (e) {
-            // console.log(e)
             if (actualChunks <= 8) {
                 actualChunks -= 1
             } else if (actualChunks <= 16) {
@@ -576,6 +578,11 @@ const getChunksForMulticall = async (
             }
             attempts++
             if (actualChunks < 1 || attempts > 20) {
+                console.error(
+                    "Multicall gas estimation failed after retries:",
+                    describeTxError(e),
+                    e
+                )
                 throw new Error("Failed to estimate gas")
             }
         }
@@ -635,11 +642,9 @@ export const useFactoryStore = defineStore("factory", {
                 return
             }
 
-            const playersInterface = new Interface(estforPlayerAbi)
-            const data = playersInterface.encodeFunctionData(
-                "setActivePlayer",
-                [playerId]
-            )
+            const data = encode(estforPlayerAbi, "setActivePlayer", [
+                BigInt(playerId),
+            ])
 
             const hash = await writeContract(config, {
                 address: factoryAddress as `0x${string}`,
@@ -667,16 +672,10 @@ export const useFactoryStore = defineStore("factory", {
                 return
             }
 
-            const playerNFTInterface = new Interface(estforPlayerNFTAbi)
-            const data = playerNFTInterface.encodeFunctionData(
+            const data = encode(
+                estforPlayerNFTAbi,
                 "safeTransferFrom",
-                [
-                    siloAddress,
-                    toAddress,
-                    playerId,
-                    1,
-                    solidityPacked(["bytes"], ["0x"]),
-                ]
+                [siloAddress, toAddress, BigInt(playerId), 1, "0x"]
             )
 
             const hash = await writeContract(config, {
@@ -704,26 +703,18 @@ export const useFactoryStore = defineStore("factory", {
                 return
             }
 
-            const playerNFTInterface = new Interface(estforPlayerNFTAbi)
-            const factoryInterface = new Interface(factoryAbi)
-
             const selectorArray = proxys.map((h) =>
-                solidityPacked(
-                    ["bytes"],
-                    [
-                        factoryInterface.encodeFunctionData("execute", [
-                            h.address,
-                            playerNFTAddress,
-                            playerNFTInterface.encodeFunctionData("safeTransferFrom", [
-                                h.address,
-                                account.address,
-                                h.playerId,
-                                1,
-                                solidityPacked(["bytes"], ["0x"]),
-                            ]),
-                        ]),
-                    ]
-                )
+                encode(factoryAbi, "execute", [
+                    h.address,
+                    playerNFTAddress,
+                    encode(estforPlayerNFTAbi, "safeTransferFrom", [
+                        h.address,
+                        account.address,
+                        BigInt(h.playerId),
+                        1,
+                        "0x",
+                    ]),
+                ])
             )
 
             await this.multicall(selectorArray, chainId, false)
@@ -737,10 +728,6 @@ export const useFactoryStore = defineStore("factory", {
             if (!playerNFTAddress || !factoryRegistryAddress || !playersAddress || !account.isConnected || account.chainId !== chainId) {
                 return
             }
-
-            const playerNFTInterface = new Interface(estforPlayerNFTAbi)
-            const factoryInterface = new Interface(factoryAbi)
-            const playersInterface = new Interface(estforPlayersAbi)
 
             const delegateSilo = this.bank?.address
             if (!delegateSilo) {
@@ -767,27 +754,29 @@ export const useFactoryStore = defineStore("factory", {
             }
 
             const selectorArray = heroes.map((h) =>
-                factoryInterface.encodeFunctionData("execute", [
+                encode(factoryAbi, "execute", [
                     delegateSilo,
                     playerNFTAddress,
-                    playerNFTInterface.encodeFunctionData("safeTransferFrom", [
+                    encode(estforPlayerNFTAbi, "safeTransferFrom", [
                         account.address,
                         h.assignedSilo,
-                        h.playerId,
+                        BigInt(h.playerId),
                         1,
-                        solidityPacked(["bytes"], ["0x"]),
+                        "0x",
                     ]),
                 ])
             )
 
             await this.multicall(selectorArray, chainId, false)
-            
+
             // now activate all heroes on each silo
             const activateSelectorArray = heroes.map((h) =>
-                factoryInterface.encodeFunctionData("execute", [
+                encode(factoryAbi, "execute", [
                     h.assignedSilo,
                     playersAddress,
-                    playersInterface.encodeFunctionData("setActivePlayer", [h.playerId]),
+                    encode(estforPlayersAbi, "setActivePlayer", [
+                        BigInt(h.playerId),
+                    ]),
                 ])
             )
             await this.multicall(activateSelectorArray, chainId, false)
@@ -805,13 +794,13 @@ export const useFactoryStore = defineStore("factory", {
                 return
             }
 
-            const playersInterface = new Interface(estforPlayersAbi)
-            const factoryInterface = new Interface(factoryAbi)
             const selectorArray = heroes.map((h) =>
-                factoryInterface.encodeFunctionData("execute", [
+                encode(factoryAbi, "execute", [
                     h.address,
                     playersAddress,
-                    playersInterface.encodeFunctionData("setActivePlayer", [h.playerId]),
+                    encode(estforPlayersAbi, "setActivePlayer", [
+                        BigInt(h.playerId),
+                    ]),
                 ])
             )
             await this.multicall(selectorArray, chainId, false)
@@ -838,32 +827,25 @@ export const useFactoryStore = defineStore("factory", {
                 return
             }
 
-            const factoryInterface = new Interface(factoryAbi)
-            const playerNFTInterface = new Interface(estforPlayerNFTAbi)
             const emptyProxies = this.emptyProxys
             if (emptyProxies.length < heroes.length) {
                 throw new Error("Not enough empty proxies")
             }
 
             const selectorArray = heroes.map((h, i) =>
-                solidityPacked(
-                    ["bytes"],
-                    [
-                        factoryInterface.encodeFunctionData("execute", [
-                            emptyProxies[i].address,
-                            playerNFTAddress,
-                            playerNFTInterface.encodeFunctionData("mint", [
-                                h.avatarId,
-                                h.name,
-                                "",
-                                "",
-                                "",
-                                false,
-                                true,
-                            ]),
-                        ]),
-                    ]
-                )
+                encode(factoryAbi, "execute", [
+                    emptyProxies[i].address,
+                    playerNFTAddress,
+                    encode(estforPlayerNFTAbi, "mint", [
+                        h.avatarId,
+                        h.name,
+                        "",
+                        "",
+                        "",
+                        false,
+                        true,
+                    ]),
+                ])
             )
 
             await this.multicall(selectorArray, chainId, false)
@@ -887,11 +869,10 @@ export const useFactoryStore = defineStore("factory", {
                 return
             }
 
-            const factoryInterface = new Interface(factoryAbi)
             const actualChunks = await getChunksForMulticall(
                 data,
                 factoryAddress,
-                factoryInterface,
+                factoryAbi,
                 chunks,
                 value,
                 chainId,
@@ -984,23 +965,12 @@ export const useFactoryStore = defineStore("factory", {
                 return
             }
 
-            const factoryInterface = new Interface(factoryAbi)
-            const brushInterface = new Interface(brushAbi)
-
             const selectorArray = proxys.map((h) =>
-                solidityPacked(
-                    ["bytes"],
-                    [
-                        factoryInterface.encodeFunctionData("execute", [
-                            h.address,
-                            brushAddress,
-                            brushInterface.encodeFunctionData("approve", [
-                                playerNFTAddress,
-                                amount,
-                            ]),
-                        ]),
-                    ]
-                )
+                encode(factoryAbi, "execute", [
+                    h.address,
+                    brushAddress,
+                    encode(brushAbi, "approve", [playerNFTAddress, amount]),
+                ])
             )
 
             await this.multicall(selectorArray, chainId, false)
@@ -1062,30 +1032,19 @@ export const useFactoryStore = defineStore("factory", {
                 return
             }
 
-            const factoryInterface = new Interface(factoryAbi)
-            const playerNFTInterface = new Interface(estforPlayerNFTAbi)
-
             const selectorArray = proxys.map((h) =>
-                solidityPacked(
-                    ["bytes"],
-                    [
-                        factoryInterface.encodeFunctionData("execute", [
-                            h.address,
-                            playerNFTAddress,
-                            playerNFTInterface.encodeFunctionData(
-                                "editPlayer",
-                                [
-                                    h.playerId,
-                                    h.playerState.name,
-                                    "",
-                                    "",
-                                    "",
-                                    true,
-                                ]
-                            ),
-                        ]),
-                    ]
-                )
+                encode(factoryAbi, "execute", [
+                    h.address,
+                    playerNFTAddress,
+                    encode(estforPlayerNFTAbi, "editPlayer", [
+                        BigInt(h.playerId),
+                        h.playerState.name,
+                        "",
+                        "",
+                        "",
+                        true,
+                    ]),
+                ])
             )
 
             await this.multicall(selectorArray, chainId, false)
@@ -1224,11 +1183,8 @@ export const useFactoryStore = defineStore("factory", {
             }
 
             proxyNumber = Math.floor(proxyNumber)
-            const factoryInterface = new Interface(factoryAbi)
-            const data = factoryInterface.encodeFunctionData("createProxy", [])
-            const selectorArray = Array.from({ length: proxyNumber }, () =>
-                solidityPacked(["bytes"], [data])
-            )
+            const data = encode(factoryAbi, "createProxy", [])
+            const selectorArray = Array.from({ length: proxyNumber }, () => data)
 
             const factoryContract = {
                 address: factoryAddress as `0x${string}`,
@@ -1239,7 +1195,7 @@ export const useFactoryStore = defineStore("factory", {
             const actualChunks = await getChunksForMulticall(
                 selectorArray,
                 factoryAddress,
-                factoryInterface,
+                factoryAbi,
                 15,
                 BigInt(0),
                 chainId
@@ -1388,7 +1344,7 @@ export const useFactoryStore = defineStore("factory", {
                         isPaused: true,
                         savedTransactions: [] as SavedTransaction[],
                     }))
-                    .filter((d: any) => d.address !== ZeroAddress)
+                    .filter((d: any) => d.address !== zeroAddress)
             )
         },
         async assignActionToProxy(
@@ -1429,56 +1385,37 @@ export const useFactoryStore = defineStore("factory", {
                 return
             }
 
-            const factoryInterface = new Interface(factoryAbi)
-            const playersInterface = new Interface(estforPlayerAbi)
-
             const selectorArray = proxys.map((h) =>
-                solidityPacked(
-                    ["bytes"],
-                    [
-                        factoryInterface.encodeFunctionData("setTransaction", [
-                            h.address,
-                            0,
-                            playersAddress, // estfor players contract address
-                            playersInterface.encodeFunctionData(
-                                "startActions",
-                                [
-                                    BigInt(h.playerState.id), // playerId
-                                    constructQueuedActions(
-                                        actionId,
-                                        choiceId,
-                                        head,
-                                        neck,
-                                        body,
-                                        arms,
-                                        legs,
-                                        feet,
-                                        ring,
-                                        food,
-                                        leftHand,
-                                        rightHand,
-                                        combatStyle
-                                    ), // solidity QueuedAction[] (different from api type)
-                                    actionQueueStatus, // action queue status - NONE / APPEND / KEEP_LAST_IN_PROGRESS
-                                ]
-                            ),
-                        ]),
-                    ]
-                )
+                encode(factoryAbi, "setTransaction", [
+                    h.address,
+                    0,
+                    playersAddress,
+                    encode(estforPlayerAbi, "startActions", [
+                        BigInt(h.playerState.id),
+                        constructQueuedActions(
+                            actionId,
+                            choiceId,
+                            head,
+                            neck,
+                            body,
+                            arms,
+                            legs,
+                            feet,
+                            ring,
+                            food,
+                            leftHand,
+                            rightHand,
+                            combatStyle
+                        ),
+                        actionQueueStatus,
+                    ]),
+                ])
             )
 
             const pauseArray = proxys
                 .filter((h) => h.isPaused === activate)
                 .map((h) =>
-                    solidityPacked(
-                        ["bytes"],
-                        [
-                            factoryInterface.encodeFunctionData("setPaused", [
-                                h.address,
-                                !activate,
-                            ]),
-                        ]
-                    )
+                    encode(factoryAbi, "setPaused", [h.address, !activate])
                 )
 
             const combined = [...pauseArray, ...selectorArray]
@@ -1493,28 +1430,25 @@ export const useFactoryStore = defineStore("factory", {
                     proxy.savedTransactions = [
                         {
                             to: playersAddress,
-                            data: playersInterface.encodeFunctionData(
-                                "startActions",
-                                [
-                                    BigInt(p.playerState.id),
-                                    constructQueuedActions(
-                                        actionId,
-                                        choiceId,
-                                        head,
-                                        neck,
-                                        body,
-                                        arms,
-                                        legs,
-                                        feet,
-                                        ring,
-                                        food,
-                                        leftHand,
-                                        rightHand,
-                                        combatStyle
-                                    ),
-                                    actionQueueStatus,
-                                ]
-                            ),
+                            data: encode(estforPlayerAbi, "startActions", [
+                                BigInt(p.playerState.id),
+                                constructQueuedActions(
+                                    actionId,
+                                    choiceId,
+                                    head,
+                                    neck,
+                                    body,
+                                    arms,
+                                    legs,
+                                    feet,
+                                    ring,
+                                    food,
+                                    leftHand,
+                                    rightHand,
+                                    combatStyle
+                                ),
+                                actionQueueStatus,
+                            ]),
                         },
                     ]
                     proxy.isPaused = !activate
@@ -1542,30 +1476,20 @@ export const useFactoryStore = defineStore("factory", {
                 return
             }
             if (itemsNeeded.length > 0) {
-                const factoryInterface = new Interface(factoryAbi)
-                const itemInterface = new Interface(itemNFTAbi)
                 const fromAddress = this.bank?.address
 
                 const selectorArray = itemsNeeded.map((i) =>
-                    solidityPacked(
-                        ["bytes"],
-                        [
-                            factoryInterface.encodeFunctionData("execute", [
-                                fromAddress,
-                                itemAddress,
-                                itemInterface.encodeFunctionData(
-                                    "safeBatchTransferFrom",
-                                    [
-                                        fromAddress,
-                                        i.address,
-                                        i.items.map((i) => i.tokenId),
-                                        i.items.map((i) => i.amount),
-                                        solidityPacked(["bytes"], ["0x"]),
-                                    ]
-                                ),
-                            ]),
-                        ]
-                    )
+                    encode(factoryAbi, "execute", [
+                        fromAddress,
+                        itemAddress,
+                        encode(itemNFTAbi, "safeBatchTransferFrom", [
+                            fromAddress,
+                            i.address,
+                            i.items.map((i) => i.tokenId),
+                            i.items.map((i) => BigInt(i.amount)),
+                            "0x",
+                        ]),
+                    ])
                 )
 
                 await this.multicall(selectorArray, chainId, false, 40)
@@ -1593,28 +1517,14 @@ export const useFactoryStore = defineStore("factory", {
                 return
             }
 
-            const factoryInterface = new Interface(factoryAbi)
-            const playersInterface = new Interface(estforPlayerAbi)
-
             const selectorArray = proxys.map((h) =>
-                solidityPacked(
-                    ["bytes"],
-                    [
-                        factoryInterface.encodeFunctionData(
-                            "execute",
-                            [
-                                h.address,
-                                playersAddress,
-                                playersInterface.encodeFunctionData(
-                                    "processActions",
-                                    [
-                                        h.playerId
-                                    ]
-                                )
-                            ]
-                        ),
-                    ]
-                )
+                encode(factoryAbi, "execute", [
+                    h.address,
+                    playersAddress,
+                    encode(estforPlayerAbi, "processActions", [
+                        BigInt(h.playerId),
+                    ]),
+                ])
             )
 
             await this.multicall(selectorArray, chainId, fastCall, 40)
@@ -1643,38 +1553,24 @@ export const useFactoryStore = defineStore("factory", {
                 return
             }
 
-            const factoryInterface = new Interface(factoryAbi)
-            const bridgeInterface = new Interface(bridgeAbi)
-
             const selectorArray = proxys.map((h) =>
-                solidityPacked(
-                    ["bytes"],
-                    [
-                        factoryInterface.encodeFunctionData(
-                            "execute",
-                            [
-                                h.address,
-                                bridgeAddress,
-                                bridgeInterface.encodeFunctionData(
-                                    "sendPlayer",
-                                    [
-                                        h.playerId,
-                                        "",
-                                        "",
-                                        "",
-                                        0,
-                                        "",
-                                        "",
-                                        "",
-                                    ]
-                                ),
-                            ]
-                        ),
-                    ]
-                )
+                encode(factoryAbi, "execute", [
+                    h.address,
+                    bridgeAddress,
+                    encode(bridgeAbi, "sendPlayer", [
+                        BigInt(h.playerId),
+                        "",
+                        "",
+                        "",
+                        0,
+                        "",
+                        "",
+                        "",
+                    ]),
+                ])
             )
 
-            
+
             await this.multicall(selectorArray, chainId, false, 1, BigInt(2e17), BigInt(11660000))
             await sleep(2000)
         },
@@ -1702,19 +1598,9 @@ export const useFactoryStore = defineStore("factory", {
                 (i) => i.tokenId === 1 && i.balance > 0
             )
 
-            const factoryInterface = new Interface(factoryAbi)
-
             if (hasRubyBrooch) {
                 const selectorArray = proxys.map((h) =>
-                    solidityPacked(
-                        ["bytes"],
-                        [
-                            factoryInterface.encodeFunctionData(
-                                "executeSavedTransactions",
-                                [h.address]
-                            ),
-                        ]
-                    )
+                    encode(factoryAbi, "executeSavedTransactions", [h.address])
                 )
 
                 await this.multicall(selectorArray, chainId, fastCall, 10)
@@ -1785,29 +1671,18 @@ export const useFactoryStore = defineStore("factory", {
                 return
             }
 
-            const factoryInterface = new Interface(factoryAbi)
-            const itemInterface = new Interface(itemNFTAbi)
-
             const selectorArray = [
-                solidityPacked(
-                    ["bytes"],
-                    [
-                        factoryInterface.encodeFunctionData("execute", [
-                            fromAddress,
-                            itemAddress,
-                            itemInterface.encodeFunctionData(
-                                "safeBatchTransferFrom",
-                                [
-                                    fromAddress,
-                                    account.address,
-                                    items.map((i) => i.tokenId),
-                                    items.map((i) => i.amount),
-                                    solidityPacked(["bytes"], ["0x"]),
-                                ]
-                            ),
-                        ]),
-                    ]
-                ),
+                encode(factoryAbi, "execute", [
+                    fromAddress,
+                    itemAddress,
+                    encode(itemNFTAbi, "safeBatchTransferFrom", [
+                        fromAddress,
+                        account.address,
+                        items.map((i) => i.tokenId),
+                        items.map((i) => BigInt(i.amount)),
+                        "0x",
+                    ]),
+                ]),
             ]
 
             const hash = await writeContract(config, {
@@ -1840,8 +1715,8 @@ export const useFactoryStore = defineStore("factory", {
                     proxy.savedTransactions[0].data,
                     "startActions"
                 )
-                const actionId = decoded?.[1]?.[0]?.[1] || BigInt(0)
-                const actionChoiceId = decoded?.[1]?.[0]?.[3] || BigInt(0)
+                const actionId = decoded?.[1]?.[0]?.actionId || BigInt(0)
+                const actionChoiceId = decoded?.[1]?.[0]?.choiceId || BigInt(0)
                 const action = allActions.find(
                     (a) => a.actionId === Number(actionId)
                 )
@@ -1932,17 +1807,14 @@ export const useFactoryStore = defineStore("factory", {
                         }
                         deposits.push(d)
                     }
-                    if (Number(item.amount) > 0) { 
+                    if (Number(item.amount) > 0) {
                         // multi user item nft could have overlapped token ids if fetched separately
                         if (!d.items.find((it) => it.tokenId === item.tokenId)) {
-                            d.items.push(item)   
+                            d.items.push(item)
                         }
                     }
                 }
             }
-
-            const factoryInterface = new Interface(factoryAbi)
-            const itemInterface = new Interface(itemNFTAbi)
 
             const selectorArray: string[] = []
             for (const d of deposits) {
@@ -1953,46 +1825,34 @@ export const useFactoryStore = defineStore("factory", {
                 if (d.items.length > 20) {
                     for (let i = 0; i < d.items.length; i += 20) {
                         const chunk = d.items.slice(i, i + 20)
-                        selectorArray.push(solidityPacked(
-                            ["bytes"],
-                            [
-                                factoryInterface.encodeFunctionData("execute", [
-                                    d.proxy,
-                                    itemAddress,
-                                    itemInterface.encodeFunctionData(
-                                        "safeBatchTransferFrom",
-                                        [
-                                            d.proxy,
-                                            toAddress,
-                                            chunk.map((it) => it.tokenId),
-                                            chunk.map((it) => it.amount),
-                                            solidityPacked(["bytes"], ["0x"]),
-                                        ]
-                                    ),
-                                ]),
-                            ]
-                        ))
-                    }
-                } else {
-                    selectorArray.push(solidityPacked(
-                        ["bytes"],
-                        [
-                            factoryInterface.encodeFunctionData("execute", [
+                        selectorArray.push(
+                            encode(factoryAbi, "execute", [
                                 d.proxy,
                                 itemAddress,
-                                itemInterface.encodeFunctionData(
-                                    "safeBatchTransferFrom",
-                                    [
-                                        d.proxy,
-                                        toAddress,
-                                        d.items.map((it) => it.tokenId),
-                                        d.items.map((it) => it.amount),
-                                        solidityPacked(["bytes"], ["0x"]),
-                                    ]
-                                ),
+                                encode(itemNFTAbi, "safeBatchTransferFrom", [
+                                    d.proxy,
+                                    toAddress,
+                                    chunk.map((it) => it.tokenId),
+                                    chunk.map((it) => BigInt(it.amount)),
+                                    "0x",
+                                ]),
+                            ])
+                        )
+                    }
+                } else {
+                    selectorArray.push(
+                        encode(factoryAbi, "execute", [
+                            d.proxy,
+                            itemAddress,
+                            encode(itemNFTAbi, "safeBatchTransferFrom", [
+                                d.proxy,
+                                toAddress,
+                                d.items.map((it) => it.tokenId),
+                                d.items.map((it) => BigInt(it.amount)),
+                                "0x",
                             ]),
-                        ]
-                    ))
+                        ])
+                    )
                 }
             }
 
@@ -2024,18 +1884,13 @@ export const useFactoryStore = defineStore("factory", {
                 return
             }
 
-            const itemInterface = new Interface(itemNFTAbi)
-
-            const data = itemInterface.encodeFunctionData(
-                "safeBatchTransferFrom",
-                [
-                    siloAddress,
-                    toAddress,
-                    items.map((i) => i.tokenId),
-                    items.map((i) => i.transferAmount),
-                    solidityPacked(["bytes"], ["0x"]),
-                ]
-            )
+            const data = encode(itemNFTAbi, "safeBatchTransferFrom", [
+                siloAddress,
+                toAddress,
+                items.map((i) => i.tokenId),
+                items.map((i) => BigInt(i.transferAmount)),
+                "0x",
+            ])
 
             const hash = await writeContract(config, {
                 address: factoryAddress as `0x${string}`,
@@ -2072,30 +1927,20 @@ export const useFactoryStore = defineStore("factory", {
                 return
             }
 
-            const factoryInterface = new Interface(factoryAbi)
-            const itemInterface = new Interface(itemNFTAbi)
             const fromAddress = this.bank?.address
 
             const selectorArray = items.map((i) =>
-                solidityPacked(
-                    ["bytes"],
-                    [
-                        factoryInterface.encodeFunctionData("execute", [
-                            fromAddress,
-                            itemAddress,
-                            itemInterface.encodeFunctionData(
-                                "safeBatchTransferFrom",
-                                [
-                                    fromAddress,
-                                    i.address,
-                                    [i.tokenId],
-                                    [i.amount],
-                                    solidityPacked(["bytes"], ["0x"]),
-                                ]
-                            ),
-                        ]),
-                    ]
-                )
+                encode(factoryAbi, "execute", [
+                    fromAddress,
+                    itemAddress,
+                    encode(itemNFTAbi, "safeBatchTransferFrom", [
+                        fromAddress,
+                        i.address,
+                        [i.tokenId],
+                        [BigInt(i.amount)],
+                        "0x",
+                    ]),
+                ])
             )
 
             await this.multicall(selectorArray, chainId, false, 40)

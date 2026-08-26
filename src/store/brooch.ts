@@ -6,7 +6,6 @@ import {
 } from "../utils/addresses"
 import broochAbi from "../abi/brooch.json"
 import broochUpgraderAbi from "../abi/broochUpgrader.json"
-import { solidityPacked } from "ethers"
 import { config, SONIC_CHAIN_ID } from "../config"
 
 export interface Brooch {
@@ -144,7 +143,7 @@ export const useBroochStore = defineStore("brooch", {
                     account.address,
                     [0],
                     [1],
-                    solidityPacked(["bytes"], ["0x"]),
+                    "0x",
                 ],
                 value:
                     BigInt(this.brooches[tokenId]?.totalSupply) *

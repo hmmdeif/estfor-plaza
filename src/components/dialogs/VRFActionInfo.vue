@@ -86,7 +86,7 @@ import {
 import { getItemName, useItemStore } from "../../store/items"
 import { InstantVRFActionType, InstantVRFActionInput, RandomReward } from "@paintswap/estfor-definitions/types"
 import { useVRFActionsStore, vrfActionNames, vrfActionIdNames } from "../../store/vrfActions"
-import { ethers } from "ethers"
+import { decodeItemRewards } from "../../utils/abi"
 
 const actionType = ref(0)
 const itemStore = useItemStore()
@@ -132,8 +132,7 @@ const skillName = computed(() => {
 })
 
 const getDecodedData = (data: string) => {
-    return ethers.AbiCoder.defaultAbiCoder().decode(["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"], data)?.
-        [1]
+    return decodeItemRewards(data)
 }
 
 const openDialog = (_actionType: InstantVRFActionType) => {

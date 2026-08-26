@@ -78,6 +78,7 @@ import { getPlayersByOwner } from "../../utils/api"
 import { getAccount } from "@wagmi/core"
 import { config, type SonicChainId } from "../../config"
 import { getAddress } from "viem"
+import { describeTxError } from "../../utils/errors"
 
 const props = defineProps({
     id: {
@@ -152,10 +153,10 @@ const depositHeroes = async () => {
         const dialog = document.getElementById(props.id) as HTMLDialogElement
         dialog.close()
     } catch (e: any) {
-        console.error(e)
         if (e.message?.indexOf("User rejected the request") > -1) {
             return
         }
+        console.error("Deposit heroes failed:", describeTxError(e), e)
         error.value =
             "Could not create a transaction."
     } finally {

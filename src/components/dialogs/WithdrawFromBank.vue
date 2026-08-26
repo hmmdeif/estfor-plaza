@@ -77,6 +77,7 @@ import { useFactoryStore } from "../../store/factory"
 import { useAppStore } from "../../store/app"
 import { AggregatedItem } from "../../store/models/factory.models"
 import type { SonicChainId } from "../../config"
+import { describeTxError } from "../../utils/errors"
 
 const props = defineProps({
     id: {
@@ -149,9 +150,10 @@ const withdrawItems = async () => {
         emits("withdrawn")
         const dialog = document.getElementById(props.id) as HTMLDialogElement
         dialog.close()
-    } catch {
-        // console.error(e)
-        // user declined tx
+    } catch (e: any) {
+        if (e.message?.indexOf("User rejected the request") === -1) {
+            console.error("Withdraw items failed:", describeTxError(e), e)
+        }
     } finally {
         loading.value = false
     }

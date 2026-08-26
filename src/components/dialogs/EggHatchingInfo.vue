@@ -72,7 +72,7 @@ import { getItemName, useItemStore } from "../../store/items"
 import { InstantVRFActionType, PetEnhancementType } from "@paintswap/estfor-definitions/types"
 import { EstforConstants } from "@paintswap/estfor-definitions"
 import { useVRFActionsStore, vrfActionNames, vrfActionIdNames } from "../../store/vrfActions"
-import { ethers } from "ethers"
+import { decodePetRange } from "../../utils/abi"
 import { allBasePets } from "../../data/pets"
 
 const actionType = ref(0)
@@ -105,8 +105,8 @@ const skillName = computed(() => {
 })
 
 const getDecodedData = (data: string) => {
-    return ethers.AbiCoder.defaultAbiCoder().decode(["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"], data)?.
-        [1]
+    const petIds = decodePetRange(data)
+    return [petIds.rewardBasePetIdMin, petIds.rewardBasePetIdMax]
 }
 
 const getPetStat = (baseId: number): { style: string, min0Fixed: number, max0Fixed: number, min0Percentage: number, max0Percentage: number, min1Fixed: number, max1Fixed: number, min1Percentage: number, max1Percentage: number } => {

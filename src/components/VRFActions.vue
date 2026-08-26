@@ -60,7 +60,7 @@ import { useVRFActionsStore, vrfActionNames } from "../store/vrfActions"
 import {
     MEDIA_URL,
 } from "../store/core"
-import { ethers } from "ethers"
+import { decodeItemRewards, decodePetRange } from "../utils/abi"
 import { computed, ref } from "vue"
 import { InstantVRFActionType } from "@paintswap/estfor-definitions/types"
 import EggHatchingInfo from "./dialogs/EggHatchingInfo.vue"
@@ -101,12 +101,20 @@ const vrfActionNamesTitles = computed(() => {
     }
 })
 
+const isEggAction = (actionType: number) =>
+    actionType === InstantVRFActionType.EGG
+
 const actionsWithItemSearch = computed(() => {
     return allVrfActions.value.filter((x) => 
         x.actions.some((y) => 
             y.inputTokenIds.some((z: number) => getItemName(z)?.toLowerCase().includes(itemStore.itemSearch.toLowerCase())) || 
-            ethers.AbiCoder.defaultAbiCoder().decode(x.actionType === InstantVRFActionType.EGG ? ["uint8 version", "tuple(uint16 rewardBasePetIdMin,uint16 rewardBasePetIdMax)"] : ["uint8 version", "tuple(uint16 itemTokenId,uint16 chance,uint16 amount)[]"], y.data)?.
-                [1]?.some((z: { itemTokenId: number }) => 
+            (isEggAction(x.actionType)
+                ? [
+                    decodePetRange(y.data).rewardBasePetIdMin,
+                    decodePetRange(y.data).rewardBasePetIdMax,
+                ]
+                : decodeItemRewards(y.data)
+            )?.some((z: { itemTokenId: number }) => 
                 getItemName(z.itemTokenId)?.toLowerCase().includes(itemStore.itemSearch.toLowerCase())
             )
         )

@@ -192,6 +192,7 @@ import { getItemName, starterItems } from "../../store/items"
 import { allItems } from "../../data/items"
 import { allActions } from "../../data/actions"
 import { NeededItem, ProxySilo } from "../../store/models/factory.models"
+import { describeTxError } from "../../utils/errors"
 import type { SonicChainId } from "../../config"
 import { Skill } from "@paintswap/estfor-definitions/types"
 import { useMonsterStore } from "../../store/monsters"
@@ -286,10 +287,14 @@ const executeSavedTransactions = async () => {
         )
         actionInputsExecuted.value = true
     } catch (e: any) {
-        // console.error(e)
         if (e.message?.indexOf("User rejected the request") > -1) {
             return
         }
+        console.error(
+            "Execute simple actions failed:",
+            describeTxError(e),
+            e
+        )
         error.value =
             "Could not create a transaction. Please check your heroes have the correct tools equipped."
     } finally {
@@ -620,10 +625,14 @@ const executeActionChoiceSavedTransactions = async () => {
             }
         }
     } catch (e: any) {
-        // console.error(e)
         if (e.message?.indexOf("User rejected the request") > -1) {
             return
         }
+        console.error(
+            "Execute complex actions failed:",
+            describeTxError(e),
+            e
+        )
         error.value =
             "Could not create a transaction. Please check your heroes have the correct tools equipped."
     } finally {

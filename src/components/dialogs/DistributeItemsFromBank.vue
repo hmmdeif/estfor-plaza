@@ -120,6 +120,7 @@ import { decodeTransaction, useFactoryStore } from "../../store/factory"
 import { useAppStore } from "../../store/app"
 import { actionChoiceNames, actionNames } from "../../store/skills"
 import { AggregatedItem, ProxySilo } from "../../store/models/factory.models"
+import { describeTxError } from "../../utils/errors"
 import type { SonicChainId } from "../../config"
 
 const props = defineProps({
@@ -200,10 +201,14 @@ const withdrawItems = async () => {
         const dialog = document.getElementById(props.id) as HTMLDialogElement
         dialog.close()
     } catch (e: any) {
-        // console.error(e)
         if (e.message?.indexOf("User rejected the request") > -1) {
             return
         }
+        console.error(
+            "Distribute items failed:",
+            describeTxError(e),
+            e
+        )
         error.value =
             "Could not create a transaction. Please check you're not distributing more items than you have."
     } finally {
