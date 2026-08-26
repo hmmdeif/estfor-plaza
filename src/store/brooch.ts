@@ -4,8 +4,8 @@ import {
     HOMEMADE_BROOCH_ADDRESS,
     BROOCH_UPGRADER_ADDRESS,
 } from "../utils/addresses"
-import broochAbi from "../abi/brooch.json"
-import broochUpgraderAbi from "../abi/broochUpgrader.json"
+import broochAbi from "../abi/generated/brooch.json"
+import broochUpgraderAbi from "../abi/generated/broochUpgrader.json"
 import { config, SONIC_CHAIN_ID } from "../config"
 
 export interface Brooch {

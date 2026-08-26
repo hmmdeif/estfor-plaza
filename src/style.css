@@ -4,6 +4,7 @@
 
 @plugin "daisyui" {
   themes: dark --default --prefersdark;
+  include: alert, avatar, button, card, checkbox, dropdown, input, join, loading, mask, menu, modal, navbar, select, tab, table, toast, tooltip;
 }
 
 @plugin "daisyui/theme" {

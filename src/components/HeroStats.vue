@@ -43,7 +43,7 @@
                                     data-tip="Melee"
                                 >
                                     <img
-                                        src="/src/assets/melee.png"
+                                        src="/src/assets/optimized/melee-80.webp"
                                         class="mask mask-squircle md:w-10 w-6 mx-auto"
                                         alt="Melee"
                                     />
@@ -55,7 +55,7 @@
                                     data-tip="Ranged"
                                 >
                                     <img
-                                        src="/src/assets/ranged.png"
+                                        src="/src/assets/optimized/ranged-80.webp"
                                         class="mask mask-squircle md:w-10 w-6 mx-auto"
                                         alt="Ranged"
                                     />
@@ -67,7 +67,7 @@
                                     data-tip="Magic"
                                 >
                                     <img
-                                        src="/src/assets/magic.png"
+                                        src="/src/assets/optimized/magic-80.webp"
                                         class="mask mask-squircle md:w-10 w-6 mx-auto"
                                         alt="Magic"
                                     />
@@ -79,7 +79,7 @@
                                     data-tip="Melee Defence"
                                 >
                                     <img
-                                        src="/src/assets/melee_def.png"
+                                        src="/src/assets/optimized/melee_def-80.webp"
                                         class="mask mask-squircle md:w-10 w-6 mx-auto"
                                         alt="Melee Defence"
                                     />
@@ -91,7 +91,7 @@
                                     data-tip="Ranged Defence"
                                 >
                                     <img
-                                        src="/src/assets/ranged_def.png"
+                                        src="/src/assets/optimized/ranged_def-80.webp"
                                         class="mask mask-squircle md:w-10 w-6 mx-auto"
                                         alt="Ranged Defence"
                                     />
@@ -103,7 +103,7 @@
                                     data-tip="Magic Defence"
                                 >
                                     <img
-                                        src="/src/assets/magic_def.png"
+                                        src="/src/assets/optimized/magic_def-80.webp"
                                         class="mask mask-squircle md:w-10 w-6 mx-auto"
                                         alt="Magic Defence"
                                     />
@@ -115,7 +115,7 @@
                                     data-tip="Health"
                                 >
                                     <img
-                                        src="/src/assets/health.png"
+                                        src="/src/assets/optimized/health-80.webp"
                                         class="mask mask-squircle md:w-10 w-6 mx-auto"
                                         alt="Health"
                                     />

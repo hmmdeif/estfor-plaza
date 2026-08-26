@@ -97,8 +97,11 @@ watch(() => broochStore.hasAccess(0), init)
         <div class="navbar-start">
             <img
                 width="46"
-                src="/src/assets/logo.png"
+                height="46"
+                src="/src/assets/optimized/logo-96.webp"
                 class="ml-2 cursor-pointer"
+                alt="Estfor Plaza"
+                decoding="async"
                 @click.prevent="donateRef?.openDialog()"
             />
             <router-link
@@ -137,7 +140,7 @@ watch(() => broochStore.hasAccess(0), init)
                                             <router-link to="/vrf-actions" @click="showBrooch(0)"
                                                 >VRF Actions
                                                 <img
-                                                    src="/src/assets/emerald_brooch_icon.png"
+                                                    src="/src/assets/optimized/emerald-brooch-icon-80.webp"
                                                     class="rounded-lg w-[20px] inline cursor-pointer"
                                                     alt="Emerald Brooch"
                                             /></router-link>
@@ -150,7 +153,7 @@ watch(() => broochStore.hasAccess(0), init)
                                     <summary>
                                         Battles
                                         <img
-                                            src="/src/assets/emerald_brooch_icon.png"
+                                            src="/src/assets/optimized/emerald-brooch-icon-80.webp"
                                             class="rounded-lg w-[20px] inline cursor-pointer"
                                             alt="Emerald Brooch"
                                         />
@@ -178,7 +181,7 @@ watch(() => broochStore.hasAccess(0), init)
                                     <summary>
                                         Clan Management
                                         <img
-                                            src="/src/assets/emerald_brooch_icon.png"
+                                            src="/src/assets/optimized/emerald-brooch-icon-80.webp"
                                             class="rounded-lg w-[20px] inline cursor-pointer"
                                             alt="Emerald Brooch"
                                         />
@@ -250,7 +253,7 @@ watch(() => broochStore.hasAccess(0), init)
                                 <router-link to="/vrf-actions" @click="showBrooch(0)"
                                     >VRF Actions
                                     <img
-                                        src="/src/assets/emerald_brooch_icon.png"
+                                        src="/src/assets/optimized/emerald-brooch-icon-80.webp"
                                         class="rounded-lg w-[20px] inline cursor-pointer"
                                         alt="Emerald Brooch"
                                 /></router-link>
@@ -261,7 +264,7 @@ watch(() => broochStore.hasAccess(0), init)
                                     @click="showBrooch(0)"
                                     >Clan Battle
                                     <img
-                                        src="/src/assets/emerald_brooch_icon.png"
+                                        src="/src/assets/optimized/emerald-brooch-icon-80.webp"
                                         class="rounded-lg w-[20px] inline cursor-pointer"
                                         alt="Emerald Brooch"
                                 /></router-link>
@@ -272,7 +275,7 @@ watch(() => broochStore.hasAccess(0), init)
                                     @click="showBrooch(0)"
                                     >Battle Rankings
                                     <img
-                                        src="/src/assets/emerald_brooch_icon.png"
+                                        src="/src/assets/optimized/emerald-brooch-icon-80.webp"
                                         class="rounded-lg w-[20px] inline cursor-pointer"
                                         alt="Emerald Brooch"
                                 /></router-link>
@@ -283,7 +286,7 @@ watch(() => broochStore.hasAccess(0), init)
                                     @click="showBrooch(0)"
                                     >Wish Contributions
                                     <img
-                                        src="/src/assets/emerald_brooch_icon.png"
+                                        src="/src/assets/optimized/emerald-brooch-icon-80.webp"
                                         class="rounded-lg w-[20px] inline cursor-pointer"
                                         alt="Emerald Brooch"
                                 /></router-link>

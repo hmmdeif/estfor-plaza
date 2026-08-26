@@ -143,9 +143,12 @@
                     Plaza to calculate their combat stats and skill training
                     times.
                     <img
-                        src="/src/assets/emerald_brooch_icon.png"
+                        src="/src/assets/optimized/emerald-brooch-icon-80.webp"
                         class="rounded-lg w-[20px] inline cursor-pointer"
                         alt="Emerald Brooch"
+                        width="77"
+                        height="80"
+                        decoding="async"
                         @click.prevent="emeraldBroochPaywallRef?.openDialog()"
                     />
                 </div>

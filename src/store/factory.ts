@@ -29,14 +29,14 @@ import {
 import { encode } from "../utils/abi"
 import { describeTxError } from "../utils/errors"
 
-import estforPlayersAbi from "../abi/estforPlayer.json"
-import estforPlayerAbi from "../abi/estforPlayer.json"
-import itemNFTAbi from "../abi/itemNFT.json"
-import estforPlayerNFTAbi from "../abi/estforPlayerNFT.json"
-import bridgeAbi from "../abi/bridge.json"
-import factoryAbi from "../abi/factoryRegistry.json"
-import epProxyAbi from "../abi/epProxy.json"
-import brushAbi from "../abi/brush.json"
+import estforPlayersAbi from "../abi/generated/estforPlayer.json"
+import estforPlayerAbi from "../abi/generated/estforPlayer.json"
+import itemNFTAbi from "../abi/generated/itemNFT.json"
+import estforPlayerNFTAbi from "../abi/generated/estforPlayerNFT.json"
+import bridgeAbi from "../abi/generated/bridge.json"
+import factoryAbi from "../abi/generated/factoryRegistry.json"
+import epProxyAbi from "../abi/generated/epProxy.json"
+import brushAbi from "../abi/generated/brush.json"
 import {
     PlayerSearchResult,
     UserItemNFTResult,

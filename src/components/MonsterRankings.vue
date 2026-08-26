@@ -163,7 +163,7 @@
                                                 "
                                             >
                                                 <img
-                                                    src="/src/assets/melee.png"
+                                                    src="/src/assets/optimized/melee-80.webp"
                                                     class="mask mask-squircle w-6"
                                                     alt="Melee"
                                                 />
@@ -177,7 +177,7 @@
                                                 "
                                             >
                                                 <img
-                                                    src="/src/assets/ranged.png"
+                                                    src="/src/assets/optimized/ranged-80.webp"
                                                     class="mask mask-squircle w-6"
                                                     alt="Ranged"
                                                 />
@@ -191,7 +191,7 @@
                                                 "
                                             >
                                                 <img
-                                                    src="/src/assets/magic.png"
+                                                    src="/src/assets/optimized/magic-80.webp"
                                                     class="mask mask-squircle w-6"
                                                     alt="Magic"
                                                 />
@@ -205,7 +205,7 @@
                                                 "
                                             >
                                                 <img
-                                                    src="/src/assets/health.png"
+                                                    src="/src/assets/optimized/health-80.webp"
                                                     class="mask mask-squircle w-6"
                                                     alt="Health"
                                                 />

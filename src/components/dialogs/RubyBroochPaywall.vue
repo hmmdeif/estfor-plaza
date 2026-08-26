@@ -41,11 +41,18 @@
                     can't have any more Ruby Brooches!</span
                 >
             </p>
-            <img
-                src="/src/assets/ruby_brooch_web.png"
-                class="rounded-lg mt-5"
-                alt="Ruby Brooch"
-            />
+            <picture>
+                <source srcset="/src/assets/optimized/ruby-brooch.avif" type="image/avif" />
+                <img
+                    src="/src/assets/optimized/ruby-brooch.webp"
+                    class="rounded-lg mt-5"
+                    alt="Ruby Brooch"
+                    width="512"
+                    height="512"
+                    loading="lazy"
+                    decoding="async"
+                />
+            </picture>
             <div class="flex mt-5">
                 <button
                     v-if="!isApproved"

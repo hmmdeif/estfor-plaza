@@ -18,11 +18,18 @@
                 {{ brooch.balance || rubyBrooch.balance }} of my brooches...
                 would you like another one perchance?
             </p>
-            <img
-                src="/src/assets/emerald_brooch_web.png"
-                class="rounded-lg"
-                alt="Emerald Brooch"
-            />
+            <picture>
+                <source srcset="/src/assets/optimized/emerald-brooch.avif" type="image/avif" />
+                <img
+                    src="/src/assets/optimized/emerald-brooch.webp"
+                    class="rounded-lg"
+                    alt="Emerald Brooch"
+                    width="512"
+                    height="512"
+                    loading="lazy"
+                    decoding="async"
+                />
+            </picture>
             <div class="flex mt-5">
                 <button
                     type="button"

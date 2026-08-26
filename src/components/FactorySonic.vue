@@ -9,9 +9,12 @@
             </p>
             <p v-if="!hasRubyBrooch" class="alert alert-warning my-5">
                 <img
-                    src="/src/assets/ruby_brooch_icon.png"
+                    src="/src/assets/optimized/ruby-brooch-icon-80.webp"
                     class="rounded-lg w-[20px] inline cursor-pointer"
                     alt="Ruby Brooch"
+                    width="80"
+                    height="79"
+                    decoding="async"
                     @click.prevent="rubyBroochPaywallRef?.openDialog()"
                 />
                 <span

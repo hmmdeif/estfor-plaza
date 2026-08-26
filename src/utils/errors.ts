@@ -5,17 +5,17 @@ import {
     parseAbiParameters,
 } from "viem"
 
-import bridgeAbi from "../abi/bridge.json"
-import broochAbi from "../abi/brooch.json"
-import broochUpgraderAbi from "../abi/broochUpgrader.json"
-import brushAbi from "../abi/brush.json"
-import epProxyAbi from "../abi/epProxy.json"
-import estforPlayerAbi from "../abi/estforPlayer.json"
-import estforPlayerNFTAbi from "../abi/estforPlayerNFT.json"
-import factoryRegistryAbi from "../abi/factoryRegistry.json"
-import itemNFTAbi from "../abi/itemNFT.json"
-import oldEstforPlayerAbi from "../abi/oldEstforPlayer.json"
-import petNFTAbi from "../abi/petNFT.json"
+import bridgeAbi from "../abi/generated/bridge.json"
+import broochAbi from "../abi/generated/brooch.json"
+import broochUpgraderAbi from "../abi/generated/broochUpgrader.json"
+import brushAbi from "../abi/generated/brush.json"
+import epProxyAbi from "../abi/generated/epProxy.json"
+import estforPlayerAbi from "../abi/generated/estforPlayer.json"
+import estforPlayerNFTAbi from "../abi/generated/estforPlayerNFT.json"
+import factoryRegistryAbi from "../abi/generated/factoryRegistry.json"
+import itemNFTAbi from "../abi/generated/itemNFT.json"
+import oldEstforPlayerAbi from "../abi/generated/oldEstforPlayer.json"
+import petNFTAbi from "../abi/generated/petNFT.json"
 
 const allErrors = [
     bridgeAbi,

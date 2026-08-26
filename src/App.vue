@@ -47,8 +47,32 @@ createAppKit({
     position: fixed;
     height: 100%;
     width: 100%;
-    background-image: url("https://media.estfor.com/landscape/mining.jpg");
+    background-image: url("./assets/optimized/background/mining-960.webp");
+    background-image: image-set(
+        url("./assets/optimized/background/mining-960.avif") type("image/avif"),
+        url("./assets/optimized/background/mining-960.webp") type("image/webp")
+    );
     background-position: center;
     background-size: cover;
+}
+
+@media (min-width: 960px) {
+    .app {
+        background-image: url("./assets/optimized/background/mining-1280.webp");
+        background-image: image-set(
+            url("./assets/optimized/background/mining-1280.avif") type("image/avif"),
+            url("./assets/optimized/background/mining-1280.webp") type("image/webp")
+        );
+    }
+}
+
+@media (min-width: 1440px) {
+    .app {
+        background-image: url("./assets/optimized/background/mining-1920.webp");
+        background-image: image-set(
+            url("./assets/optimized/background/mining-1920.avif") type("image/avif"),
+            url("./assets/optimized/background/mining-1920.webp") type("image/webp")
+        );
+    }
 }
 </style>

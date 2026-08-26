@@ -2,9 +2,9 @@ import { defineStore } from "pinia"
 import { readContract, getAccount } from "@wagmi/core"
 
 import { decode } from "../utils/abi"
-import estforPlayerAbi from "../abi/estforPlayer.json"
-import oldEstforPlayerAbi from "../abi/oldEstforPlayer.json"
-import broochAbi from "../abi/brooch.json"
+import estforPlayerAbi from "../abi/generated/estforPlayer.json"
+import oldEstforPlayerAbi from "../abi/generated/oldEstforPlayer.json"
+import broochAbi from "../abi/generated/brooch.json"
 import {
     getPlayerState,
     getGlobalData,

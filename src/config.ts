@@ -1,7 +1,7 @@
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi"
 import { sonic } from "@reown/appkit/networks"
 import { fallback, http } from "@wagmi/core"
-import logoUrl from "./assets/logo.png"
+import logoUrl from "./assets/optimized/logo-256.webp"
 
 export const projectId = import.meta.env.VITE_PROJECT_ID
 

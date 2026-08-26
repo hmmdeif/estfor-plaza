@@ -1,0 +1,128 @@
+[
+  {
+    "inputs": [],
+    "name": "InvalidDelegate",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidEndpointCall",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LzTokenUnavailable",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "eid",
+        "type": "uint32"
+      }
+    ],
+    "name": "NoPeer",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "msgValue",
+        "type": "uint256"
+      }
+    ],
+    "name": "NotEnoughNative",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOwnerOfPlayer",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "eid",
+        "type": "uint32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "sender",
+        "type": "bytes32"
+      }
+    ],
+    "name": "OnlyPeer",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SendingNoItems",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SendingNoPets",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SendingTooManyItems",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SendingTooManyPets",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_playerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_discord",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_twitter",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_telegram",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_clanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_clanDiscord",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_clanTelegram",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_clanTwitter",
+        "type": "string"
+      }
+    ],
+    "name": "sendPlayer",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
+]

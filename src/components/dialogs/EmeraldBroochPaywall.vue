@@ -23,11 +23,18 @@
                 You already have access to use this feature. But feel free to
                 buy another one of my brooches if you like...
             </p>
-            <img
-                src="/src/assets/emerald_brooch_web.png"
-                class="rounded-lg"
-                alt="Emerald Brooch"
-            />
+            <picture>
+                <source srcset="/src/assets/optimized/emerald-brooch.avif" type="image/avif" />
+                <img
+                    src="/src/assets/optimized/emerald-brooch.webp"
+                    class="rounded-lg"
+                    alt="Emerald Brooch"
+                    width="512"
+                    height="512"
+                    loading="lazy"
+                    decoding="async"
+                />
+            </picture>
             <div class="flex mt-5">
                 <button
                     type="button"
