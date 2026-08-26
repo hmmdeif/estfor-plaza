@@ -7,6 +7,9 @@ settings:
 overrides:
   wagmi: 3.7.6
 
+patchedDependencies:
+  '@reown/appkit@1.8.23': 0ab459d76b78fe5d2dbadf391b343ddbe970cc8c8402ece4206d6e22e3e8e634
+
 importers:
 
   .:
@@ -19,7 +22,7 @@ importers:
         version: 2.0.113
       '@reown/appkit':
         specifier: ^1.8.23
-        version: 1.8.23(@types/react@19.2.8)(bufferutil@4.1.0)(debug@4.4.3(supports-color@7.2.0))(react@18.3.1)(typescript@6.0.3)(use-sync-external-store@1.4.0(react@18.3.1))(utf-8-validate@5.0.10)(zod@3.25.76)
+        version: 1.8.23(patch_hash=0ab459d76b78fe5d2dbadf391b343ddbe970cc8c8402ece4206d6e22e3e8e634)(@types/react@19.2.8)(bufferutil@4.1.0)(debug@4.4.3(supports-color@7.2.0))(react@18.3.1)(typescript@6.0.3)(use-sync-external-store@1.4.0(react@18.3.1))(utf-8-validate@5.0.10)(zod@3.25.76)
       '@reown/appkit-adapter-wagmi':
         specifier: ^1.8.23
         version: 1.8.23(aaba12c57ebd13373bc304ae49abb9ff)
@@ -3153,7 +3156,7 @@ snapshots:
 
   '@reown/appkit-adapter-wagmi@1.8.23(aaba12c57ebd13373bc304ae49abb9ff)':
     dependencies:
-      '@reown/appkit': 1.8.23(@types/react@19.2.8)(bufferutil@4.1.0)(debug@4.4.3(supports-color@7.2.0))(react@18.3.1)(typescript@6.0.3)(use-sync-external-store@1.4.0(react@18.3.1))(utf-8-validate@5.0.10)(zod@3.25.76)
+      '@reown/appkit': 1.8.23(patch_hash=0ab459d76b78fe5d2dbadf391b343ddbe970cc8c8402ece4206d6e22e3e8e634)(@types/react@19.2.8)(bufferutil@4.1.0)(debug@4.4.3(supports-color@7.2.0))(react@18.3.1)(typescript@6.0.3)(use-sync-external-store@1.4.0(react@18.3.1))(utf-8-validate@5.0.10)(zod@3.25.76)
       '@reown/appkit-common': 1.8.23(bufferutil@4.1.0)(typescript@6.0.3)(utf-8-validate@5.0.10)(zod@3.25.76)
       '@reown/appkit-controllers': 1.8.23(@types/react@19.2.8)(bufferutil@4.1.0)(react@18.3.1)(typescript@6.0.3)(utf-8-validate@5.0.10)(zod@3.25.76)
       '@reown/appkit-polyfills': 1.8.23
@@ -3735,7 +3738,7 @@ snapshots:
       - zod
     optional: true
 
-  '@reown/appkit@1.8.23(@types/react@19.2.8)(bufferutil@4.1.0)(debug@4.4.3(supports-color@7.2.0))(react@18.3.1)(typescript@6.0.3)(use-sync-external-store@1.4.0(react@18.3.1))(utf-8-validate@5.0.10)(zod@3.25.76)':
+  '@reown/appkit@1.8.23(patch_hash=0ab459d76b78fe5d2dbadf391b343ddbe970cc8c8402ece4206d6e22e3e8e634)(@types/react@19.2.8)(bufferutil@4.1.0)(debug@4.4.3(supports-color@7.2.0))(react@18.3.1)(typescript@6.0.3)(use-sync-external-store@1.4.0(react@18.3.1))(utf-8-validate@5.0.10)(zod@3.25.76)':
     dependencies:
       '@reown/appkit-common': 1.8.23(bufferutil@4.1.0)(typescript@6.0.3)(utf-8-validate@5.0.10)(zod@3.25.76)
       '@reown/appkit-controllers': 1.8.23(@types/react@19.2.8)(bufferutil@4.1.0)(react@18.3.1)(typescript@6.0.3)(utf-8-validate@5.0.10)(zod@3.25.76)
