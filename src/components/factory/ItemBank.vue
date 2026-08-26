@@ -94,9 +94,10 @@ import WithdrawFromBank from "../dialogs/WithdrawFromBank.vue"
 import DistributeItemsFromBank from "../dialogs/DistributeItemsFromBank.vue"
 import { allItems } from "../../data/items"
 import { AggregatedItem } from "../../store/models/factory.models"
+import type { SonicChainId } from "../../config"
 
 const props = defineProps<{
-    chainId: 146
+    chainId: SonicChainId
 }>()
 
 const factoryStore = useFactoryStore()

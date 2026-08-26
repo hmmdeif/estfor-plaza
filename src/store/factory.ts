@@ -53,7 +53,7 @@ import {
     useSkillStore,
 } from "./skills"
 import { sleep } from "../utils/time"
-import { config } from "../config"
+import { config, type SonicChainId } from "../config"
 import { useBroochStore } from "./brooch"
 import { useMonsterStore } from "./monsters"
 import {
@@ -537,7 +537,7 @@ const getChunksForMulticall = async (
     contract: Interface,
     chunks: number,
     value: bigint,
-    chainId: 146,
+    chainId: SonicChainId,
     gasLimit: bigint = BigInt(6000000)
 ) => {
     let attempts = 0
@@ -691,7 +691,7 @@ export const useFactoryStore = defineStore("factory", {
         },
         async withdrawHeroes(
             proxys: ProxySilo[],
-            chainId: 146,
+            chainId: SonicChainId,
         ) {
             const coreStore = useCoreStore()
             const factoryAddress = coreStore.getAddress(Address.factoryRegistry)
@@ -728,7 +728,7 @@ export const useFactoryStore = defineStore("factory", {
 
             await this.multicall(selectorArray, chainId, false)
         },
-        async depositHeroes(heroes: { playerId: string, assignedSilo: string }[], chainId: 146) {
+        async depositHeroes(heroes: { playerId: string, assignedSilo: string }[], chainId: SonicChainId) {
             const coreStore = useCoreStore()
             const playerNFTAddress = coreStore.getAddress(Address.estforPlayerNFT, chainId)
             const factoryRegistryAddress = coreStore.getAddress(Address.factoryRegistry, chainId)
@@ -795,7 +795,7 @@ export const useFactoryStore = defineStore("factory", {
             await sleep(2000)
             await this.getAllProxyStates(chainId)
         },
-        async activateHeroes(heroes: { address: string, playerId: string }[], chainId: 146) {
+        async activateHeroes(heroes: { address: string, playerId: string }[], chainId: SonicChainId) {
             const coreStore = useCoreStore()
             const playersAddress = coreStore.getAddress(Address.estforPlayers, chainId)
             const factoryAddress = coreStore.getAddress(Address.factoryRegistry, chainId)
@@ -818,7 +818,7 @@ export const useFactoryStore = defineStore("factory", {
             await sleep(2000)
             await this.getAllProxyStates(chainId)
         },
-        async mintHeroes(heroes: any[], chainId: 146) {
+        async mintHeroes(heroes: any[], chainId: SonicChainId) {
             const coreStore = useCoreStore()
             const factoryAddress = coreStore.getAddress(
                 Address.factoryRegistry,
@@ -871,7 +871,7 @@ export const useFactoryStore = defineStore("factory", {
         },
         async multicall(
             data: any[],
-            chainId: 146,
+            chainId: SonicChainId,
             fastCall: boolean,
             chunks = 10,
             value: bigint = BigInt(0),
@@ -961,7 +961,7 @@ export const useFactoryStore = defineStore("factory", {
         async approveBrush(
             proxys: ProxySilo[],
             amount: bigint,
-            chainId: 146
+            chainId: SonicChainId
         ) {
             const coreStore = useCoreStore()
             const factoryAddress = coreStore.getAddress(
@@ -1008,7 +1008,7 @@ export const useFactoryStore = defineStore("factory", {
         async sendBrush(
             proxys: ProxySilo[],
             amount: bigint,
-            chainId: 146
+            chainId: SonicChainId
         ) {
             const coreStore = useCoreStore()
             const brushAddress = coreStore.getAddress(Address.brush, chainId)
@@ -1042,7 +1042,7 @@ export const useFactoryStore = defineStore("factory", {
                 this.currentTransactionNumber = 0
             }
         },
-        async evolveHeroes(proxys: ProxySilo[], chainId: 146) {
+        async evolveHeroes(proxys: ProxySilo[], chainId: SonicChainId) {
             const coreStore = useCoreStore()
             const factoryAddress = coreStore.getAddress(
                 Address.factoryRegistry,
@@ -1090,7 +1090,7 @@ export const useFactoryStore = defineStore("factory", {
 
             await this.multicall(selectorArray, chainId, false)
         },
-        async getAllProxyStates(chainId: 146, proxys: ProxySilo[] = []) {
+        async getAllProxyStates(chainId: SonicChainId, proxys: ProxySilo[] = []) {
             const coreStore = useCoreStore()
             const playerAddress = coreStore.getAddress(
                 Address.estforPlayers,
@@ -1189,7 +1189,7 @@ export const useFactoryStore = defineStore("factory", {
             this.initialised = true
             this.initialisedAt = new Date()
         },
-        async getTransactionCharge(chainId: 146) {
+        async getTransactionCharge(chainId: SonicChainId) {
             const coreStore = useCoreStore()
             const factoryAddress = coreStore.getAddress(
                 Address.factoryRegistry,
@@ -1208,7 +1208,7 @@ export const useFactoryStore = defineStore("factory", {
             })
             this.transactionCharge = result as bigint
         },
-        async createProxy(proxyNumber: number, chainId: 146) {
+        async createProxy(proxyNumber: number, chainId: SonicChainId) {
             const coreStore = useCoreStore()
             const factoryAddress = coreStore.getAddress(
                 Address.factoryRegistry,
@@ -1331,7 +1331,7 @@ export const useFactoryStore = defineStore("factory", {
                 proxyToUpdate.queuedActions = queuedActions
             }
         },
-        async getProxys(chainId: 146, force = true) {
+        async getProxys(chainId: SonicChainId, force = true) {
             if (
                 !force &&
                 this.initialised &&
@@ -1408,7 +1408,7 @@ export const useFactoryStore = defineStore("factory", {
             combatStyle: CombatStyle,
             actionQueueStatus: ActionQueueStrategy,
             activate: boolean,
-            chainId: 146
+            chainId: SonicChainId
         ) {
             const coreStore = useCoreStore()
             const factoryAddress = coreStore.getAddress(
@@ -1524,7 +1524,7 @@ export const useFactoryStore = defineStore("factory", {
         },
         async transferItemsFromBankToProxys(
             itemsNeeded: NeededItem[],
-            chainId: 146
+            chainId: SonicChainId
         ) {
             const coreStore = useCoreStore()
             const factoryAddress = coreStore.getAddress(
@@ -1575,7 +1575,7 @@ export const useFactoryStore = defineStore("factory", {
         async processActions(
             proxys: ProxySilo[],
             fastCall: boolean,
-            chainId: 146
+            chainId: SonicChainId
         ) {
             const coreStore = useCoreStore()
             const factoryAddress = coreStore.getAddress(
@@ -1625,7 +1625,7 @@ export const useFactoryStore = defineStore("factory", {
         },
         async bridgeHeroes(
             proxys: ProxySilo[],
-            chainId: 146
+            chainId: SonicChainId
         ) {
             const coreStore = useCoreStore()
             const factoryAddress = coreStore.getAddress(
@@ -1681,7 +1681,7 @@ export const useFactoryStore = defineStore("factory", {
         async executeSavedTransactions(
             proxys: ProxySilo[],
             fastCall: boolean,
-            chainId: 146
+            chainId: SonicChainId
         ) {
             const coreStore = useCoreStore()
             const factoryAddress = coreStore.getAddress(
@@ -1763,7 +1763,7 @@ export const useFactoryStore = defineStore("factory", {
                         .flat() || []
             }
         },
-        async withdrawItems(items: any[], chainId: 146) {
+        async withdrawItems(items: any[], chainId: SonicChainId) {
             const coreStore = useCoreStore()
             const itemAddress = coreStore.getAddress(Address.itemNFT, chainId)
             const factoryAddress = coreStore.getAddress(
@@ -1890,7 +1890,7 @@ export const useFactoryStore = defineStore("factory", {
         async transferItemsToBank(
             relevantTokenIds: number[],
             proxys: ProxySilo[],
-            chainId: 146,
+            chainId: SonicChainId,
             overrideNeedsItem: boolean = false
         ) {
             const coreStore = useCoreStore()
@@ -2006,7 +2006,7 @@ export const useFactoryStore = defineStore("factory", {
             siloAddress: string,
             toAddress: string,
             items: TransferUserItemNFT[],
-            chainId: 146
+            chainId: SonicChainId
         ) {
             const coreStore = useCoreStore()
             const itemAddress = coreStore.getAddress(Address.itemNFT, chainId)
@@ -2054,7 +2054,7 @@ export const useFactoryStore = defineStore("factory", {
                 tokenId: number
                 amount: string
             }[],
-            chainId: 146
+            chainId: SonicChainId
         ) {
             const coreStore = useCoreStore()
             const itemAddress = coreStore.getAddress(Address.itemNFT, chainId)

@@ -120,6 +120,7 @@ import { decodeTransaction, useFactoryStore } from "../../store/factory"
 import { useAppStore } from "../../store/app"
 import { actionChoiceNames, actionNames } from "../../store/skills"
 import { AggregatedItem, ProxySilo } from "../../store/models/factory.models"
+import type { SonicChainId } from "../../config"
 
 const props = defineProps({
     id: {
@@ -192,7 +193,7 @@ const withdrawItems = async () => {
                     tokenId: item.value,
                     amount: i.amountToDistribute.toString(),
                 })),
-            props.chainId as 146
+            props.chainId as SonicChainId
         )
         app.addToast(`Items distributed`, "alert-success", 5000)
         emits("withdrawn")

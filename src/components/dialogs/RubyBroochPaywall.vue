@@ -86,7 +86,7 @@ import { computed, ref } from "vue"
 import { getAccount, waitForTransactionReceipt, switchChain } from "@wagmi/core"
 import { useAppStore } from "../../store/app"
 import { useBroochStore } from "../../store/brooch"
-import { config } from "../../config"
+import { config, SONIC_CHAIN_ID } from "../../config"
 
 const app = useAppStore()
 const broochStore = useBroochStore()
@@ -106,8 +106,8 @@ const init = async () => {
     try {
         const account = getAccount(config)
         if (account.isConnected) {
-            if (account.chainId !== 146) {
-                switchChain(config, { chainId: 146 })
+            if (account.chainId !== SONIC_CHAIN_ID) {
+                switchChain(config, { chainId: SONIC_CHAIN_ID })
             }
             loading.value = true
             await broochStore.getBroochData(0, false)
@@ -144,7 +144,7 @@ const mintNFT = async () => {
     loading.value = true
     try {
         const hash = await broochStore.upgradeBrooch(1)
-        await waitForTransactionReceipt(config, { hash, chainId: 146 })
+        await waitForTransactionReceipt(config, { hash, chainId: SONIC_CHAIN_ID })
         app.addToast("Thank you for your support!", "alert-success", 5000)
     } catch (error) {
         // app.addToast('Failed to mint brooch', 'alert-error', 50000)
@@ -163,7 +163,7 @@ const approve = async () => {
     loading.value = true
     try {
         const hash = await broochStore.setApprovalForAll()
-        await waitForTransactionReceipt(config, { hash, chainId: 146 })
+        await waitForTransactionReceipt(config, { hash, chainId: SONIC_CHAIN_ID })
         app.addToast("Transfer Approved", "alert-success", 5000)
     } catch (error) {
         // app.addToast('Failed to mint brooch', 'alert-error', 50000)

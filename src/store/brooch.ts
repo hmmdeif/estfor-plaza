@@ -7,7 +7,7 @@ import {
 import broochAbi from "../abi/brooch.json"
 import broochUpgraderAbi from "../abi/broochUpgrader.json"
 import { solidityPacked } from "ethers"
-import { config } from "../config"
+import { config, SONIC_CHAIN_ID } from "../config"
 
 export interface Brooch {
     tokenId: number
@@ -68,21 +68,21 @@ export const useBroochStore = defineStore("brooch", {
                         abi: broochAbi,
                         functionName: "tokenSupply",
                         args: [tokenId],
-                        chainId: 146,
+                        chainId: SONIC_CHAIN_ID,
                     }),
                     readContract(config, {
                         address: HOMEMADE_BROOCH_ADDRESS as `0x${string}`,
                         abi: broochAbi,
                         functionName: "baseTokenPrice",
                         args: [tokenId],
-                        chainId: 146,
+                        chainId: SONIC_CHAIN_ID,
                     }),
                     readContract(config, {
                         address: HOMEMADE_BROOCH_ADDRESS as `0x${string}`,
                         abi: broochAbi,
                         functionName: "balanceOf",
                         args: [account.address, tokenId],
-                        chainId: 146,
+                        chainId: SONIC_CHAIN_ID,
                     }),
                 ])
             } else {
@@ -92,21 +92,21 @@ export const useBroochStore = defineStore("brooch", {
                         abi: broochAbi,
                         functionName: "tokenSupply",
                         args: [tokenId],
-                        chainId: 146,
+                        chainId: SONIC_CHAIN_ID,
                     }),
                     readContract(config, {
                         address: BROOCH_UPGRADER_ADDRESS as `0x${string}`,
                         abi: broochUpgraderAbi,
                         functionName: "upgradePrices",
                         args: [tokenId],
-                        chainId: 146,
+                        chainId: SONIC_CHAIN_ID,
                     }),
                     readContract(config, {
                         address: HOMEMADE_BROOCH_ADDRESS as `0x${string}`,
                         abi: broochAbi,
                         functionName: "balanceOf",
                         args: [account.address, tokenId],
-                        chainId: 146,
+                        chainId: SONIC_CHAIN_ID,
                     }),
                 ])
             }
@@ -139,7 +139,7 @@ export const useBroochStore = defineStore("brooch", {
                 address: HOMEMADE_BROOCH_ADDRESS as `0x${string}`,
                 abi: broochAbi,
                 functionName: "mintBatch",
-                chainId: 146,
+                chainId: SONIC_CHAIN_ID,
                 args: [
                     account.address,
                     [0],
@@ -158,7 +158,7 @@ export const useBroochStore = defineStore("brooch", {
                 abi: broochAbi,
                 functionName: "setApprovalForAll",
                 args: [BROOCH_UPGRADER_ADDRESS, true],
-                chainId: 146,
+                chainId: SONIC_CHAIN_ID,
             })
         },
         upgradeBrooch(tokenId: number) {
@@ -167,7 +167,7 @@ export const useBroochStore = defineStore("brooch", {
                 abi: broochUpgraderAbi,
                 functionName: "upgradeBrooch",
                 args: [tokenId],
-                chainId: 146,
+                chainId: SONIC_CHAIN_ID,
                 value:
                     BigInt(this.brooches[tokenId]?.totalSupply) *
                         BigInt(10 ** 18) +
@@ -181,7 +181,7 @@ export const useBroochStore = defineStore("brooch", {
                 abi: broochAbi,
                 functionName: "isApprovedForAll",
                 args: [account.address, BROOCH_UPGRADER_ADDRESS],
-                chainId: 146,
+                chainId: SONIC_CHAIN_ID,
             })
         },
     },

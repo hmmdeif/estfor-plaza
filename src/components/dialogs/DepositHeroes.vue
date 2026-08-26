@@ -76,7 +76,7 @@ import { useFactoryStore } from "../../store/factory"
 import { useAppStore } from "../../store/app"
 import { getPlayersByOwner } from "../../utils/api"
 import { getAccount } from "@wagmi/core"
-import { config } from "../../config"
+import { config, type SonicChainId } from "../../config"
 import { getAddress } from "viem"
 
 const props = defineProps({
@@ -145,7 +145,7 @@ const depositHeroes = async () => {
                     playerId: i.playerId,
                     assignedSilo: getAddress(i.assignedSilo),
                 })),
-            props.chainId as 146
+            props.chainId as SonicChainId
         )
         app.addToast(`Heroes deposited`, "alert-success", 5000)
         emits("deposited")

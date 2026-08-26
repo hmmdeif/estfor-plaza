@@ -76,6 +76,7 @@ import { getItemName } from "../../store/items"
 import { useFactoryStore } from "../../store/factory"
 import { useAppStore } from "../../store/app"
 import { AggregatedItem } from "../../store/models/factory.models"
+import type { SonicChainId } from "../../config"
 
 const props = defineProps({
     id: {
@@ -136,7 +137,7 @@ const withdrawItems = async () => {
                 tokenId: i.tokenId,
                 amount: i.amountToWithdraw.toString(),
             })),
-            props.chainId as 146
+            props.chainId as SonicChainId
         )
         app.addToast(
             `${itemsToWithdraw.value.length} item${

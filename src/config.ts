@@ -1,21 +1,28 @@
-import { injected } from "@wagmi/connectors"
-import { http, fallback } from "@wagmi/core"
-import { sonic } from "@wagmi/core/chains"
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi"
+import { sonic } from "@reown/appkit/networks"
+import { fallback, http } from "@wagmi/core"
+import logoUrl from "./assets/logo.png"
+
+export const projectId = import.meta.env.VITE_PROJECT_ID
+
+if (!projectId) {
+    throw new Error("VITE_PROJECT_ID is required")
+}
+
+export const networks: [typeof sonic] = [sonic]
+export const SONIC_CHAIN_ID = sonic.id
+export type SonicChainId = typeof SONIC_CHAIN_ID
 
 export const metadata = {
     name: "Deif's Estfor Plaza",
-    description: "",
-    url: "https://hmmdeif.github.io/estfor-plaza/",
-    icons: [],
+    description: "Tools and information for Estfor Kingdom players.",
+    url: window.location.origin,
+    icons: [logoUrl],
 }
 
-const projectId = import.meta.env.VITE_PROJECT_ID
-
 export const wagmiAdapter = new WagmiAdapter({
-    networks: [sonic],
+    networks,
     projectId,
-    connectors: [injected({ shimDisconnect: true })],
     transports: {
         [sonic.id]: fallback(
             [

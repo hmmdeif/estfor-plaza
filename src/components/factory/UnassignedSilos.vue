@@ -106,9 +106,10 @@ import { useFactoryStore } from "../../store/factory"
 import { computed, ref, watch } from "vue"
 import AssignHero from "../dialogs/AssignHero.vue"
 import { getHeroClass } from "../../utils/player"
+import type { SonicChainId } from "../../config"
 
 const props = defineProps<{
-    chainId: 146
+    chainId: SonicChainId
 }>()
 
 const factoryStore = useFactoryStore()

@@ -2,11 +2,8 @@
 import { onMounted } from "vue"
 import { useAppStore } from "./store/app"
 import Header from "./components/layout/Header.vue"
-import { reconnect } from "@wagmi/core"
-import { config, wagmiAdapter, metadata } from "./config"
-
- import { createAppKit } from '@reown/appkit/vue' 
-import { sonic } from "viem/chains"
+import { createAppKit } from "@reown/appkit/vue"
+import { metadata, networks, projectId, wagmiAdapter } from "./config"
 
 const appStore = useAppStore()
 
@@ -18,26 +15,24 @@ onMounted(() => {
     setPreferredColorScheme()
 })
 
-const projectId = import.meta.env.VITE_PROJECT_ID
-
-reconnect(config)
-
 createAppKit({
     adapters: [wagmiAdapter],
-    defaultNetwork: sonic,
+    defaultNetwork: networks[0],
     projectId,
-    networks: [sonic],
+    networks,
     metadata,
-    excludeWalletIds: [
-        "19177a98252e07ddfc9af2083ba8e07ef627cb6103467ffebb3f8f4205fd7927",
-    ],
+    features: {
+        email: false,
+        socials: false,
+        swaps: false,
+        onramp: false,
+    },
+    excludeWalletIds: ["19177a98252e07ddfc9af2083ba8e07ef627cb6103467ffebb3f8f4205fd7927"],
     themeMode: "dark",
     themeVariables: {
         "--w3m-accent": "#214850",
     },
 })
-
-
 </script>
 
 <template>

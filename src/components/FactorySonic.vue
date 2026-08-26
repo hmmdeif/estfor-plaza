@@ -120,7 +120,7 @@ import AssignedSilos from "./factory/AssignedSilos.vue"
 import { getAccount, watchAccount, switchChain } from "@wagmi/core"
 import ItemBank from "./factory/ItemBank.vue"
 import ViewSilos from "./dialogs/ViewSilos.vue"
-import { config } from "../config"
+import { config, SONIC_CHAIN_ID, type SonicChainId } from "../config"
 import { useBroochStore } from "../store/brooch"
 import RubyBroochPaywall from "./dialogs/RubyBroochPaywall.vue"
 import { sleep } from "../utils/time"
@@ -133,7 +133,7 @@ const loading = ref(factoryStore.initialised === false)
 const creating = ref(false)
 const silosToCreate = ref(5)
 
-const chainId = ref<146>(146)
+const chainId = ref<SonicChainId>(SONIC_CHAIN_ID)
 
 const viewSilosRef = ref<typeof ViewSilos>()
 
@@ -255,8 +255,8 @@ watchAccount(config, {
 onBeforeMount(() => {
     const account = getAccount(config)
     if (account.isConnected) {
-        if (account.chainId !== 146) {
-            switchChain(config, { chainId: 146 })
+        if (account.chainId !== SONIC_CHAIN_ID) {
+            switchChain(config, { chainId: SONIC_CHAIN_ID })
         }
     }
     void loadProxys()

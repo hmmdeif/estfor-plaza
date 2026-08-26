@@ -283,9 +283,10 @@ import AssignedHeroGroupSelect from "../inputs/AssignedHeroGroupSelect.vue"
 import AssignedHeroSkillSelect from "../inputs/AssignedHeroSkillSelect.vue"
 import EvolveHero from "../dialogs/EvolveHero.vue"
 import { getHeroClass } from "../../utils/player"
+import type { SonicChainId } from "../../config"
 
 const props = defineProps<{
-    chainId: 146
+    chainId: SonicChainId
 }>()
 
 const factoryStore = useFactoryStore()

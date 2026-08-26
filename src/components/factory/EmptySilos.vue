@@ -131,11 +131,12 @@ import { getAvatars, getExactPlayers } from "../../utils/api"
 import { avatarBoostSkills } from "../../store/core"
 import AvatarSelect from "../inputs/AvatarSelect.vue"
 import DepositHeroes from "../dialogs/DepositHeroes.vue"
+import type { SonicChainId } from "../../config"
 
 const emit = defineEmits(["create-heroes"])
 
 const props = defineProps<{
-    chainId: 146
+    chainId: SonicChainId
 }>()
 
 const factoryStore = useFactoryStore()

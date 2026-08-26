@@ -192,6 +192,7 @@ import { getItemName, starterItems } from "../../store/items"
 import { allItems } from "../../data/items"
 import { allActions } from "../../data/actions"
 import { NeededItem, ProxySilo } from "../../store/models/factory.models"
+import type { SonicChainId } from "../../config"
 import { Skill } from "@paintswap/estfor-definitions/types"
 import { useMonsterStore } from "../../store/monsters"
 
@@ -265,13 +266,13 @@ const executeSavedTransactions = async () => {
             await factoryStore.processActions(
                 silosWithEmptyQueuesOrActionInputOnly.value,
                 shouldFastCall.value,
-                props.chainId as 146
+                props.chainId as SonicChainId
             )
         } else {
             await factoryStore.executeSavedTransactions(
                 silosWithEmptyQueuesOrActionInputOnly.value,
                 shouldFastCall.value,
-                props.chainId as 146
+                props.chainId as SonicChainId
             )
         }
         app.addToast(
@@ -329,7 +330,7 @@ const transferItemsToBank = async () => {
                 .filter((t) => t.selected)
                 .map((t) => t.tokenId),
             silosToExecute.value,
-            props.chainId as 146
+            props.chainId as SonicChainId
         )
         app.addToast(`Items transferred to Bank`, "alert-success", 5000)
         itemsTransferredToBank.value = true
@@ -583,7 +584,7 @@ const executeActionChoiceSavedTransactions = async () => {
                     stage.value = "Transferring items to heroes (Part 1 of 2)"
                     await factoryStore.transferItemsFromBankToProxys(
                         itemsNeeded,
-                        props.chainId as 146
+                        props.chainId as SonicChainId
                     )
                 }
                 stage.value = "Executing actions (Part 2 of 2)"
@@ -592,13 +593,13 @@ const executeActionChoiceSavedTransactions = async () => {
                     await factoryStore.processActions(
                         silosWithActionChoicesOnly.value,
                         shouldFastCall.value,
-                        props.chainId as 146
+                        props.chainId as SonicChainId
                     )
                 } else {
                     await factoryStore.executeSavedTransactions(
                         silosWithActionChoicesOnly.value,
                         shouldFastCall.value,
-                        props.chainId as 146
+                        props.chainId as SonicChainId
                     )
                 }
                 stage.value = null

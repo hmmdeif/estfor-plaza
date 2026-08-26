@@ -283,14 +283,14 @@ import { useFactoryStore } from "../../store/factory"
 import { getUserItemNFTs } from "../../utils/api"
 import { getAccount } from "@wagmi/core"
 import { getItemName } from "../../store/items"
-import { config } from "../../config"
+import { config, type SonicChainId } from "../../config"
 import {
     ProxySilo,
     TransferUserItemNFT,
 } from "../../store/models/factory.models"
 
 const props = defineProps<{
-    chainId: 146
+    chainId: SonicChainId
 }>()
 
 const factoryStore = useFactoryStore()

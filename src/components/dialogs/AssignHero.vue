@@ -285,6 +285,7 @@ import CombatStyleSelect from "../inputs/CombatStyleSelect.vue"
 import ItemSelect from "../inputs/ItemSelect.vue"
 import { EstforConstants } from "@paintswap/estfor-definitions"
 import { ProxySilo } from "../../store/models/factory.models"
+import type { SonicChainId } from "../../config"
 import { allActionChoicesMagic } from "../../data/actionChoices"
 import { allActionChoiceIdsMagic } from "../../data/actionChoiceIds"
 
@@ -815,7 +816,7 @@ const assignHeroes = async () => {
                     : CombatStyle.NONE,
                 queueStatus.value,
                 active.value,
-                props.chainId as 146
+                props.chainId as SonicChainId
             )
         } else if (
             skillId.value > 0 &&
@@ -861,7 +862,7 @@ const assignHeroes = async () => {
                 CombatStyle.NONE,
                 queueStatus.value,
                 active.value,
-                props.chainId as 146
+                props.chainId as SonicChainId
             )
         }
 

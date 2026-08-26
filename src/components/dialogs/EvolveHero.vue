@@ -65,6 +65,7 @@ import { useFactoryStore } from "../../store/factory"
 import { useAppStore } from "../../store/app"
 import { useCoreStore } from "../../store/core"
 import { ProxySilo } from "../../store/models/factory.models"
+import type { SonicChainId } from "../../config"
 
 const props = defineProps({
     id: {
@@ -102,7 +103,7 @@ const approveBrush = async () => {
         await factoryStore.approveBrush(
             heroesToEvolve.value,
             BigInt(cost.value),
-            props.chainId as 146
+            props.chainId as SonicChainId
         )
         approved.value = true
     } catch {
@@ -119,7 +120,7 @@ const sendBrush = async () => {
         await factoryStore.sendBrush(
             heroesToEvolve.value,
             BigInt(cost.value),
-            props.chainId as 146
+            props.chainId as SonicChainId
         )
         sentBrush.value = true
     } catch {
@@ -135,7 +136,7 @@ const evolveHeroes = async () => {
     try {
         await factoryStore.evolveHeroes(
             heroesToEvolve.value,
-            props.chainId as 146
+            props.chainId as SonicChainId
         )
 
         app.addToast(

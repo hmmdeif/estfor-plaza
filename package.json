@@ -17,7 +17,6 @@
         "@paintswap/estfor-definitions": "^2.0.113",
         "@reown/appkit": "^1.8.23",
         "@reown/appkit-adapter-wagmi": "^1.8.23",
-        "@wagmi/connectors": "8.1.0",
         "@wagmi/core": "3.6.4",
         "ethers": "^6.17.0",
         "pinia": "^4.0.3",
