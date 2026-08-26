@@ -58,19 +58,49 @@ html, body, #app {
 }
 
 .card,
-.tooltip::before,
-.checkbox-primary:hover {
+.tooltip::before {
   border: 2px solid #44b3a8;
 }
 
-.select,
+.checkbox {
+  border-color: #44b3a8;
+}
+
+.checkbox::before {
+  position: absolute;
+  inset: 20%;
+  width: auto;
+  height: auto;
+}
+
+.checkbox:checked {
+  box-shadow: none;
+}
+
 .input {
   background: rgba(33, 72, 80, 0.6);
+}
+
+.select {
+  background-color: rgb(33, 72, 80);
+}
+
+.input:focus,
+.input:focus-within,
+.select:focus,
+.select:focus-within,
+.select:open,
+.checkbox:focus-visible {
+  outline: none;
 }
 
 .form-control {
   display: flex;
   flex-direction: column;
+}
+
+.label {
+  color: #fff;
 }
 
 .fade-enter-active,

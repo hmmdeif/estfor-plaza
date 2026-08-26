@@ -60,7 +60,7 @@
                     </span>
                     <input
                         type="checkbox"
-                        class="checkbox checkbox-primary card"
+                        class="checkbox checkbox-primary"
                         v-model="executeComplexOverride"
                         @change="missingItems = []"
                     />
@@ -72,7 +72,7 @@
                     </span>
                     <input
                         type="checkbox"
-                        class="checkbox checkbox-primary card"
+                        class="checkbox checkbox-primary"
                         v-model="shouldFastCall"
                     />
                 </label>
@@ -148,7 +148,7 @@
                                 type="checkbox"
                                 v-model="token.selected"
                                 :checked="token.selected"
-                                class="checkbox checkbox-primary card"
+                                class="checkbox checkbox-primary"
                             />
                             <span
                                 class="text-sm mt-1 flex gap-2 items-center"

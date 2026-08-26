@@ -50,7 +50,7 @@
                     <input
                         id="hideHeroNames"
                         type="checkbox"
-                        class="checkbox checkbox-primary card"
+                        class="checkbox checkbox-primary"
                         v-model="hideHeroNames"
                     />
                     <label for="hideHeroNames" class="ml-2 text-xs">Hide Hero Names</label>
@@ -61,7 +61,7 @@
                     <input
                         id="matchAction"
                         type="checkbox"
-                        class="checkbox checkbox-primary card"
+                        class="checkbox checkbox-primary"
                         v-model="matchAction"
                     />
                     <AssignedHeroSkillSelect
@@ -83,7 +83,7 @@
                             <th class="w-[80px]">
                                 <input
                                     type="checkbox"
-                                    class="checkbox checkbox-primary card"
+                                    class="checkbox checkbox-primary"
                                     v-model="selectAll"
                                     @change="selectAllSilos"
                                 />
@@ -103,7 +103,7 @@
                             <td>
                                 <input
                                     type="checkbox"
-                                    class="checkbox checkbox-primary card"
+                                    class="checkbox checkbox-primary"
                                     v-model="silo.selected"
                                 />
                             </td>

@@ -202,7 +202,7 @@
                                 <td class="text-center">
                                     <input
                                         type="checkbox"
-                                        class="checkbox checkbox-primary card"
+                                        class="checkbox checkbox-primary"
                                         v-model="p.selected"
                                     />
                                 </td>
@@ -292,7 +292,7 @@
                                 <td class="text-center">
                                     <input
                                         type="checkbox"
-                                        class="checkbox checkbox-primary card"
+                                        class="checkbox checkbox-primary"
                                         v-model="p.selected"
                                     />
                                 </td>
