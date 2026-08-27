@@ -1,8 +1,8 @@
-import { createAppKit, useAppKit } from "@reown/appkit/vue"
+import { createAppKit } from "@reown/appkit/vue"
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi"
 import { disconnect, getAccount, watchAccount } from "@wagmi/core"
 import { config, metadata, networks, projectId } from "./config"
-import { markWalletReady, setWalletOpener, setWalletSession } from "./wallet-state"
+import { setWalletSession, walletReady } from "./wallet-state"
 
 // Loaded on demand via wallet-state.ts so the WalletConnect stack and the
 // WagmiAdapter never load with the initial page.
@@ -39,42 +39,39 @@ const modal = createAppKit({
     },
 })
 
-setWalletOpener(() => useAppKit().open())
+const syncWalletSession = () => {
+    const account = getAccount(config)
+    setWalletSession(account.isConnected, account.address)
+}
 
-// Auto-reconnect of a persisted session can finish before this module is
-// lazily evaluated, in which case watchAccount would never fire. Seed the
-// bridge with the current snapshot first, then follow live changes.
-const snapshot = getAccount(config)
-setWalletSession(snapshot.isConnected, snapshot.address)
-markWalletReady()
+// AppKit owns connector setup, but the rest of the app uses the shared Wagmi
+// config directly. Mirror that config so both sides always observe one session.
+watchAccount(config, { onChange: syncWalletSession })
 
-watchAccount(config, {
-    onChange(account) {
-        setWalletSession(account.status === "connected", account.address)
-    },
-})
+export const ready = modal.ready().then(() => {
+    syncWalletSession()
+    walletReady.value = true
 
-// Safety net: AppKit's modal disconnect can silently skip the wagmi-level
-// teardown (it bypasses the adapter while it hasn't synced a caipAddress),
-// leaving wagmi connected while AppKit considers the session gone - which
-// stranded users on the game screen. If AppKit reports a disconnected
-// session that persists past a short grace period while wagmi still claims
-// to be connected, force a real wagmi teardown and clear the bridge. The
-// grace period ignores transient desyncs during boot/session restore.
-let rescueTimer: number | undefined
-modal.subscribeAccount(
-    (account) => {
+    // AppKit 1.8 can clear its account before delegating disconnect to Wagmi.
+    // If delegation is skipped, reconcile the two after the normal disconnect
+    // path has had time to finish.
+    let rescueTimer: number | undefined
+    modal.subscribeAccount((account) => {
+        window.clearTimeout(rescueTimer)
+
         if (!account.isConnected && getAccount(config).isConnected) {
-            clearTimeout(rescueTimer)
             rescueTimer = window.setTimeout(() => {
                 if (getAccount(config).isConnected) {
-                    void disconnect(config).catch(() => {})
-                    setWalletSession(false, undefined)
+                    void disconnect(config).catch((error) => {
+                        console.warn("Unable to reconcile wallet disconnect", error)
+                    })
                 }
             }, 800)
-        } else {
-            clearTimeout(rescueTimer)
         }
-    },
-    "eip155"
-)
+    }, "eip155")
+})
+
+export async function open() {
+    await ready
+    await modal.open()
+}

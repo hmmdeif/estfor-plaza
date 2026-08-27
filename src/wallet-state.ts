@@ -1,64 +1,76 @@
 import { ref } from "vue"
 
-// Reactive bridge between the app and the lazily-booted AppKit stack
-// (see appkit-init.ts). Keeping AppKit/WalletConnect out of the module
-// graph until bootWallet() runs is what keeps the initial bundle small.
-
-let openModal: () => void = () => {}
-
-/** False until appkit-init.ts has evaluated and seeded walletState. */
+// Reactive bridge between the app and the lazily loaded AppKit stack.
 export const walletReady = ref(false)
-
-export function markWalletReady() {
-    walletReady.value = true
-}
 
 export const walletState = {
     isConnected: ref(false),
-    address: ref<string | undefined>(undefined),
-    /** Boots the wallet stack first if needed, then opens the connect modal. */
+    address: ref<string | undefined>(),
     open: async () => {
-        await bootWallet()
-        openModal()
+        const wallet = await loadWallet()
+        await wallet.open()
     },
 }
 
-/** Called by appkit-init.ts once the AppKit client exists. */
-export function setWalletOpener(opener: () => void) {
-    openModal = opener
-}
-
-/** Called by appkit-init.ts to mirror wagmi account state into the app. */
+/** Called by appkit-init.ts to mirror Wagmi account state into the app. */
 export function setWalletSession(isConnected: boolean, address?: string) {
     walletState.isConnected.value = isConnected
-    walletState.address.value = address
+    walletState.address.value = isConnected ? address : undefined
 }
 
-let bootPromise: Promise<unknown> | undefined
+type WalletModule = typeof import("./appkit-init")
+let walletModule: Promise<WalletModule> | undefined
 
-/** Loads and initialises appkit-init.ts exactly once. */
-export function bootWallet(): Promise<unknown> {
-    if (!bootPromise) {
-        bootPromise = import("./appkit-init")
-    }
-    return bootPromise
+const loadWallet = () => (walletModule ??= import("./appkit-init"))
+
+/** Loads AppKit once and waits for connector setup and session restoration. */
+export async function bootWallet(): Promise<void> {
+    const wallet = await loadWallet()
+    await wallet.ready
 }
 
-const hasPersistedSession = () =>
-    Object.keys(localStorage).some((k) => /(wc@|wagmi|appkit|w3m)/i.test(k))
+/** AppKit's persisted status is the authoritative hint that reconnect is needed. */
+export const shouldRestoreSession =
+    localStorage.getItem("@appkit/connection_status") === "connected"
 
-/** True when localStorage hints at a previous wallet connection. */
-export const shouldRestoreSession = hasPersistedSession
+const bootInBackground = () => {
+    void bootWallet().catch((error) => {
+        console.warn("Unable to initialise wallet support", error)
+    })
+}
 
-if (hasPersistedSession()) {
-    void bootWallet()
+if (shouldRestoreSession) {
+    bootInBackground()
 } else {
-    const schedule = () => void bootWallet()
-    window.addEventListener("pointerdown", schedule, { once: true, capture: true })
-    window.addEventListener("keydown", schedule, { once: true, capture: true })
-    const idle = (cb: () => void) =>
-        "requestIdleCallback" in window
-            ? requestIdleCallback(cb, { timeout: 1500 })
-            : setTimeout(cb, 1500)
-    idle(schedule)
+    let idleCallbackId: number | undefined
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
+
+    const scheduleBoot = () => {
+        window.removeEventListener("pointerdown", scheduleBoot, true)
+        window.removeEventListener("keydown", scheduleBoot, true)
+
+        if (idleCallbackId !== undefined) {
+            window.cancelIdleCallback(idleCallbackId)
+        }
+        if (timeoutId !== undefined) clearTimeout(timeoutId)
+
+        bootInBackground()
+    }
+
+    window.addEventListener("pointerdown", scheduleBoot, {
+        once: true,
+        capture: true,
+    })
+    window.addEventListener("keydown", scheduleBoot, {
+        once: true,
+        capture: true,
+    })
+
+    if ("requestIdleCallback" in window) {
+        idleCallbackId = window.requestIdleCallback(scheduleBoot, {
+            timeout: 1500,
+        })
+    } else {
+        timeoutId = setTimeout(scheduleBoot, 1500)
+    }
 }

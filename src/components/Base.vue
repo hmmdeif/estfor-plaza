@@ -43,7 +43,7 @@
             <RouterView />
         </div>
         <div
-            v-else-if="!isConnected"
+            v-else-if="!isConnected && (!shouldRestoreSession || walletReady)"
             class="card md:w-[500px] bg-base-100-50 shadow-xl mx-auto my-[100px] p-10"
         >
             <div class="text-center">
@@ -73,7 +73,7 @@
             v-else-if="
                 loading ||
                 app.loadingRoute ||
-                (!isConnected && !walletReady && shouldRestoreSession())
+                (!isConnected && !walletReady && shouldRestoreSession)
             "
             class="mx-auto my-[100px] w-[500px] text-center"
         >
@@ -123,15 +123,12 @@
 </template>
 
 <script setup lang="ts">
-import { getAccount } from "@wagmi/core"
 import { computed, onMounted, ref, watch } from "vue"
 import { useCoreStore } from "../store/core"
 import { useAppStore } from "../store/app"
 import { useBroochStore } from "../store/brooch"
-import { config } from "../config"
 import { bootWallet, shouldRestoreSession, walletReady, walletState } from "../wallet-state"
 import { useRoute } from "vue-router"
-import { sleep } from "../utils/time";
 
 const coreStore = useCoreStore()
 const broochStore = useBroochStore()
@@ -143,34 +140,34 @@ const toasts = computed(() => app.toasts)
 const isConnected = computed(() => walletState.isConnected.value)
 const route = useRoute()
 
+// Ignore an older initialization if the wallet changes while AppKit is restoring.
+let initId = 0
+
 const init = async () => {
+    const id = ++initId
+
     try {
-        // Only wait for the lazily-booted wallet stack when a stored session
-        // may need restoring; fresh visitors must not force the boot here.
-        if (shouldRestoreSession()) await bootWallet()
-        const account = getAccount(config)
-        if (account.isConnecting || account.isReconnecting) {
-            await sleep(1000)
-            return await init()
-        }
-        if (account.isConnected) {
+        if (shouldRestoreSession && !walletReady.value) await bootWallet()
+        if (id !== initId) return
+
+        if (walletState.isConnected.value) {
             loading.value = true
             await coreStore.getActivePlayer()
             await broochStore.getBroochData(0, false)
             await broochStore.getBroochData(1, true)
-        } else if (account.isDisconnected) {
+        } else {
             coreStore.disconnect()
         }
-    } catch (e) {
-        console.log(e)
+    } catch (error) {
+        console.warn("Unable to initialise wallet data", error)
     } finally {
-        loading.value = false
+        if (id === initId) loading.value = false
     }
 }
 
 onMounted(init)
 
-watch(walletState.address, init)
+watch([walletState.isConnected, walletState.address], init)
 </script>
 
 <style>
