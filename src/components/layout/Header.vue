@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineAsyncComponent, ref, watch } from "vue"
+import { computed, defineAsyncComponent, ref, watch } from "vue"
 import { getAccount } from "@wagmi/core"
 import Donate from "../dialogs/Donate.vue"
 import RubyBroochPaywall from "../dialogs/RubyBroochPaywall.vue"
@@ -8,9 +8,12 @@ import { useBroochStore } from "../../store/brooch"
 import { config } from "../../config"
 import { useAppStore } from "../../store/app"
 import Changelog from "../dialogs/Changelog.vue"
+import { walletState } from "../../wallet-state"
 
 const broochStore = useBroochStore()
 const appStore = useAppStore()
+const isWalletConnected = computed(() => walletState.isConnected.value)
+const openWallet = () => walletState.open()
 
 const HeaderItemSearch = defineAsyncComponent(() => import("./HeaderItemSearch.vue"))
 
@@ -306,7 +309,15 @@ watch(() => broochStore.hasAccess(0), init)
                 </svg>
             </div>
             <HeaderItemSearch v-if="route.meta.showItemSearch" />
-            <appkit-button size="sm" />
+            <button
+                v-if="!isWalletConnected"
+                type="button"
+                class="btn btn-primary btn-sm"
+                @click="openWallet"
+            >
+                Connect Wallet
+            </button>
+            <appkit-button v-else size="sm" />
         </div>
     </nav>
     <Donate ref="donateRef" />
