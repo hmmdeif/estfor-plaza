@@ -22,7 +22,7 @@ export const useAppStore = defineStore("app", {
             toasts: [],
             id: 0,
             loadingRoute: false,
-            version: "0.0.2",
+            version: "0.0.3",
         }) as AppState,
     getters: {},
     actions: {

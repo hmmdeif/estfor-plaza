@@ -8,6 +8,17 @@
             <div class="changelog-content">
                 <div class="changelog-item">
                     <div class="changelog-item-title mb-2 text-lg font-bold">
+                        v0.0.3
+                    </div>
+                    <div class="changelog-item-content">
+                        <ul class="list-disc list-inside mb-2">
+                            <li>Added Anniversary 3 items</li>
+                            <li>Optimised site loading, images, dependencies, and initial bundle size</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="changelog-item">
+                    <div class="changelog-item-title mb-2 text-lg font-bold">
                         v0.0.2
                     </div>
                     <div class="changelog-item-content">

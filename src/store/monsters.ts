@@ -11,8 +11,9 @@ import { defineStore } from "pinia"
 import { allActions } from "../data/actions"
 import { ItemState, useItemStore } from "./items"
 import { EstforConstants } from "@paintswap/estfor-definitions"
-import { MEDIA_URL, useCoreStore, safeDecode } from "./core"
+import { useCoreStore, safeDecode } from "./core"
 import { EquippedItems, ProxySilo } from "./models/factory.models"
+import { monsterThumbSource } from "../utils/media"
 import {
     allActionChoicesMagic,
     allActionChoicesMelee,
