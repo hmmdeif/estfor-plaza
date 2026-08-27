@@ -1,26 +1,24 @@
 import { createRouter, createWebHistory } from "vue-router"
 import type { RouteRecordRaw } from "vue-router"
 import { useBroochStore } from "../store/brooch"
-import Base from "../components/Base.vue"
+// All components are lazy loaded so their stores and data dependencies stay
+// out of the startup bundle.
+const Base = () => import("../components/Base.vue")
+const CombatCalculator = () => import("../components/CombatCalculator.vue")
+const SkillTraining = () => import("../components/SkillTraining.vue")
+const HeroSelect = () => import("../components/HeroSelect.vue")
+const LotteryRanking = () => import("../components/LotteryRanking.vue")
+const ClanBattle = () => import("../components/ClanBattle.vue")
+const TerritoryBattleRankings = () =>
+    import("../components/TerritoryBattleRankings.vue")
+const VaultBattleRankings = () => import("../components/VaultBattleRankings.vue")
+const ClanManagement = () => import("../components/ClanManagement.vue")
+const WishContributions = () =>
+    import("../components/clan-management/WishContributions.vue")
+const About = () => import("../components/About.vue")
+const VRFActions = () => import("../components/VRFActions.vue")
+
 import { useAppStore } from "../store/app"
-
-// import all components here rather than lazy load
-import CombatCalculator from "../components/CombatCalculator.vue"
-import SkillTraining from "../components/SkillTraining.vue"
-import HeroSelect from "../components/HeroSelect.vue"
-import LotteryRanking from "../components/LotteryRanking.vue"
-import ClanBattle from "../components/ClanBattle.vue"
-import TerritoryBattleRankings from "../components/TerritoryBattleRankings.vue"
-import VaultBattleRankings from "../components/VaultBattleRankings.vue"
-import ClanManagement from "../components/ClanManagement.vue"
-import WishContributions from "../components/clan-management/WishContributions.vue"
-import About from "../components/About.vue"
-import VRFActions from "../components/VRFActions.vue"
-// import BroochOwners from "../components/BroochOwners.vue"
-
-// Lazy: pulls in store/factory + heavy data/actions & data/actionChoices datasets,
-// so it is kept out of the startup bundle and only loaded on /factory
-const FactorySonic = () => import("../components/FactorySonic.vue")
 
 declare module "vue-router" {
     interface RouteMeta {
@@ -108,7 +106,7 @@ const routes: Array<RouteRecordRaw> = [
             },
             {
                 path: "factory",
-                component: FactorySonic,
+                component: () => import("../components/FactorySonic.vue"),
             },
             // {
             //     path: "brooch-owners",

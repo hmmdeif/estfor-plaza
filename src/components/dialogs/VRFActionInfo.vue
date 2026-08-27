@@ -1,8 +1,6 @@
 <template>
     <dialog id="vrf_action_modal" class="modal">
-        <div
-            class="modal-box bg-base-100 border-2 border-primary md:w-4/5 max-w-full"
-        >
+        <div class="modal-box bg-base-100 border-2 border-primary md:w-4/5 max-w-full">
             <h3 class="font-bold text-lg text-center">{{ skillName }}</h3>
             <img
                 :src="imgSource"
@@ -16,17 +14,19 @@
                         <tr>
                             <th class="text-left">Action</th>
                             <th class="text-right">Inputs</th>
-                            <th class="text-right">Rewards 
-                                <span v-if="actionType === InstantVRFActionType.FORGING"> (One reward per action - highest roll)</span>
-                                <span v-if="actionType === InstantVRFActionType.GENERIC"> (One reward per action - highest roll)</span>
+                            <th class="text-right">
+                                Rewards
+                                <span v-if="actionType === InstantVRFActionType.FORGING">
+                                    (One reward per action - highest roll)</span
+                                >
+                                <span v-if="actionType === InstantVRFActionType.GENERIC">
+                                    (One reward per action - highest roll)</span
+                                >
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr
-                            v-for="a in actions"
-                            :key="a.actionId"
-                        >
+                        <tr v-for="a in actions" :key="a.actionId">
                             <td class="text-left">
                                 {{ vrfActionIdNames[a.actionId] }}
                             </td>
@@ -35,14 +35,8 @@
                                     v-for="(r, i) in a.inputTokenIds"
                                     :key="r"
                                     class="text-xs flex justify-between"
-                                    @click.prevent="
-                                        itemStore.itemSearch = getItemName(
-                                            r
-                                        )
-                                    "
-                                    ><span>{{
-                                        getItemName(r)
-                                    }}</span
+                                    @click.prevent="searchStore.itemSearch = getItemName(r)"
+                                    ><span>{{ getItemName(r) }}</span
                                     >{{ a.inputAmounts[i] }}</span
                                 >
                             </td>
@@ -52,17 +46,13 @@
                                     :key="r.itemTokenId"
                                     class="text-xs flex justify-between"
                                     @click.prevent="
-                                        itemStore.itemSearch = getItemName(
-                                            Number(r.itemTokenId)
-                                        )
+                                        searchStore.itemSearch = getItemName(Number(r.itemTokenId))
                                     "
                                 >
                                     <span>{{ getItemName(Number(r.itemTokenId)) }}</span
                                     ><span
                                         >{{ r.amount }} ({{
-                                            Number(calculateChance(
-                                                r
-                                            )).toFixed(2)
+                                            Number(calculateChance(r)).toFixed(2)
                                         }}%)</span
                                     >
                                 </div>
@@ -80,24 +70,23 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue"
+import { MEDIA_URL } from "../../store/core"
+import { getItemName } from "../../store/items"
+import { useSearchStore } from "../../store/search"
 import {
-    MEDIA_URL,
-} from "../../store/core"
-import { getItemName, useItemStore } from "../../store/items"
-import { InstantVRFActionType, InstantVRFActionInput, RandomReward } from "@paintswap/estfor-definitions/types"
+    InstantVRFActionType,
+    InstantVRFActionInput,
+    RandomReward,
+} from "@paintswap/estfor-definitions/types"
 import { useVRFActionsStore, vrfActionNames, vrfActionIdNames } from "../../store/vrfActions"
 import { decodeItemRewards } from "../../utils/abi"
 
 const actionType = ref(0)
-const itemStore = useItemStore()
+const searchStore = useSearchStore()
 const vrfActionsStore = useVRFActionsStore()
 
-const calculateChance = (
-    r: RandomReward
-) => {
-    return (
-        Number(r.chance) * 100 / 65535
-    )
+const calculateChance = (r: RandomReward) => {
+    return (Number(r.chance) * 100) / 65535
 }
 
 const actions = computed(() => {
@@ -111,19 +100,21 @@ const actions = computed(() => {
     a.sort((a, b) => (a.actionId > b.actionId ? 1 : -1))
     return a.filter(
         (y) =>
-            itemStore.itemSearch === "" ||
-            y.inputTokenIds.some((z: number) => getItemName(z)?.toLowerCase().includes(itemStore.itemSearch.toLowerCase())) ||
-            getDecodedData(y.data)?.some((z: { itemTokenId: number }) => 
-                getItemName(z.itemTokenId)?.toLowerCase().includes(itemStore.itemSearch.toLowerCase())
+            searchStore.itemSearch === "" ||
+            y.inputTokenIds.some((z: number) =>
+                getItemName(z)?.toLowerCase().includes(searchStore.itemSearch.toLowerCase())
+            ) ||
+            getDecodedData(y.data)?.some((z: { itemTokenId: number }) =>
+                getItemName(z.itemTokenId)
+                    ?.toLowerCase()
+                    .includes(searchStore.itemSearch.toLowerCase())
             )
     )
 })
 
 const imgSource = computed(() => {
     // @ts-ignore
-    return `${MEDIA_URL}/landscape/${vrfActionNames[
-        actionType.value
-    ].toLowerCase()}.jpg`
+    return `${MEDIA_URL}/landscape/${vrfActionNames[actionType.value].toLowerCase()}.jpg`
 })
 
 const skillName = computed(() => {

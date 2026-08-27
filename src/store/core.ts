@@ -24,7 +24,7 @@ import {
     UserItemNFT,
 } from "@paintswap/estfor-definitions/types"
 import { EstforConstants } from "@paintswap/estfor-definitions"
-import { allItems } from "../data/items"
+import { boostItems } from "../data/generated/boostItems"
 import { allFullAttireBonuses } from "../data/fullAttireBonuses"
 import { HOMEMADE_BROOCH_ADDRESS } from "../utils/addresses"
 import { fantom, sonic } from "viem/chains"
@@ -415,9 +415,7 @@ export const useCoreStore = defineStore("core", {
 
                 // Average the boost values over the duration if they're shorter than a day
                 if (state.individualBoost) {
-                    const vial = allItems.find(
-                        (x) => x.tokenId === state.individualBoost
-                    )
+                    const vial = boostItems[state.individualBoost]
                     if (
                         vial?.boostType === boost ||
                         vial?.boostType === BoostType.ANY_XP
@@ -431,9 +429,8 @@ export const useCoreStore = defineStore("core", {
                 }
 
                 if (state.applyWishingWellBoost) {
-                    const vial = allItems.find(
-                        (x) => x.tokenId === EstforConstants.LUCK_OF_THE_DRAW
-                    )
+                    const vial =
+                        boostItems[EstforConstants.LUCK_OF_THE_DRAW]
                     if (
                         vial?.boostType === boost ||
                         vial?.boostType === BoostType.ANY_XP

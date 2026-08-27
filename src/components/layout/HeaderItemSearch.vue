@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useItemStore } from "../../store/items"
+import { useSearchStore } from "../../store/search"
 import { searchableItemNames } from "../../data/generated/searchableItemNames"
 
-const itemStore = useItemStore()
+const searchStore = useSearchStore()
 </script>
 
 <template>
@@ -25,7 +25,7 @@ const itemStore = useItemStore()
             type="text"
             placeholder="Item Search"
             class="input input-sm input-bordered max-w-xs bg-base-100-50"
-            v-model="itemStore.itemSearch"
+            v-model="searchStore.itemSearch"
             list="item-datalist"
         />
         <datalist id="item-datalist">

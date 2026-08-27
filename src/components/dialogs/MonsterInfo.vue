@@ -12,12 +12,7 @@
 
             <div class="text-center mt-5">
                 {{ monster?.info.numSpawned / 1000 }} spawned per hour for
-                {{
-                    (
-                        monster?.info.xpPerHour /
-                        (monster?.info.numSpawned / 1000)
-                    ).toFixed(0)
-                }}
+                {{ (monster?.info.xpPerHour / (monster?.info.numSpawned / 1000)).toFixed(0) }}
                 xp each
             </div>
 
@@ -152,11 +147,7 @@
                         <tr v-for="i in monster?.guaranteedRewards">
                             <td
                                 class="text-left cursor-pointer"
-                                @click.prevent="
-                                    itemStore.itemSearch = getItemName(
-                                        i.itemTokenId
-                                    )
-                                "
+                                @click.prevent="searchStore.itemSearch = getItemName(i.itemTokenId)"
                             >
                                 {{ getItemName(i.itemTokenId) || "Unknown" }}
                             </td>
@@ -166,18 +157,12 @@
                         <tr v-for="i in monster?.randomRewards">
                             <td
                                 class="text-left cursor-pointer"
-                                @click.prevent="
-                                    itemStore.itemSearch = getItemName(
-                                        i.itemTokenId
-                                    )
-                                "
+                                @click.prevent="searchStore.itemSearch = getItemName(i.itemTokenId)"
                             >
                                 {{ getItemName(i.itemTokenId) }}
                             </td>
                             <td class="text-right">{{ i.amount }}</td>
-                            <td class="text-right">
-                                {{ ((i.chance * 100) / 65535).toFixed(2) }}%
-                            </td>
+                            <td class="text-right">{{ ((i.chance * 100) / 65535).toFixed(2) }}%</td>
                         </tr>
                     </tbody>
                 </table>
@@ -191,16 +176,13 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue"
-import {
-    monsterNames,
-    monsterImageMap,
-    useMonsterStore,
-} from "../../store/monsters"
+import { monsterNames, monsterImageMap, useMonsterStore } from "../../store/monsters"
 import { MEDIA_URL } from "../../store/core"
-import { getItemName, useItemStore } from "../../store/items"
+import { getItemName } from "../../store/items"
+import { useSearchStore } from "../../store/search"
 
 const monsterStore = useMonsterStore()
-const itemStore = useItemStore()
+const searchStore = useSearchStore()
 
 const monsterId = ref(0)
 

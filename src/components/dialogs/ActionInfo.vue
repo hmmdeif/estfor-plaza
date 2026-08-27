@@ -1,8 +1,6 @@
 <template>
     <dialog id="action_modal" class="modal">
-        <div
-            class="modal-box bg-base-100 border-2 border-primary md:w-4/5 max-w-full"
-        >
+        <div class="modal-box bg-base-100 border-2 border-primary md:w-4/5 max-w-full">
             <h3 class="font-bold text-lg text-center">{{ skillName }}</h3>
             <img
                 :src="imgSource"
@@ -18,9 +16,7 @@
                             <th class="text-right">Level</th>
                             <th class="text-right">XP (per hour)</th>
                             <th class="text-left">Item required</th>
-                            <th class="text-right">
-                                Guaranteed Loot (per hour)
-                            </th>
+                            <th class="text-right">Guaranteed Loot (per hour)</th>
                             <th class="text-right">Random Loot (per hour)</th>
                         </tr>
                     </thead>
@@ -40,11 +36,7 @@
                             </td>
                             <td class="text-right">{{ a.info.xpPerHour }}</td>
                             <td class="text-left">
-                                {{
-                                    getItemName(
-                                        a.info.handItemTokenIdRangeMin
-                                    ) || "None"
-                                }}
+                                {{ getItemName(a.info.handItemTokenIdRangeMin) || "None" }}
                             </td>
                             <td class="text-right cursor-pointer">
                                 <span
@@ -52,13 +44,9 @@
                                     :key="r.itemTokenId"
                                     class="text-xs flex justify-between"
                                     @click.prevent="
-                                        itemStore.itemSearch = getItemName(
-                                            r.itemTokenId
-                                        )
+                                        searchStore.itemSearch = getItemName(r.itemTokenId)
                                     "
-                                    ><span>{{
-                                        getItemName(r.itemTokenId)
-                                    }}</span
+                                    ><span>{{ getItemName(r.itemTokenId) }}</span
                                     >{{ r.rate / 10 }}</span
                                 >
                             </td>
@@ -68,19 +56,13 @@
                                     :key="r.itemTokenId"
                                     class="text-xs flex justify-between"
                                     @click.prevent="
-                                        itemStore.itemSearch = getItemName(
-                                            r.itemTokenId
-                                        )
+                                        searchStore.itemSearch = getItemName(r.itemTokenId)
                                     "
                                 >
                                     <span>{{ getItemName(r.itemTokenId) }}</span
                                     ><span
                                         >{{ r.amount }} ({{
-                                            calculateChance(
-                                                r,
-                                                a,
-                                                playerXp
-                                            ).toFixed(2)
+                                            calculateChance(r, a, playerXp).toFixed(2)
                                         }}%)</span
                                     >
                                 </div>
@@ -99,20 +81,16 @@
 <script setup lang="ts">
 import { computed, ref } from "vue"
 import { actionNames, skillNames } from "../../store/skills"
-import {
-    MEDIA_URL,
-    getLevel,
-    useCoreStore,
-    skillToXPMap,
-} from "../../store/core"
-import { getItemName, useItemStore } from "../../store/items"
+import { MEDIA_URL, getLevel, useCoreStore, skillToXPMap } from "../../store/core"
+import { getItemName } from "../../store/items"
+import { useSearchStore } from "../../store/search"
 import { allActions } from "../../data/actions"
 import { Skill } from "@paintswap/estfor-definitions/types"
 import { calculateChance } from "../../utils/player"
 
 const coreStore = useCoreStore()
 const skillId = ref(0)
-const itemStore = useItemStore()
+const searchStore = useSearchStore()
 
 const playerXp = computed(() => {
     // @ts-ignore
@@ -124,25 +102,23 @@ const actions = computed(() => {
     a.sort((a, b) => (a.info.minXP > b.info.minXP ? 1 : -1))
     return a.filter(
         (x) =>
-            itemStore.itemSearch === "" ||
-            x.guaranteedRewards.some(
-                (y) =>
-                    getItemName(y.itemTokenId)
-                        ?.toLowerCase()
-                        .includes(itemStore.itemSearch.toLowerCase())
+            searchStore.itemSearch === "" ||
+            x.guaranteedRewards.some((y) =>
+                getItemName(y.itemTokenId)
+                    ?.toLowerCase()
+                    .includes(searchStore.itemSearch.toLowerCase())
             ) ||
-            x.randomRewards.some(
-                (y) =>
-                    getItemName(y.itemTokenId)
-                        ?.toLowerCase()
-                        .includes(itemStore.itemSearch.toLowerCase())
+            x.randomRewards.some((y) =>
+                getItemName(y.itemTokenId)
+                    ?.toLowerCase()
+                    .includes(searchStore.itemSearch.toLowerCase())
             ) ||
             getItemName(x.info.handItemTokenIdRangeMax)
                 ?.toLowerCase()
-                .includes(itemStore.itemSearch.toLowerCase()) ||
+                .includes(searchStore.itemSearch.toLowerCase()) ||
             getItemName(x.info.handItemTokenIdRangeMax)
                 ?.toLowerCase()
-                .includes(itemStore.itemSearch.toLowerCase())
+                .includes(searchStore.itemSearch.toLowerCase())
     )
 })
 
@@ -153,9 +129,7 @@ const skillName = computed(() => {
 
 const imgSource = computed(() => {
     // @ts-ignore
-    return `${MEDIA_URL}/landscape/${skillNames[
-        skillId.value
-    ].toLowerCase()}.jpg`
+    return `${MEDIA_URL}/landscape/${skillNames[skillId.value].toLowerCase()}.jpg`
 })
 
 const openDialog = (_skillId: Skill) => {

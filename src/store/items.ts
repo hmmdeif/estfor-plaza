@@ -476,7 +476,6 @@ export interface ItemState {
     rangedActionChoices: ActionChoiceInput[]
     magicActionChoices: ActionChoiceInput[]
     equippedItems: EquippedItems[]
-    itemSearch: string
 }
 
 export const useItemStore = defineStore("items", {
@@ -490,7 +489,6 @@ export const useItemStore = defineStore("items", {
                       localStorage.getItem("equippedItemsMulti") as string
                   )
                 : ([] as EquippedItems[]),
-            itemSearch: "",
         }) as ItemState,
     getters: {
         getCurrentEquippedItems(state: ItemState) {

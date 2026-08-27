@@ -6,10 +6,7 @@
                     <thead>
                         <tr>
                             <th class="flex max-md:flex-col">
-                                <HourSelect
-                                    v-model="elapsedTime"
-                                    class="md:w-1/2 mr-2"
-                                />
+                                <HourSelect v-model="elapsedTime" class="md:w-1/2 mr-2" />
                                 <CombatStyleSelect
                                     v-model="combatStyle"
                                     :skill="weaponSkill"
@@ -17,19 +14,12 @@
                                 />
                             </th>
                             <th class="text-right">
-                                <div
-                                    class="flex gap-1 items-center justify-end"
-                                >
+                                <div class="flex gap-1 items-center justify-end">
                                     Damage Dealt Per Minute
                                     <ChevronUpDownIcon
                                         v-if="currentSort != 'damagePerMinute'"
                                         class="w-6 text-white hover:text-gray-400 cursor-pointer"
-                                        @click="
-                                            updateSort(
-                                                'damagePerMinute',
-                                                'desc'
-                                            )
-                                        "
+                                        @click="updateSort('damagePerMinute', 'desc')"
                                     />
                                     <ChevronDownIcon
                                         v-else-if="
@@ -37,9 +27,7 @@
                                             currentDirection == 'desc'
                                         "
                                         class="w-6 text-white hover:text-gray-400 cursor-pointer"
-                                        @click="
-                                            updateSort('damagePerMinute', 'asc')
-                                        "
+                                        @click="updateSort('damagePerMinute', 'asc')"
                                     />
                                     <ChevronUpIcon
                                         v-else
@@ -49,37 +37,22 @@
                                 </div>
                             </th>
                             <th class="text-right">
-                                <div
-                                    class="flex gap-1 items-center justify-end"
-                                >
+                                <div class="flex gap-1 items-center justify-end">
                                     Damage Taken Over {{ elapsedTime }} Hour{{
                                         elapsedTime > 1 ? "s" : ""
                                     }}
                                     <ChevronUpDownIcon
-                                        v-if="
-                                            currentSort != 'damageTakenPerHour'
-                                        "
+                                        v-if="currentSort != 'damageTakenPerHour'"
                                         class="w-6 text-white hover:text-gray-400 cursor-pointer"
-                                        @click="
-                                            updateSort(
-                                                'damageTakenPerHour',
-                                                'desc'
-                                            )
-                                        "
+                                        @click="updateSort('damageTakenPerHour', 'desc')"
                                     />
                                     <ChevronDownIcon
                                         v-else-if="
-                                            currentSort ==
-                                                'damageTakenPerHour' &&
+                                            currentSort == 'damageTakenPerHour' &&
                                             currentDirection == 'desc'
                                         "
                                         class="w-6 text-white hover:text-gray-400 cursor-pointer"
-                                        @click="
-                                            updateSort(
-                                                'damageTakenPerHour',
-                                                'asc'
-                                            )
-                                        "
+                                        @click="updateSort('damageTakenPerHour', 'asc')"
                                     />
                                     <ChevronUpIcon
                                         v-else
@@ -89,9 +62,7 @@
                                 </div>
                             </th>
                             <th class="text-right">
-                                <div
-                                    class="flex gap-1 items-center justify-end"
-                                >
+                                <div class="flex gap-1 items-center justify-end">
                                     XP Per Hour
                                     <ChevronUpDownIcon
                                         v-if="currentSort != 'xpPerHour'"
@@ -100,8 +71,7 @@
                                     />
                                     <ChevronDownIcon
                                         v-else-if="
-                                            currentSort == 'xpPerHour' &&
-                                            currentDirection == 'desc'
+                                            currentSort == 'xpPerHour' && currentDirection == 'desc'
                                         "
                                         class="w-6 text-white hover:text-gray-400 cursor-pointer"
                                         @click="updateSort('xpPerHour', 'asc')"
@@ -118,9 +88,7 @@
                     <tbody>
                         <tr v-if="monsterRankings.length === 0">
                             <td colspan="4" class="text-center">
-                                No monsters found that drop "{{
-                                    itemStore.itemSearch
-                                }}"
+                                No monsters found that drop "{{ searchStore.itemSearch }}"
                             </td>
                         </tr>
                         <tr v-for="m in monsterRankings" :key="m.name">
@@ -134,9 +102,7 @@
                                                 :src="m.imgSource"
                                                 :alt="m.name"
                                                 @click.prevent="
-                                                    monsterInfoRef?.openDialog(
-                                                        m.actionId
-                                                    )
+                                                    monsterInfoRef?.openDialog(m.actionId)
                                                 "
                                             />
                                         </div>
@@ -144,17 +110,11 @@
                                     <div>
                                         <div
                                             class="font-bold cursor-pointer"
-                                            @click.prevent="
-                                                monsterInfoRef?.openDialog(
-                                                    m.actionId
-                                                )
-                                            "
+                                            @click.prevent="monsterInfoRef?.openDialog(m.actionId)"
                                         >
                                             {{ m.name }}
                                         </div>
-                                        <div
-                                            class="text-xs flex gap-2 items-center max-md:hidden"
-                                        >
+                                        <div class="text-xs flex gap-2 items-center max-md:hidden">
                                             <div
                                                 class="tooltip tooltip-primary tooltip-right"
                                                 :data-tip="
@@ -199,10 +159,7 @@
                                             {{ m.magicDamagePerMinute }}
                                             <div
                                                 class="tooltip tooltip-primary tooltip-right"
-                                                :data-tip="
-                                                    m.combatStats.health +
-                                                    ' Total Health'
-                                                "
+                                                :data-tip="m.combatStats.health + ' Total Health'"
                                             >
                                                 <img
                                                     src="/src/assets/optimized/health-80.webp"
@@ -218,15 +175,8 @@
                             <td class="text-right">
                                 <div>
                                     <div>{{ m.damagePerMinute }}</div>
-                                    <div
-                                        class="text-xs max-md:hidden text-gray-300"
-                                    >
-                                        {{
-                                            (
-                                                m.combatStats.health /
-                                                m.damagePerMinute
-                                            ).toFixed(2)
-                                        }}
+                                    <div class="text-xs max-md:hidden text-gray-300">
+                                        {{ (m.combatStats.health / m.damagePerMinute).toFixed(2) }}
                                         minutes to kill
                                     </div>
                                 </div>
@@ -236,23 +186,17 @@
                                     <div>
                                         {{ m.damageTakenPerHour.toFixed(0) }}
                                     </div>
-                                    <div
-                                        class="text-xs max-md:hidden text-gray-300"
-                                    >
+                                    <div class="text-xs max-md:hidden text-gray-300">
                                         <span
                                             v-if="
                                                 m.fishRequiredPerHour > 0 &&
-                                                m.fishRequiredPerHour !==
-                                                    Infinity
+                                                m.fishRequiredPerHour !== Infinity
                                             "
                                             >{{ m.fishRequiredPerHour }}
                                             {{ equippedFishName }}</span
                                         >
                                         <span
-                                            v-else-if="
-                                                m.fishRequiredPerHour ===
-                                                Infinity
-                                            "
+                                            v-else-if="m.fishRequiredPerHour === Infinity"
                                             class="text-error"
                                             >Hero will die (equip food)</span
                                         >
@@ -275,20 +219,10 @@
                                             ).toFixed(0)
                                         }}
                                     </div>
-                                    <div
-                                        class="text-xs max-md:hidden text-gray-300"
-                                    >
-                                        {{
-                                            levelsGained(
-                                                currentXPForCombatStyle,
-                                                m.xpPerHour
-                                            )
-                                        }}
+                                    <div class="text-xs max-md:hidden text-gray-300">
+                                        {{ levelsGained(currentXPForCombatStyle, m.xpPerHour) }}
                                         level{{
-                                            levelsGained(
-                                                currentXPForCombatStyle,
-                                                m.xpPerHour
-                                            ) === 1
+                                            levelsGained(currentXPForCombatStyle, m.xpPerHour) === 1
                                                 ? ""
                                                 : "s"
                                         }}
@@ -308,12 +242,9 @@
 <script setup lang="ts">
 import { useMonsterStore } from "../store/monsters"
 import { computed, ref, watch } from "vue"
-import {
-    ChevronUpDownIcon,
-    ChevronDownIcon,
-    ChevronUpIcon,
-} from "@heroicons/vue/24/solid"
-import { useItemStore, getItemName } from "../store/items"
+import { ChevronUpDownIcon, ChevronDownIcon, ChevronUpIcon } from "@heroicons/vue/24/solid"
+import { getItemName, useItemStore } from "../store/items"
+import { useSearchStore } from "../store/search"
 import { getLevel, useCoreStore } from "../store/core"
 import HourSelect from "./inputs/HourSelect.vue"
 import CombatStyleSelect from "./inputs/CombatStyleSelect.vue"
@@ -321,6 +252,7 @@ import { BoostType, Skill } from "@paintswap/estfor-definitions/types"
 import MonsterInfo from "./dialogs/MonsterInfo.vue"
 
 const itemStore = useItemStore()
+const searchStore = useSearchStore()
 const monsterStore = useMonsterStore()
 const coreStore = useCoreStore()
 
@@ -368,9 +300,7 @@ const currentXPForCombatStyle = computed(() => {
 })
 
 const monsterRankings = computed(() => {
-    const storeRankings = [
-        ...monsterStore.getMonsterRankings(elapsedTime.value),
-    ]
+    const storeRankings = [...monsterStore.getMonsterRankings(elapsedTime.value)]
     if (currentSort.value) {
         storeRankings.sort((a, b) => {
             if (currentDirection.value == "desc") {
@@ -384,27 +314,22 @@ const monsterRankings = computed(() => {
     }
     return storeRankings.filter(
         (x) =>
-            itemStore.itemSearch === "" ||
-            x.guaranteedRewards.some(
-                (y) =>
-                    getItemName(y.itemTokenId)
-                        ?.toLowerCase()
-                        .includes(itemStore.itemSearch.toLowerCase())
+            searchStore.itemSearch === "" ||
+            x.guaranteedRewards.some((y) =>
+                getItemName(y.itemTokenId)
+                    ?.toLowerCase()
+                    .includes(searchStore.itemSearch.toLowerCase())
             ) ||
-            x.randomRewards.some(
-                (y) =>
-                    getItemName(y.itemTokenId)
-                        ?.toLowerCase()
-                        .includes(itemStore.itemSearch.toLowerCase())
+            x.randomRewards.some((y) =>
+                getItemName(y.itemTokenId)
+                    ?.toLowerCase()
+                    .includes(searchStore.itemSearch.toLowerCase())
             )
     )
 })
 
 const equippedFishName = computed(
-    () =>
-        itemStore.items.find(
-            (x) => x.tokenId === itemStore.getCurrentEquippedItems?.food
-        )?.name
+    () => itemStore.items.find((x) => x.tokenId === itemStore.getCurrentEquippedItems?.food)?.name
 )
 
 const currentSort = ref<string | null>(null)
@@ -421,10 +346,7 @@ const levelsGained = (currentXP: number, xpPerHour: number) => {
             (
                 currentXP +
                 xpPerHour *
-                    coreStore.getXPBoostMultiplier(
-                        combatStyle.value,
-                        BoostType.COMBAT_XP
-                    ) *
+                    coreStore.getXPBoostMultiplier(combatStyle.value, BoostType.COMBAT_XP) *
                     elapsedTime.value
             ).toString()
         ) - getLevel(currentXP.toString())

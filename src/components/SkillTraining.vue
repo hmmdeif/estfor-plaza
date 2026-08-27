@@ -4,9 +4,7 @@
     <template v-if="actionsWithItemSearch.length == 0">
         <div class="card bg-base-100-50 shadow-xl rounded-lg my-5">
             <div class="card-body text-center">
-                No skills found that require or produce "{{
-                    itemStore.itemSearch
-                }}"
+                No skills found that require or produce "{{ searchStore.itemSearch }}"
             </div>
         </div>
     </template>
@@ -23,17 +21,11 @@
                         ]?.toLowerCase()}.jpg`"
                         :alt="skillNames[action.skill]"
                         @click.prevent="
-                            action.relevantAction.actionType ===
-                            ActionType.actionAndChoice
-                                ? actionAndChoiceInfoRef?.openDialog(
-                                      action.skill
-                                  )
-                                : action.relevantAction.actionType ===
-                                    ActionType.action
+                            action.relevantAction.actionType === ActionType.actionAndChoice
+                                ? actionAndChoiceInfoRef?.openDialog(action.skill)
+                                : action.relevantAction.actionType === ActionType.action
                                   ? actionInfoRef?.openDialog(action.skill)
-                                  : actionChoiceInfoRef?.openDialog(
-                                        action.skill
-                                    )
+                                  : actionChoiceInfoRef?.openDialog(action.skill)
                         "
                     />
                 </figure>
@@ -41,16 +33,11 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div class="flex-col flex justify-between">
                             <div class="flex flex-col">
-                                <div
-                                    class="text-2xl font-bold flex items-center gap-2"
-                                >
+                                <div class="text-2xl font-bold flex items-center gap-2">
                                     {{ skillNames[action.skill] || "Unknown" }}
                                     <div
                                         v-if="
-                                            fullAttireMultiplier(
-                                                coreStore.inventory,
-                                                action.skill
-                                            )
+                                            fullAttireMultiplier(coreStore.inventory, action.skill)
                                         "
                                         class="tooltip tooltip-primary tooltip-bottom"
                                         data-tip="Bonus XP from full attire outfit"
@@ -97,18 +84,14 @@
                                     </div>
                                 </div>
                                 <div class="text-sm text-gray-400">
-                                    {{
-                                        action.relevantAction.currentAction
-                                            .name || "Unknown"
-                                    }}
+                                    {{ action.relevantAction.currentAction.name || "Unknown" }}
                                 </div>
                             </div>
                             <div class="flex flex-col mt-5">
                                 <div class="text-2xl font-bold">
                                     {{
                                         (
-                                            action.relevantAction.currentAction
-                                                .xpPerHour *
+                                            action.relevantAction.currentAction.xpPerHour *
                                             coreStore.getXPBoostMultiplier(
                                                 action.skill,
                                                 BoostType.NON_COMBAT_XP
@@ -120,9 +103,7 @@
                                 <div class="text-sm text-gray-400">
                                     Level
                                     {{
-                                        getLevel(
-                                            action.relevantAction.currentXPForSkill.toString()
-                                        )
+                                        getLevel(action.relevantAction.currentXPForSkill.toString())
                                     }}
                                 </div>
                             </div>
@@ -130,37 +111,23 @@
                         <div class="flex-col flex justify-between">
                             <div class="flex flex-col">
                                 <div class="text-2xl font-bold">
-                                    {{
-                                        hoursUntilNextAction(
-                                            action.relevantAction
-                                        )
-                                    }}
+                                    {{ hoursUntilNextAction(action.relevantAction) }}
                                     hour{{
-                                        parseInt(
-                                            hoursUntilNextAction(
-                                                action.relevantAction
-                                            )
-                                        ) > 1
+                                        parseInt(hoursUntilNextAction(action.relevantAction)) > 1
                                             ? "s"
                                             : ""
                                     }}
                                     <div
                                         v-if="
-                                            parseInt(
-                                                hoursUntilNextLevel20(
-                                                    action.relevantAction
-                                                )
-                                            ) > 0
+                                            parseInt(hoursUntilNextLevel20(action.relevantAction)) >
+                                            0
                                         "
                                         class="tooltip tooltip-primary tooltip-bottom"
                                         :data-tip="`${hoursUntilNextLevel20(
                                             action.relevantAction
                                         )} hour${
-                                            parseInt(
-                                                hoursUntilNextLevel20(
-                                                    action.relevantAction
-                                                )
-                                            ) > 1
+                                            parseInt(hoursUntilNextLevel20(action.relevantAction)) >
+                                            1
                                                 ? 's'
                                                 : ''
                                         } until next level 20 boundary`"
@@ -181,19 +148,13 @@
                                         </svg>
                                     </div>
                                 </div>
-                                <div class="text-sm text-gray-400">
-                                    Until next action unlock
-                                </div>
+                                <div class="text-sm text-gray-400">Until next action unlock</div>
                             </div>
-                            <div
-                                v-if="action.relevantAction.nextAction"
-                                class="flex flex-col mt-5"
-                            >
+                            <div v-if="action.relevantAction.nextAction" class="flex flex-col mt-5">
                                 <div class="text-2xl font-bold">
                                     {{
                                         (
-                                            action.relevantAction.nextAction
-                                                ?.xpPerHour *
+                                            action.relevantAction.nextAction?.xpPerHour *
                                             coreStore.getXPBoostMultiplier(
                                                 action.skill,
                                                 BoostType.NON_COMBAT_XP
@@ -205,9 +166,7 @@
                                 <div class="text-sm text-gray-400">
                                     Next action at level
                                     {{
-                                        getLevel(
-                                            action.relevantAction.nextAction.minXP.toString()
-                                        )
+                                        getLevel(action.relevantAction.nextAction.minXP.toString())
                                     }}
                                 </div>
                             </div>
@@ -224,12 +183,7 @@
 
 <script setup lang="ts">
 import { BoostType, Skill } from "@paintswap/estfor-definitions/types"
-import {
-    useSkillStore,
-    RelevantAction,
-    skillNames,
-    ActionType,
-} from "../store/skills"
+import { useSkillStore, RelevantAction, skillNames, ActionType } from "../store/skills"
 import {
     MEDIA_URL,
     useCoreStore,
@@ -244,11 +198,11 @@ import ItemSearch from "./ItemSearch.vue"
 import ActionInfo from "./dialogs/ActionInfo.vue"
 import ActionChoiceInfo from "./dialogs/ActionChoiceInfo.vue"
 import ActionAndChoiceInfo from "./dialogs/ActionAndChoiceInfo.vue"
-import { useItemStore } from "../store/items"
+import { useSearchStore } from "../store/search"
 
 const skillStore = useSkillStore()
 const coreStore = useCoreStore()
-const itemStore = useItemStore()
+const searchStore = useSearchStore()
 const actionInfoRef = ref<typeof ActionInfo>()
 const actionChoiceInfoRef = ref<typeof ActionChoiceInfo>()
 const actionAndChoiceInfoRef = ref<typeof ActionAndChoiceInfo>()
@@ -257,75 +211,51 @@ const allActions = computed(() => {
     return [
         {
             skill: Skill.WOODCUTTING,
-            relevantAction: skillStore.getCurrentAndNextActionForSkill(
-                Skill.WOODCUTTING
-            ),
+            relevantAction: skillStore.getCurrentAndNextActionForSkill(Skill.WOODCUTTING),
         },
         {
             skill: Skill.MINING,
-            relevantAction: skillStore.getCurrentAndNextActionForSkill(
-                Skill.MINING
-            ),
+            relevantAction: skillStore.getCurrentAndNextActionForSkill(Skill.MINING),
         },
         {
             skill: Skill.FISHING,
-            relevantAction: skillStore.getCurrentAndNextActionForSkill(
-                Skill.FISHING
-            ),
+            relevantAction: skillStore.getCurrentAndNextActionForSkill(Skill.FISHING),
         },
         {
             skill: Skill.COOKING,
-            relevantAction: skillStore.getCurrentAndNextActionForSkill(
-                Skill.COOKING
-            ),
+            relevantAction: skillStore.getCurrentAndNextActionForSkill(Skill.COOKING),
         },
         {
             skill: Skill.SMITHING,
-            relevantAction: skillStore.getCurrentAndNextActionForSkill(
-                Skill.SMITHING
-            ),
+            relevantAction: skillStore.getCurrentAndNextActionForSkill(Skill.SMITHING),
         },
         {
             skill: Skill.CRAFTING,
-            relevantAction: skillStore.getCurrentAndNextActionForSkill(
-                Skill.CRAFTING
-            ),
+            relevantAction: skillStore.getCurrentAndNextActionForSkill(Skill.CRAFTING),
         },
         {
             skill: Skill.FIREMAKING,
-            relevantAction: skillStore.getCurrentAndNextActionForSkill(
-                Skill.FIREMAKING
-            ),
+            relevantAction: skillStore.getCurrentAndNextActionForSkill(Skill.FIREMAKING),
         },
         {
             skill: Skill.THIEVING,
-            relevantAction: skillStore.getCurrentAndNextActionForSkill(
-                Skill.THIEVING
-            ),
+            relevantAction: skillStore.getCurrentAndNextActionForSkill(Skill.THIEVING),
         },
         {
             skill: Skill.FORGING,
-            relevantAction: skillStore.getCurrentAndNextActionForSkill(
-                Skill.FORGING
-            ),
+            relevantAction: skillStore.getCurrentAndNextActionForSkill(Skill.FORGING),
         },
         {
             skill: Skill.FLETCHING,
-            relevantAction: skillStore.getCurrentAndNextActionForSkill(
-                Skill.FLETCHING
-            ),
+            relevantAction: skillStore.getCurrentAndNextActionForSkill(Skill.FLETCHING),
         },
         {
             skill: Skill.ALCHEMY,
-            relevantAction: skillStore.getCurrentAndNextActionForSkill(
-                Skill.ALCHEMY
-            ),
+            relevantAction: skillStore.getCurrentAndNextActionForSkill(Skill.ALCHEMY),
         },
         {
             skill: Skill.FARMING,
-            relevantAction: skillStore.getCurrentAndNextActionForSkill(
-                Skill.FARMING
-            ),
+            relevantAction: skillStore.getCurrentAndNextActionForSkill(Skill.FARMING),
         },
     ]
 })
@@ -338,15 +268,11 @@ const hoursUntilNextAction = (relevantAction: RelevantAction) => {
     if (!relevantAction.nextAction) {
         return "0" // max level
     }
-    const xpToNextAction =
-        relevantAction.nextAction.minXP - relevantAction.currentXPForSkill
+    const xpToNextAction = relevantAction.nextAction.minXP - relevantAction.currentXPForSkill
     return (
         xpToNextAction /
         (relevantAction.currentAction.xpPerHour *
-            coreStore.getXPBoostMultiplier(
-                relevantAction.skill,
-                BoostType.NON_COMBAT_XP
-            ))
+            coreStore.getXPBoostMultiplier(relevantAction.skill, BoostType.NON_COMBAT_XP))
     ).toFixed(1)
 }
 
@@ -354,8 +280,7 @@ const hoursUntilNextLevel20 = (relevantAction: RelevantAction) => {
     if (!relevantAction.nextAction) {
         return "0" // max level
     }
-    const xpToNextAction =
-        relevantAction.nextAction.minXP - relevantAction.currentXPForSkill
+    const xpToNextAction = relevantAction.nextAction.minXP - relevantAction.currentXPForSkill
     // get xps of level 20, 40, 60, 80, 100
     const relevantXpBoundaries = [
         xpBoundaries[19],
@@ -365,11 +290,7 @@ const hoursUntilNextLevel20 = (relevantAction: RelevantAction) => {
         xpBoundaries[99],
     ]
     const nextXpBoundary =
-        Math.min(
-            ...relevantXpBoundaries.filter(
-                (x) => x > relevantAction.currentXPForSkill
-            )
-        ) || 0
+        Math.min(...relevantXpBoundaries.filter((x) => x > relevantAction.currentXPForSkill)) || 0
 
     if (xpToNextAction < nextXpBoundary - relevantAction.currentXPForSkill) {
         return "0" // next upgrade action is closer than the level 20 boundary
@@ -377,10 +298,7 @@ const hoursUntilNextLevel20 = (relevantAction: RelevantAction) => {
     return (
         (nextXpBoundary - relevantAction.currentXPForSkill) /
         (relevantAction.currentAction.xpPerHour *
-            coreStore.getXPBoostMultiplier(
-                relevantAction.skill,
-                BoostType.NON_COMBAT_XP
-            ))
+            coreStore.getXPBoostMultiplier(relevantAction.skill, BoostType.NON_COMBAT_XP))
     ).toFixed(1)
 }
 </script>

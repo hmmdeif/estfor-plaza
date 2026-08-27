@@ -1,8 +1,6 @@
 <template>
     <dialog id="action_choice_modal" class="modal">
-        <div
-            class="modal-box bg-base-100 border-2 border-primary md:w-4/5 max-w-full"
-        >
+        <div class="modal-box bg-base-100 border-2 border-primary md:w-4/5 max-w-full">
             <h3 class="font-bold text-lg text-center">{{ skillName }}</h3>
             <img
                 :src="imgSource"
@@ -27,17 +25,14 @@
                             :key="i"
                             :class="{
                                 'text-gray-400':
-                                    (a.skillMinXPs[
-                                        a.skills.findIndex((s) => s === skillId)
-                                    ] || 0) > playerXp,
+                                    (a.skillMinXPs[a.skills.findIndex((s) => s === skillId)] || 0) >
+                                    playerXp,
                             }"
                         >
                             <td
                                 class="text-left cursor-pointer"
                                 @click.prevent="
-                                    itemStore.itemSearch = getItemName(
-                                        a.outputTokenId
-                                    )
+                                    searchStore.itemSearch = getItemName(a.outputTokenId)
                                 "
                             >
                                 {{ getItemName(a.outputTokenId) }}
@@ -45,11 +40,7 @@
                             <td class="text-right">
                                 {{
                                     getLevel(
-                                        a.skillMinXPs[
-                                            a.skills.findIndex(
-                                                (s) => s === skillId
-                                            )
-                                        ] || 0
+                                        a.skillMinXPs[a.skills.findIndex((s) => s === skillId)] || 0
                                     )
                                 }}
                             </td>
@@ -59,15 +50,11 @@
                                     v-for="(x, i) in a.inputTokenIds"
                                     :key="x"
                                     class="flex justify-between cursor-pointer"
-                                    @click.prevent="
-                                        itemStore.itemSearch = getItemName(x)
-                                    "
+                                    @click.prevent="searchStore.itemSearch = getItemName(x)"
                                 >
                                     <div>{{ getItemName(x) }}</div>
                                     <div>
-                                        {{
-                                            (a.inputAmounts[i] * a.rate) / 1000
-                                        }}
+                                        {{ (a.inputAmounts[i] * a.rate) / 1000 }}
                                     </div>
                                 </div>
                             </td>
@@ -75,16 +62,10 @@
                                 <span v-if="a.successPercent < 100">{{
                                     (
                                         ((a.outputAmount * a.rate) / 1000) *
-                                        calculateActionChoiceSuccessPercent(
-                                            a,
-                                            playerXp,
-                                            skillId
-                                        )
+                                        calculateActionChoiceSuccessPercent(a, playerXp, skillId)
                                     ).toFixed(1)
                                 }}</span>
-                                <span v-else>{{
-                                    (a.outputAmount * a.rate) / 1000
-                                }}</span>
+                                <span v-else>{{ (a.outputAmount * a.rate) / 1000 }}</span>
                             </td>
                         </tr>
                     </tbody>
@@ -100,20 +81,16 @@
 <script setup lang="ts">
 import { computed, ref } from "vue"
 import { skillNames, useSkillStore } from "../../store/skills"
-import {
-    MEDIA_URL,
-    getLevel,
-    useCoreStore,
-    skillToXPMap,
-} from "../../store/core"
-import { getItemName, useItemStore } from "../../store/items"
+import { MEDIA_URL, getLevel, useCoreStore, skillToXPMap } from "../../store/core"
+import { getItemName } from "../../store/items"
+import { useSearchStore } from "../../store/search"
 import { ActionChoiceInput, Skill } from "@paintswap/estfor-definitions/types"
 import { calculateActionChoiceSuccessPercent } from "../../utils/player"
 
 const coreStore = useCoreStore()
 const skillId = ref(0)
 const skillStore = useSkillStore()
-const itemStore = useItemStore()
+const searchStore = useSearchStore()
 
 const playerXp = computed(() => {
     // @ts-ignore
@@ -149,14 +126,12 @@ const actions = computed(() => {
     }
     a.sort((a, b) => {
         if (
-            (a.skillMinXPs[a.skills.findIndex((s) => s === skillId.value)] ||
-                0) >
+            (a.skillMinXPs[a.skills.findIndex((s) => s === skillId.value)] || 0) >
             (b.skillMinXPs[b.skills.findIndex((s) => s === skillId.value)] || 0)
         )
             return 1
         if (
-            (a.skillMinXPs[a.skills.findIndex((s) => s === skillId.value)] ||
-                0) <
+            (a.skillMinXPs[a.skills.findIndex((s) => s === skillId.value)] || 0) <
             (b.skillMinXPs[b.skills.findIndex((s) => s === skillId.value)] || 0)
         )
             return -1
@@ -164,22 +139,19 @@ const actions = computed(() => {
     })
     return a.filter(
         (x) =>
-            itemStore.itemSearch === "" ||
-            x.inputTokenIds.some(
-                (y) =>
-                    getItemName(y)
-                        ?.toLowerCase()
-                        .includes(itemStore.itemSearch.toLowerCase())
+            searchStore.itemSearch === "" ||
+            x.inputTokenIds.some((y) =>
+                getItemName(y)?.toLowerCase().includes(searchStore.itemSearch.toLowerCase())
             ) ||
             getItemName(x.outputTokenId)
                 ?.toLowerCase()
-                .includes(itemStore.itemSearch.toLowerCase()) ||
+                .includes(searchStore.itemSearch.toLowerCase()) ||
             getItemName(x.handItemTokenIdRangeMax)
                 ?.toLowerCase()
-                .includes(itemStore.itemSearch.toLowerCase()) ||
+                .includes(searchStore.itemSearch.toLowerCase()) ||
             getItemName(x.handItemTokenIdRangeMax)
                 ?.toLowerCase()
-                .includes(itemStore.itemSearch.toLowerCase())
+                .includes(searchStore.itemSearch.toLowerCase())
     )
 })
 
@@ -190,16 +162,12 @@ const skillName = computed(() => {
 
 const imgSource = computed(() => {
     // @ts-ignore
-    return `${MEDIA_URL}/landscape/${skillNames[
-        skillId.value
-    ].toLowerCase()}.jpg`
+    return `${MEDIA_URL}/landscape/${skillNames[skillId.value].toLowerCase()}.jpg`
 })
 
 const openDialog = (_skillId: Skill) => {
     skillId.value = _skillId
-    const dialog = document.getElementById(
-        "action_choice_modal"
-    ) as HTMLDialogElement
+    const dialog = document.getElementById("action_choice_modal") as HTMLDialogElement
     dialog.showModal()
 }
 

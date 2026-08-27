@@ -21,7 +21,8 @@ import {
     allActionChoicesRanged,
     allActionChoicesSmithing,
 } from "../data/actionChoices"
-import { getItemName, useItemStore } from "./items"
+import { getItemName } from "./items"
+import { useSearchStore } from "./search"
 import {
     allActionChoiceIdsAlchemy,
     allActionChoiceIdsCooking,
@@ -850,7 +851,7 @@ export const useSkillStore = defineStore("skills", {
                 let isActionChoice = false
                 let isInputAndChoice = false
                 const coreStore = useCoreStore()
-                const itemStore = useItemStore()
+                const searchStore = useSearchStore()
                 const playerState = coreStore.playerState
                 let currentXPForSkill = 1
                 let hasItemSearch = false
@@ -995,7 +996,7 @@ export const useSkillStore = defineStore("skills", {
                                         getItemName(y.itemTokenId)
                                             ?.toLowerCase()
                                             .includes(
-                                                itemStore.itemSearch.toLowerCase()
+                                                searchStore.itemSearch.toLowerCase()
                                             )
                                 ) ||
                                 x.randomRewards.some(
@@ -1003,18 +1004,18 @@ export const useSkillStore = defineStore("skills", {
                                         getItemName(y.itemTokenId)
                                             ?.toLowerCase()
                                             .includes(
-                                                itemStore.itemSearch.toLowerCase()
+                                                searchStore.itemSearch.toLowerCase()
                                             )
                                 ) ||
                                 getItemName(x.info.handItemTokenIdRangeMax)
                                     ?.toLowerCase()
                                     .includes(
-                                        itemStore.itemSearch.toLowerCase()
+                                        searchStore.itemSearch.toLowerCase()
                                     ) ||
                                 getItemName(x.info.handItemTokenIdRangeMax)
                                     ?.toLowerCase()
                                     .includes(
-                                        itemStore.itemSearch.toLowerCase()
+                                        searchStore.itemSearch.toLowerCase()
                                     )
                         )
                     ) {
@@ -1122,23 +1123,23 @@ export const useSkillStore = defineStore("skills", {
                                         getItemName(y)
                                             ?.toLowerCase()
                                             .includes(
-                                                itemStore.itemSearch.toLowerCase()
+                                                searchStore.itemSearch.toLowerCase()
                                             )
                                 ) ||
                                 getItemName(x.outputTokenId)
                                     ?.toLowerCase()
                                     .includes(
-                                        itemStore.itemSearch.toLowerCase()
+                                        searchStore.itemSearch.toLowerCase()
                                     ) ||
                                 getItemName(x.handItemTokenIdRangeMax)
                                     ?.toLowerCase()
                                     .includes(
-                                        itemStore.itemSearch.toLowerCase()
+                                        searchStore.itemSearch.toLowerCase()
                                     ) ||
                                 getItemName(x.handItemTokenIdRangeMax)
                                     ?.toLowerCase()
                                     .includes(
-                                        itemStore.itemSearch.toLowerCase()
+                                        searchStore.itemSearch.toLowerCase()
                                     )
                         )
                     ) {

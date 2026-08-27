@@ -1,4 +1,4 @@
-t<template>
+<template>
     <div
         v-for="toast in toasts"
         :key="toast.id"
@@ -130,7 +130,6 @@ import { useAppStore } from "../store/app"
 import { useBroochStore } from "../store/brooch"
 import { config } from "../config"
 import { bootWallet, shouldRestoreSession, walletReady, walletState } from "../wallet-state"
-import { useFactoryStore } from "../store/factory"
 import { useRoute } from "vue-router"
 import { sleep } from "../utils/time";
 
@@ -156,13 +155,11 @@ const init = async () => {
         }
         if (account.isConnected) {
             loading.value = true
-            useFactoryStore().reset()
             await coreStore.getActivePlayer()
             await broochStore.getBroochData(0, false)
             await broochStore.getBroochData(1, true)
         } else if (account.isDisconnected) {
             coreStore.disconnect()
-            useFactoryStore().reset()
         }
     } catch (e) {
         console.log(e)
