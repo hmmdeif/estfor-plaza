@@ -5,12 +5,12 @@
 
             <div class="mt-5">
                 For depositing heroes into empty silos from your wallet. Leave the Assigned Silo blank to keep them in your wallet.
-            </div>       
-            
+            </div>
+
             <button class="btn btn-primary mt-5 w-full" @click="autoFillSilos">Auto-fill</button>
 
             <div class="overflow-x-auto mt-5">
-                <table class="table md:table-md table-xs">
+                <table class="table md:table-sm table-xs">
                     <thead>
                         <tr>
                             <th>Hero</th>
@@ -47,7 +47,7 @@
                     <li>
                         Activate heroes on each silo
                     </li>
-                </ol>                
+                </ol>
             </div>
             <div class="mt-5">
                 If you cannot access the Plaza after this process, you probably transferred your active hero to a silo. Go to Estfor and activate your main hero there.

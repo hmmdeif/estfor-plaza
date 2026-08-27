@@ -156,7 +156,7 @@
                     </div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="table md:table-md table-xs">
+                    <table class="table md:table-sm table-xs">
                         <caption
                             v-if="!loadingA && clanANameFixed"
                             class="caption-top mb-5 text-lg"
@@ -246,7 +246,7 @@
                     </div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="table md:table-md table-xs">
+                    <table class="table md:table-sm table-xs">
                         <caption
                             v-if="!loadingB && clanBNameFixed"
                             class="caption-top mb-5 text-lg"

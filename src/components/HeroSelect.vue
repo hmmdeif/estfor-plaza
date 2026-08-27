@@ -8,7 +8,7 @@
                 />
             </div>
             <div class="grow overflow-x-auto">
-                <table class="table md:table-md table-xs text-lg">
+                <table class="table md:table-sm table-xs text-lg">
                     <caption class="caption-top">
                         Hero Roster
                     </caption>

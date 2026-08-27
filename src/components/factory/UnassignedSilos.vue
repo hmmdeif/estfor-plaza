@@ -5,7 +5,7 @@
         <div class="card-body">
             <h2 class="text-2xl font-bold text-center">Unassigned Heroes</h2>
             <div class="overflow-x-auto">
-                <table class="table md:table-md table-xs">
+                <table class="table md:table-sm table-xs">
                     <thead>
                         <tr>
                             <th class="w-[80px]">

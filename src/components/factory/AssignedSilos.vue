@@ -44,7 +44,7 @@
                     />
                 </div>
             </div>
-            
+
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     <input
@@ -55,7 +55,7 @@
                     />
                     <label for="hideHeroNames" class="ml-2 text-xs">Hide Hero Names</label>
                 </div>
-            
+
                 <div class="flex items-center justify-end">
                     <label for="matchAction" class="mr-2 text-xs">Match Running Action</label>
                     <input
@@ -77,7 +77,7 @@
             <hr class="my-2 border-primary" />
 
             <div class="overflow-x-auto">
-                <table class="table md:table-md table-xs">
+                <table class="table md:table-sm table-xs">
                     <thead>
                         <tr>
                             <th class="w-[80px]">

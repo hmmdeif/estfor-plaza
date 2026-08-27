@@ -4,7 +4,7 @@
         <DateSelect v-model="date" @update:model-value="onDateUpdate" />
     </div>
     <div class="overflow-x-auto">
-        <table class="table md:table-md table-xs">
+        <table class="table md:table-sm table-xs">
             <thead>
                 <tr>
                     <th class="w-[80px] text-center"></th>

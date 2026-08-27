@@ -9,7 +9,7 @@
             </div>
 
             <div class="overflow-x-auto mt-5">
-                <table class="table md:table-md table-xs">
+                <table class="table md:table-sm table-xs">
                     <thead>
                         <tr>
                             <th>Item</th>

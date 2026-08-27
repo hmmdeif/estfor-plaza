@@ -14,7 +14,7 @@
                 </div>
                 <div v-else>
                     <div class="overflow-x-auto">
-                        <table class="table md:table-md table-xs">
+                        <table class="table md:table-sm table-xs">
                             <caption class="caption-top mb-5 text-lg">
                                 Wishing Well Luckiest Heroes
                             </caption>
@@ -67,7 +67,7 @@
                 </div>
                 <div v-else>
                     <div class="overflow-x-auto">
-                        <table class="table md:table-md table-xs">
+                        <table class="table md:table-sm table-xs">
                             <caption class="caption-top mb-5 text-lg">
                                 Wishing Well Unluckiest Heroes
                             </caption>

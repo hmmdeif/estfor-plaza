@@ -65,7 +65,7 @@
                         </div>
                     </label>
                 </div>
-                <div class="flex items-end gap-2">
+                <div class="flex items-end gap-2 mt-2">
                     <label class="form-control w-full">
                         <div class="label">
                             <span class="text-sm">Number of Heroes</span>

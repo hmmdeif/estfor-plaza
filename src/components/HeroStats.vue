@@ -2,7 +2,7 @@
     <div class="card bg-base-100-50 shadow-xl rounded-lg">
         <div class="card-body">
             <div class="overflow-x-auto">
-                <table class="table md:table-md table-xs">
+                <table class="table md:table-sm table-xs">
                     <!-- head -->
                     <thead>
                         <tr>

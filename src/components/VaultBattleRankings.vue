@@ -32,7 +32,7 @@
                 to lose * Your Locked Amount)
             </div>
             <div class="overflow-x-auto">
-                <table class="table md:table-md table-xs">
+                <table class="table md:table-sm table-xs">
                     <thead>
                         <tr>
                             <th>Owner</th>

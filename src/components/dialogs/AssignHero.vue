@@ -193,7 +193,7 @@
                     v-model="active"
                 />
             </label>
-            <label class="label w-full cursor-pointer justify-between">
+            <label class="label w-full cursor-pointer justify-between mt-2">
                 <span class="text-xs mr-2 items-center flex">
                     Check Heroes Have Items
                 </span>

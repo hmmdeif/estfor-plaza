@@ -65,14 +65,14 @@
                         @change="missingItems = []"
                     />
                 </label>
-                <label class="label w-full cursor-pointer justify-between">
-                    <span class="text-xs mr-2 items-center flex">
+                <label class="label w-full cursor-pointer justify-between mt-2">
+                    <span class="text-xs mr-2 min-w-0 flex-1 whitespace-normal">
                         Execute all transactions without waiting for
                         confirmation (can cause issues with some wallets)
                     </span>
                     <input
                         type="checkbox"
-                        class="checkbox checkbox-primary"
+                        class="checkbox checkbox-primary shrink-0"
                         v-model="shouldFastCall"
                     />
                 </label>
@@ -141,6 +141,7 @@
                     v-if="!loading"
                     v-for="token in relevantTokens"
                     :key="token.tokenId"
+                    class="mt-1"
                 >
                     <div class="form-control">
                         <label class="label cursor-pointer justify-start gap-5">
