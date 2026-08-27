@@ -18,10 +18,6 @@ import {
 } from "../data/actionChoices"
 import { getLevel, useCoreStore } from "./core"
 import { EstforConstants } from "@paintswap/estfor-definitions"
-import {
-    calculateExtraXPForHeroActionChoiceInput,
-    calculateExtraXPForHeroActionInput,
-} from "./factory"
 import { EquippedItems, ProxySilo } from "./models/factory.models"
 import {
     allActionChoiceIdsMagic,
@@ -332,7 +328,7 @@ export const getItemName = (tokenId: number): string => {
     return allItems.find((x) => x.tokenId === tokenId)?.name || getExtraName(tokenId) || ""
 }
 
-const getMagicBag = (state: ItemState, magicXp: number, rightHand: number) => {
+export const getMagicBag = (state: ItemState, magicXp: number, rightHand: number) => {
     return state.magicActionChoices
         .map((x, i) => ({
             ...x,
@@ -360,7 +356,7 @@ const getMagicBag = (state: ItemState, magicXp: number, rightHand: number) => {
         )
 }
 
-const getQuiverOptions = (
+export const getQuiverOptions = (
     state: ItemState,
     rangedXp: number,
     fletchingXp: number
@@ -598,111 +594,6 @@ export const useItemStore = defineStore("items", {
                                         : !x.isFullModeOnly)))
                     )
                     .filter((x) => x.isAvailable)
-            }
-        },
-        getItemsForSlotAndHeroes: (state: ItemState) => {
-            return (position: EquipPosition, heroes: ProxySilo[]) => {
-                let minDefenceXp = 0
-                let minMeleeXp = 0
-                let minRangedXp = 0
-                let minMagicXp = 0
-                let minFullMode = true
-                for (const h of heroes) {
-                    const { defenceXP, meleeXP, magicXP, rangedXP } =
-                        calculateExtraXPForHeroActionInput(h, Skill.COMBAT)
-                    if (
-                        Number(h.playerState.defenceXP) + defenceXP <
-                            minDefenceXp ||
-                        minDefenceXp === 0
-                    ) {
-                        minDefenceXp =
-                            Number(h.playerState.defenceXP) + defenceXP
-                    }
-                    if (
-                        Number(h.playerState.meleeXP) + meleeXP < minMeleeXp ||
-                        minMeleeXp === 0
-                    ) {
-                        minMeleeXp = Number(h.playerState.meleeXP) + meleeXP
-                    }
-                    if (
-                        Number(h.playerState.rangedXP) + rangedXP <
-                            minRangedXp ||
-                        minRangedXp === 0
-                    ) {
-                        minRangedXp = Number(h.playerState.rangedXP) + rangedXP
-                    }
-                    if (
-                        Number(h.playerState.magicXP) + magicXP < minMagicXp ||
-                        minMagicXp === 0
-                    ) {
-                        minMagicXp = Number(h.playerState.magicXP) + magicXP
-                    }
-                    if (h.playerState.isFullMode === false) {
-                        minFullMode = false
-                    }
-                }
-
-                return state.items.filter(
-                    (x) =>
-                        x.equipPosition === position &&
-                        ((x.skill == Skill.DEFENCE &&
-                            x.minXP <= minDefenceXp) ||
-                            (x.skill == Skill.MELEE && x.minXP <= minMeleeXp) ||
-                            (x.skill == Skill.RANGED &&
-                                x.minXP <= minRangedXp) ||
-                            (x.skill == Skill.MAGIC && x.minXP <= minMagicXp) ||
-                            (x.skill == Skill.NONE &&
-                                (minFullMode ? true : !x.isFullModeOnly)))
-                )
-            }
-        },
-        getRangedActionChoicesForHeroes(state: ItemState) {
-            return (heroes: ProxySilo[]) => {
-                let minRangedXp = 0
-                let minFletchingXp = 0
-
-                for (const h of heroes) {
-                    const { rangedXP } = calculateExtraXPForHeroActionInput(
-                        h,
-                        Skill.COMBAT
-                    )
-                    if (
-                        Number(h.playerState.rangedXP) + rangedXP >
-                        minRangedXp
-                    ) {
-                        minRangedXp = Number(h.playerState.rangedXP) + rangedXP
-                    }
-                    const fletchingXP =
-                        calculateExtraXPForHeroActionChoiceInput(
-                            h,
-                            Skill.FLETCHING
-                        )
-                    if (
-                        Number(h.playerState.fletchingXP) + fletchingXP >
-                        minFletchingXp
-                    ) {
-                        minFletchingXp =
-                            Number(h.playerState.fletchingXP) + fletchingXP
-                    }
-                }
-
-                return getQuiverOptions(state, minRangedXp, minFletchingXp)
-            }
-        },
-        getMagicActionChoicesForHeroes(state: ItemState) {
-            return (heroes: ProxySilo[], rightHand: number) => {
-                let minMagicXp = 0
-                for (const h of heroes) {
-                    const { magicXP } = calculateExtraXPForHeroActionInput(
-                        h,
-                        Skill.COMBAT
-                    )
-                    if (Number(h.playerState.magicXP) + magicXP > minMagicXp) {
-                        minMagicXp = Number(h.playerState.magicXP) + magicXP
-                    }
-                }
-
-                return getMagicBag(state, minMagicXp, rightHand)
             }
         },
         getMagicActionChoicesForXP(state: ItemState) {

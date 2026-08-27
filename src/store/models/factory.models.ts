@@ -27,6 +27,7 @@ export interface FactoryState {
     bankItems: UserItemNFT[]
     initialised: boolean
     initialisedAt: Date | null
+    initialisedFor: string | null
     totalTransactionNumber: number
     currentTransactionNumber: number
     transactionCharge: bigint

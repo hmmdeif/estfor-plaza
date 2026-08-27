@@ -177,6 +177,14 @@ const loadProxys = async (): Promise<boolean> => {
         return true
     }
 
+    // The store is a singleton, so if it holds data initialised for another
+    // wallet (e.g. after disconnect/reconnect) clear it before loading.
+    const account = getAccount(config)
+    if (factoryStore.initialised && factoryStore.initialisedFor !== account.address) {
+        factoryStore.reset()
+        loading.value = true
+    }
+
     try {
         const proxys: FactoryRegistryCreated[] = []
         while (true) {

@@ -14,10 +14,13 @@ import TerritoryBattleRankings from "../components/TerritoryBattleRankings.vue"
 import VaultBattleRankings from "../components/VaultBattleRankings.vue"
 import ClanManagement from "../components/ClanManagement.vue"
 import WishContributions from "../components/clan-management/WishContributions.vue"
-import FactorySonic from "../components/FactorySonic.vue"
 import About from "../components/About.vue"
 import VRFActions from "../components/VRFActions.vue"
 // import BroochOwners from "../components/BroochOwners.vue"
+
+// Lazy: pulls in store/factory + heavy data/actions & data/actionChoices datasets,
+// so it is kept out of the startup bundle and only loaded on /factory
+const FactorySonic = () => import("../components/FactorySonic.vue")
 
 declare module "vue-router" {
     interface RouteMeta {

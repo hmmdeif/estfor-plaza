@@ -271,6 +271,9 @@ import {
 } from "@paintswap/estfor-definitions/types"
 import {
     calculateExtraXPForHeroActionInput,
+    getItemsForSlotAndHeroes,
+    getMagicActionChoicesForHeroes,
+    getRangedActionChoicesForHeroes,
     useFactoryStore,
 } from "../../store/factory"
 import SkillSelect from "../inputs/SkillSelect.vue"
@@ -359,50 +362,50 @@ const openDialog = (heroes: ProxySilo[]) => {
 }
 
 const combatRightHandItems = computed(() => [
-    ...itemStore.getItemsForSlotAndHeroes(
+    ...getItemsForSlotAndHeroes(
         EquipPosition.RIGHT_HAND,
         heroesToAssign.value
     ),
-    ...itemStore.getItemsForSlotAndHeroes(
+    ...getItemsForSlotAndHeroes(
         EquipPosition.BOTH_HANDS,
         heroesToAssign.value
     ),
 ])
 const headItems = computed(() =>
-    itemStore.getItemsForSlotAndHeroes(EquipPosition.HEAD, heroesToAssign.value)
+    getItemsForSlotAndHeroes(EquipPosition.HEAD, heroesToAssign.value)
 )
 const neckItems = computed(() =>
-    itemStore.getItemsForSlotAndHeroes(EquipPosition.NECK, heroesToAssign.value)
+    getItemsForSlotAndHeroes(EquipPosition.NECK, heroesToAssign.value)
 )
 const leftHandItems = computed(() =>
-    itemStore.getItemsForSlotAndHeroes(
+    getItemsForSlotAndHeroes(
         EquipPosition.LEFT_HAND,
         heroesToAssign.value
     )
 )
 const bodyItems = computed(() =>
-    itemStore.getItemsForSlotAndHeroes(EquipPosition.BODY, heroesToAssign.value)
+    getItemsForSlotAndHeroes(EquipPosition.BODY, heroesToAssign.value)
 )
 const legItems = computed(() =>
-    itemStore.getItemsForSlotAndHeroes(EquipPosition.LEGS, heroesToAssign.value)
+    getItemsForSlotAndHeroes(EquipPosition.LEGS, heroesToAssign.value)
 )
 const feetItems = computed(() =>
-    itemStore.getItemsForSlotAndHeroes(EquipPosition.FEET, heroesToAssign.value)
+    getItemsForSlotAndHeroes(EquipPosition.FEET, heroesToAssign.value)
 )
 const armItems = computed(() =>
-    itemStore.getItemsForSlotAndHeroes(EquipPosition.ARMS, heroesToAssign.value)
+    getItemsForSlotAndHeroes(EquipPosition.ARMS, heroesToAssign.value)
 )
 const ringItems = computed(() =>
-    itemStore.getItemsForSlotAndHeroes(EquipPosition.RING, heroesToAssign.value)
+    getItemsForSlotAndHeroes(EquipPosition.RING, heroesToAssign.value)
 )
 const quiverItems = computed(() =>
-    itemStore.getRangedActionChoicesForHeroes(heroesToAssign.value)
+    getRangedActionChoicesForHeroes(heroesToAssign.value)
 )
 const magicBagItems = computed(() =>
-    itemStore.getMagicActionChoicesForHeroes(heroesToAssign.value, equippedItems.value.rightHand || 0)
+    getMagicActionChoicesForHeroes(heroesToAssign.value, equippedItems.value.rightHand || 0)
 )
 const foodItems = computed(() =>
-    itemStore.getItemsForSlotAndHeroes(EquipPosition.FOOD, heroesToAssign.value)
+    getItemsForSlotAndHeroes(EquipPosition.FOOD, heroesToAssign.value)
 )
 const rightHandOptions = computed(() => {
     if (

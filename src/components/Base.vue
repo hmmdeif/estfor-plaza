@@ -1,4 +1,4 @@
-<template>
+t<template>
     <div
         v-for="toast in toasts"
         :key="toast.id"

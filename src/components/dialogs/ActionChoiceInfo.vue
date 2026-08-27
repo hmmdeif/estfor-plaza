@@ -108,7 +108,7 @@ import {
 } from "../../store/core"
 import { getItemName, useItemStore } from "../../store/items"
 import { ActionChoiceInput, Skill } from "@paintswap/estfor-definitions/types"
-import { calculateActionChoiceSuccessPercent } from "../../store/factory"
+import { calculateActionChoiceSuccessPercent } from "../../utils/player"
 
 const coreStore = useCoreStore()
 const skillId = ref(0)

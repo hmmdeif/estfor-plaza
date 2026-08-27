@@ -7,9 +7,9 @@ import {
     estimateGas,
 } from "@wagmi/core"
 import {
-    ActionChoiceInput,
     ActionQueueStrategy,
     CombatStyle,
+    EquipPosition,
     GuaranteedReward,
     Player,
     QueuedAction,
@@ -21,7 +21,6 @@ import { zeroAddress } from "viem"
 
 import {
     Address,
-    getLevel,
     skillToXPMap,
     useCoreStore,
     safeDecode,
@@ -46,7 +45,11 @@ import {
     searchQueuedActions,
 } from "../utils/api"
 import { allActions } from "../data/actions"
-import { calculateChance } from "../utils/player"
+import {
+    calculateChance,
+    calculateActionChoiceSuccessPercent,
+} from "../utils/player"
+import { getMagicBag, getQuiverOptions, useItemStore } from "./items"
 import {
     actionChoiceNames,
     actionNames,
@@ -146,31 +149,6 @@ export const proxyNeedsItem = (item: UserItemNFT, p: ProxySilo): boolean => {
         }
     }
     return false
-}
-
-export const calculateActionChoiceSuccessPercent = (
-    a: ActionChoiceInput,
-    playerXP: string,
-    skillId: Skill
-): number => {
-    if (a.successPercent === 100) {
-        return 1
-    }
-    return (
-        Math.min(
-            90,
-            a.successPercent +
-                Math.max(
-                    0,
-                    getLevel(playerXP) -
-                        getLevel(
-                            a.skillMinXPs[
-                                a.skills.findIndex((s) => s === skillId)
-                            ] || 0
-                        )
-                )
-        ) / 100
-    )
 }
 
 export const getIncomingItems = (proxys: ProxySilo[]) => {
@@ -499,6 +477,107 @@ export const calculateExtraXPForHeroActionChoiceInput = (
     return extraXP
 }
 
+export const getItemsForSlotAndHeroes = (
+    position: EquipPosition,
+    heroes: ProxySilo[]
+) => {
+    const itemStore = useItemStore()
+    let minDefenceXp = 0
+    let minMeleeXp = 0
+    let minRangedXp = 0
+    let minMagicXp = 0
+    let minFullMode = true
+    for (const h of heroes) {
+        const { defenceXP, meleeXP, magicXP, rangedXP } =
+            calculateExtraXPForHeroActionInput(h, Skill.COMBAT)
+        if (
+            Number(h.playerState.defenceXP) + defenceXP < minDefenceXp ||
+            minDefenceXp === 0
+        ) {
+            minDefenceXp = Number(h.playerState.defenceXP) + defenceXP
+        }
+        if (
+            Number(h.playerState.meleeXP) + meleeXP < minMeleeXp ||
+            minMeleeXp === 0
+        ) {
+            minMeleeXp = Number(h.playerState.meleeXP) + meleeXP
+        }
+        if (
+            Number(h.playerState.rangedXP) + rangedXP < minRangedXp ||
+            minRangedXp === 0
+        ) {
+            minRangedXp = Number(h.playerState.rangedXP) + rangedXP
+        }
+        if (
+            Number(h.playerState.magicXP) + magicXP < minMagicXp ||
+            minMagicXp === 0
+        ) {
+            minMagicXp = Number(h.playerState.magicXP) + magicXP
+        }
+        if (h.playerState.isFullMode === false) {
+            minFullMode = false
+        }
+    }
+
+    return itemStore.$state.items.filter(
+        (x: any) =>
+            x.equipPosition === position &&
+            ((x.skill == Skill.DEFENCE && x.minXP <= minDefenceXp) ||
+                (x.skill == Skill.MELEE && x.minXP <= minMeleeXp) ||
+                (x.skill == Skill.RANGED && x.minXP <= minRangedXp) ||
+                (x.skill == Skill.MAGIC && x.minXP <= minMagicXp) ||
+                (x.skill == Skill.NONE &&
+                    (minFullMode ? true : !x.isFullModeOnly)))
+    )
+}
+
+export const getRangedActionChoicesForHeroes = (heroes: ProxySilo[]) => {
+    const itemStore = useItemStore()
+    let minRangedXp = 0
+    let minFletchingXp = 0
+
+    for (const h of heroes) {
+        const { rangedXP } = calculateExtraXPForHeroActionInput(
+            h,
+            Skill.COMBAT
+        )
+        if (Number(h.playerState.rangedXP) + rangedXP > minRangedXp) {
+            minRangedXp = Number(h.playerState.rangedXP) + rangedXP
+        }
+        const fletchingXP = calculateExtraXPForHeroActionChoiceInput(
+            h,
+            Skill.FLETCHING
+        )
+        if (
+            Number(h.playerState.fletchingXP) + fletchingXP >
+            minFletchingXp
+        ) {
+            minFletchingXp = Number(h.playerState.fletchingXP) + fletchingXP
+        }
+    }
+
+    return getQuiverOptions(itemStore.$state, minRangedXp, minFletchingXp)
+}
+
+export const getMagicActionChoicesForHeroes = (
+    heroes: ProxySilo[],
+    rightHand: number
+) => {
+    const itemStore = useItemStore()
+    let minMagicXp = 0
+    for (const h of heroes) {
+        const { magicXP } = calculateExtraXPForHeroActionInput(
+            h,
+            Skill.COMBAT
+        )
+        if (Number(h.playerState.magicXP) + magicXP > minMagicXp) {
+            minMagicXp = Number(h.playerState.magicXP) + magicXP
+        }
+    }
+
+    return getMagicBag(itemStore.$state, minMagicXp, rightHand)
+}
+
 export const decodeTransaction = (savedTransactions: SavedTransaction[]) => {
     if (savedTransactions.length === 0) {
         return "No action"
@@ -596,6 +675,7 @@ export const useFactoryStore = defineStore("factory", {
             proxys: [] as ProxySilo[],
             initialised: false,
             initialisedAt: null,
+            initialisedFor: null,
             bankItems: [] as UserItemNFT[],
             totalTransactionNumber: 0,
             currentTransactionNumber: 0,
@@ -631,6 +711,7 @@ export const useFactoryStore = defineStore("factory", {
             this.totalTransactionNumber = 0
             this.currentTransactionNumber = 0
             this.initialisedAt = null
+            this.initialisedFor = null
         },
         async setActive(siloAddress: string, playerId: string) {
             const coreStore = useCoreStore()
@@ -1147,6 +1228,7 @@ export const useFactoryStore = defineStore("factory", {
             await this.getTransactionCharge(chainId)
             this.initialised = true
             this.initialisedAt = new Date()
+            this.initialisedFor = account.address ?? null
         },
         async getTransactionCharge(chainId: SonicChainId) {
             const coreStore = useCoreStore()

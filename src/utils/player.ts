@@ -1,5 +1,30 @@
-import { ActionInput, Player, RandomReward, Skill } from "@paintswap/estfor-definitions/types"
+import { ActionChoiceInput, ActionInput, Player, RandomReward, Skill } from "@paintswap/estfor-definitions/types"
 import { getLevel } from "../store/core"
+
+export const calculateActionChoiceSuccessPercent = (
+    a: ActionChoiceInput,
+    playerXP: string,
+    skillId: Skill
+): number => {
+    if (a.successPercent === 100) {
+        return 1
+    }
+    return (
+        Math.min(
+            90,
+            a.successPercent +
+                Math.max(
+                    0,
+                    getLevel(playerXP) -
+                        getLevel(
+                            a.skillMinXPs[
+                                a.skills.findIndex((s) => s === skillId)
+                            ] || 0
+                        )
+                )
+        ) / 100
+    )
+}
 
 export const calculateChance = (
     r: RandomReward,
