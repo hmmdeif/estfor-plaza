@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue"
+import { defineAsyncComponent, ref, watch } from "vue"
 import { getAccount } from "@wagmi/core"
-import { useItemStore } from "../../store/items"
 import Donate from "../dialogs/Donate.vue"
 import RubyBroochPaywall from "../dialogs/RubyBroochPaywall.vue"
 import { useRoute } from "vue-router"
 import { useBroochStore } from "../../store/brooch"
 import { config } from "../../config"
-import { allItems } from "../../data/items"
 import { useAppStore } from "../../store/app"
 import Changelog from "../dialogs/Changelog.vue"
 
-const itemStore = useItemStore()
 const broochStore = useBroochStore()
 const appStore = useAppStore()
+
+const HeaderItemSearch = defineAsyncComponent(() => import("./HeaderItemSearch.vue"))
 
 const route = useRoute()
 const broochTimeout = ref<number>(0)
@@ -22,10 +21,10 @@ const donateRef = ref<typeof Donate>()
 const rubyUpgradeRef = ref<typeof RubyBroochPaywall>()
 const changelogRef = ref<typeof Changelog>()
 
-const lastChecked = ref(localStorage.getItem('lastChecked'))
+const lastChecked = ref(localStorage.getItem("lastChecked"))
 
 const onNotificationClick = () => {
-    localStorage.setItem('lastChecked', appStore.version)
+    localStorage.setItem("lastChecked", appStore.version)
     lastChecked.value = appStore.version
     changelogRef.value?.openDialog()
 }
@@ -57,10 +56,6 @@ const showBrooch = (tokenId: number) => {
         }
     }
 }
-
-const allItemNames = computed(() => {
-    return Object.values(allItems).map((x) => x.name)
-})
 
 const removeFocus = () => {
     const el = document.getElementById("md-plaza")
@@ -126,14 +121,11 @@ watch(() => broochStore.hasAccess(0), init)
                                             >
                                         </li>
                                         <li @click="removeFocus">
-                                            <router-link to="/skills"
-                                                >Skill Training</router-link
-                                            >
+                                            <router-link to="/skills">Skill Training</router-link>
                                         </li>
                                         <li @click="removeFocus">
                                             <router-link to="/lotteries"
-                                                >Wishing Well
-                                                Ranking</router-link
+                                                >Wishing Well Ranking</router-link
                                             >
                                         </li>
                                         <li @click="removeFocus">
@@ -160,9 +152,7 @@ watch(() => broochStore.hasAccess(0), init)
                                     </summary>
                                     <ul>
                                         <li @click="removeFocus">
-                                            <router-link
-                                                to="/clan-battle"
-                                                @click="showBrooch(0)"
+                                            <router-link to="/clan-battle" @click="showBrooch(0)"
                                                 >Clan Battle
                                             </router-link>
                                         </li>
@@ -198,9 +188,7 @@ watch(() => broochStore.hasAccess(0), init)
                                 </details>
                             </li>
                             <li @click="removeFocus">
-                                <router-link to="/factory"
-                                    >Factory
-                                </router-link>
+                                <router-link to="/factory">Factory </router-link>
                             </li>
                         </ul>
                     </details>
@@ -230,24 +218,16 @@ watch(() => broochStore.hasAccess(0), init)
                             class="z-[1] menu dropdown-content p-2 shadow-sm bg-base-100 rounded-box w-52"
                         >
                             <li @click="removeFocus">
-                                <router-link to="/hero-select"
-                                    >Hero Select</router-link
-                                >
+                                <router-link to="/hero-select">Hero Select</router-link>
                             </li>
                             <li @click="removeFocus">
-                                <router-link to="/combat"
-                                    >Combat Calculator</router-link
-                                >
+                                <router-link to="/combat">Combat Calculator</router-link>
                             </li>
                             <li @click="removeFocus">
-                                <router-link to="/skills"
-                                    >Skill Training</router-link
-                                >
+                                <router-link to="/skills">Skill Training</router-link>
                             </li>
                             <li @click="removeFocus">
-                                <router-link to="/lotteries"
-                                    >Wishing Well Ranking</router-link
-                                >
+                                <router-link to="/lotteries">Wishing Well Ranking</router-link>
                             </li>
                             <li @click="removeFocus">
                                 <router-link to="/vrf-actions" @click="showBrooch(0)"
@@ -259,9 +239,7 @@ watch(() => broochStore.hasAccess(0), init)
                                 /></router-link>
                             </li>
                             <li @click="removeFocus">
-                                <router-link
-                                    to="/clan-battle"
-                                    @click="showBrooch(0)"
+                                <router-link to="/clan-battle" @click="showBrooch(0)"
                                     >Clan Battle
                                     <img
                                         src="/src/assets/optimized/emerald-brooch-icon-80.webp"
@@ -270,9 +248,7 @@ watch(() => broochStore.hasAccess(0), init)
                                 /></router-link>
                             </li>
                             <li @click="removeFocus">
-                                <router-link
-                                    to="/territory-rankings"
-                                    @click="showBrooch(0)"
+                                <router-link to="/territory-rankings" @click="showBrooch(0)"
                                     >Battle Rankings
                                     <img
                                         src="/src/assets/optimized/emerald-brooch-icon-80.webp"
@@ -293,9 +269,7 @@ watch(() => broochStore.hasAccess(0), init)
                             </li>
 
                             <li @click="removeFocus">
-                                <router-link to="/factory"
-                                    >Factory
-                                </router-link>
+                                <router-link to="/factory">Factory </router-link>
                             </li>
                         </ul>
                     </details>
@@ -314,43 +288,24 @@ watch(() => broochStore.hasAccess(0), init)
                 </svg>
             </button> -->
             <div v-if="lastChecked !== appStore.version" class="mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-primary cursor-pointer" :class="{ 'animate-pulse': lastChecked !== appStore.version }" @click="onNotificationClick">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-                </svg>
-            </div>
-            <div
-                v-if="route.meta.showItemSearch"
-                class="join max-lg:hidden items-center mr-2"
-            >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke-width="1.5"
                     stroke="currentColor"
-                    class="w-6 h-6 mr-2 text-secondary"
+                    class="w-6 h-6 text-primary cursor-pointer"
+                    :class="{ 'animate-pulse': lastChecked !== appStore.version }"
+                    @click="onNotificationClick"
                 >
                     <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
-                        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                        d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
                     />
-                </svg>
-                <input
-                    type="text"
-                    placeholder="Item Search"
-                    class="input input-sm input-bordered max-w-xs bg-base-100-50"
-                    v-model="itemStore.itemSearch"
-                    list="item-datalist"
-                />
-                <datalist id="item-datalist">
-                    <option
-                        v-for="item in allItemNames"
-                        :key="item"
-                        :value="item"
-                    />
-                </datalist>
+                </svg>remove factory eager load
             </div>
+            <HeaderItemSearch v-if="route.meta.showItemSearch" />
             <appkit-button size="sm" />
         </div>
     </nav>

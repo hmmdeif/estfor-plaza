@@ -24,11 +24,7 @@
                     list="item-datalist-card"
                 />
                 <datalist id="item-datalist-card">
-                    <option
-                        v-for="item in allItemNames"
-                        :key="item"
-                        :value="item"
-                    />
+                    <option v-for="name in searchableItemNames" :key="name" :value="name" />
                 </datalist>
             </div>
         </div>
@@ -36,13 +32,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue"
 import { useItemStore } from "../store/items"
-import { allItems } from "../data/items"
+import { searchableItemNames } from "../data/generated/searchableItemNames"
 
 const itemStore = useItemStore()
-
-const allItemNames = computed(() => {
-    return Object.values(allItems).map((x) => x.name)
-})
 </script>
