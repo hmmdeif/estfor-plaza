@@ -1,6 +1,5 @@
-import { WagmiAdapter } from "@reown/appkit-adapter-wagmi"
 import { sonic } from "@reown/appkit/networks"
-import { fallback, http } from "@wagmi/core"
+import { createConfig, fallback, http } from "@wagmi/core"
 import logoUrl from "./assets/optimized/logo-256.webp"
 
 export const projectId = import.meta.env.VITE_PROJECT_ID
@@ -20,9 +19,11 @@ export const metadata = {
     icons: [logoUrl],
 }
 
-export const wagmiAdapter = new WagmiAdapter({
-    networks,
-    projectId,
+// Plain wagmi config, kept free of AppKit imports so stores can use it
+// before the wallet stack (WalletConnect etc.) is lazily booted. The
+// WagmiAdapter in appkit-init.ts reuses this exact instance.
+export const config = createConfig({
+    chains: [sonic],
     transports: {
         [sonic.id]: fallback(
             [
@@ -34,5 +35,3 @@ export const wagmiAdapter = new WagmiAdapter({
         ),
     },
 })
-
-export const config = wagmiAdapter.wagmiConfig

@@ -1,0 +1,29 @@
+diff --git a/dist/esm/src/client.js b/dist/esm/src/client.js
+index 9ab84a80f7295fb77ff36a46a4ecf5edbea57e27..86bbb168892e6627cc3e5803d4ce2e4fdd71e9b9 100644
+--- a/dist/esm/src/client.js
++++ b/dist/esm/src/client.js
+@@ -79,6 +79,12 @@ export class WagmiAdapter extends AdapterBlueprint {
+     }
+     createConfig(configParams) {
+         this.wagmiChains = configParams.networks.filter(caipNetwork => caipNetwork.chainNamespace === CommonConstantsUtil.CHAIN.EVM);
++        if (configParams.wagmiConfig) {
++            // Reuse a pre-built wagmi config so callers can construct it
++            // without pulling the AppKit adapter into their eager bundle.
++            this.wagmiConfig = configParams.wagmiConfig;
++            return;
++        }
+         const transports = {};
+         const connectors = [...(configParams.connectors ?? [])];
+         this.wagmiChains.forEach(element => {
+diff --git a/dist/types/src/client.d.ts b/dist/types/src/client.d.ts
+index 0c1ef45ca040cfc8e5c408599cdbeab9372afbb3..bc6b5b0deae78f9bb491e742cd257d9e0a18cc1f 100644
+--- a/dist/types/src/client.d.ts
++++ b/dist/types/src/client.d.ts
+@@ -18,6 +18,7 @@ export declare class WagmiAdapter extends AdapterBlueprint {
+         networks: AppKitNetwork[];
+         pendingTransactionsFilter?: PendingTransactionsFilter;
+         projectId: string;
++        wagmiConfig?: Config;
+         customRpcUrls?: CustomRpcUrlMap;
+     });
+     construct(_options: AdapterBlueprint.Params): void;

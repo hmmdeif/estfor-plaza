@@ -70,7 +70,11 @@
             </div>
         </div>
         <div
-            v-else-if="loading || app.loadingRoute"
+            v-else-if="
+                loading ||
+                app.loadingRoute ||
+                (!isConnected && !walletReady && shouldRestoreSession())
+            "
             class="mx-auto my-[100px] w-[500px] text-center"
         >
             <span
@@ -120,12 +124,12 @@
 
 <script setup lang="ts">
 import { getAccount } from "@wagmi/core"
-import { useAppKit, useAppKitAccount } from "@reown/appkit/vue";
 import { computed, onMounted, ref, watch } from "vue"
 import { useCoreStore } from "../store/core"
 import { useAppStore } from "../store/app"
 import { useBroochStore } from "../store/brooch"
 import { config } from "../config"
+import { bootWallet, shouldRestoreSession, walletReady, walletState } from "../wallet-state"
 import { useFactoryStore } from "../store/factory"
 import { useRoute } from "vue-router"
 import { sleep } from "../utils/time";
@@ -134,21 +138,23 @@ const coreStore = useCoreStore()
 const broochStore = useBroochStore()
 const app = useAppStore()
 const loading = ref(false)
-const { open } = useAppKit()
-const accountData = useAppKitAccount({ namespace: "eip155" });
+const open = () => walletState.open()
 
 const toasts = computed(() => app.toasts)
-const isConnected = computed(() => accountData.value.isConnected)
+const isConnected = computed(() => walletState.isConnected.value)
 const route = useRoute()
 
 const init = async () => {
     try {
+        // Only wait for the lazily-booted wallet stack when a stored session
+        // may need restoring; fresh visitors must not force the boot here.
+        if (shouldRestoreSession()) await bootWallet()
         const account = getAccount(config)
-        if (account.isConnecting) {
+        if (account.isConnecting || account.isReconnecting) {
             await sleep(1000)
             return await init()
         }
-        if (isConnected.value) {
+        if (account.isConnected) {
             loading.value = true
             useFactoryStore().reset()
             await coreStore.getActivePlayer()
@@ -167,7 +173,7 @@ const init = async () => {
 
 onMounted(init)
 
-watch(() => accountData.value.address, init)
+watch(walletState.address, init)
 </script>
 
 <style>

@@ -13,4 +13,5 @@ allowBuilds:
   utf-8-validate: true
 
 patchedDependencies:
+  '@reown/appkit-adapter-wagmi@1.8.23': patches/@reown__appkit-adapter-wagmi@1.8.23.patch
   '@reown/appkit@1.8.23': patches/@reown__appkit@1.8.23.patch
