@@ -2,11 +2,15 @@
     <dialog id="egg_hatching_modal" class="modal">
         <div class="modal-box bg-base-100 border-2 border-primary md:w-4/5 max-w-full">
             <h3 class="font-bold text-lg text-center">{{ skillName }}</h3>
-            <img
-                :src="imgSource"
-                :alt="skillName"
-                class="w-full mx-auto mt-5 max-w-[800px] rounded-lg"
-            />
+            <picture>
+                <source v-if="imgSource?.avif" type="image/avif" :srcset="imgSource.avif" />
+                <img
+                    v-if="imgSource?.webp"
+                    :src="imgSource.webp"
+                    :alt="skillName"
+                    class="w-full mx-auto mt-5 max-w-[800px] rounded-lg"
+                />
+            </picture>
 
             <div class="overflow-x-auto mt-5">
                 <table class="table md:table-md table-xs">
@@ -60,10 +64,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue"
-import { MEDIA_URL } from "../../store/core"
+import { landscapeImage } from "../../utils/media"
 import { getItemName } from "../../store/items"
 import { useSearchStore } from "../../store/search"
-import { InstantVRFActionType, PetEnhancementType } from "@paintswap/estfor-definitions/types"
+import { InstantVRFActionType, Pet, PetEnhancementType } from "@paintswap/estfor-definitions/types"
 import { EstforConstants } from "@paintswap/estfor-definitions"
 import { useVRFActionsStore, vrfActionNames, vrfActionIdNames } from "../../store/vrfActions"
 import { decodePetRange } from "../../utils/abi"
@@ -92,7 +96,7 @@ const actions = computed(() => {
 
 const imgSource = computed(() => {
     // @ts-ignore
-    return `${MEDIA_URL}/landscape/${vrfActionNames[actionType.value].toLowerCase()}.jpg`
+    return landscapeImage(String(vrfActionNames[actionType.value] ?? ""))
 })
 
 const skillName = computed(() => {
@@ -136,6 +140,9 @@ const getPetStat = (
             break
         case PetEnhancementType.HEALTH:
             style = "Health"
+            break
+        case PetEnhancementType.ALCHEMY:
+            style = "Alchemy"
             break
         default:
             style = "None"
@@ -412,6 +419,98 @@ const getPetStats = (
                 getPetStat(EstforConstants.PET_KRAGSTYR_MELEE_AND_DEFENCE_TIER5),
                 getPetStat(EstforConstants.PET_KRAGSTYR_DEFENCE_TIER5),
                 getPetStat(EstforConstants.PET_KRAGSTYR_HEALTH_TIER5),
+            ]
+        case EstforConstants.RIFT_MIN_TIER1:
+            return [
+                getPetStat(EstforConstants.PET_RIFT_ALCHEMY_TIER1),
+            ]
+        case EstforConstants.RIFT_MIN_TIER2:
+            return [
+                getPetStat(EstforConstants.PET_RIFT_ALCHEMY_TIER2),
+            ]
+        case EstforConstants.RIFT_MIN_TIER3:
+            return [
+                getPetStat(EstforConstants.PET_RIFT_ALCHEMY_TIER3),
+            ]
+        case EstforConstants.RIFT_MIN_TIER4:
+            return [
+                getPetStat(EstforConstants.PET_RIFT_ALCHEMY_TIER4),
+            ]
+        case EstforConstants.RIFT_MIN_TIER5:
+            return [
+                getPetStat(EstforConstants.PET_RIFT_ALCHEMY_TIER5),
+            ]
+
+        case EstforConstants.ANNIV2_MIN_TIER1:
+            return [
+                getPetStat(EstforConstants.PET_ANNIV2_MELEE_TIER1),
+                getPetStat(EstforConstants.PET_ANNIV2_MELEE_AND_DEFENCE_TIER1),
+                getPetStat(EstforConstants.PET_ANNIV2_DEFENCE_TIER1),
+                getPetStat(EstforConstants.PET_ANNIV2_HEALTH_TIER1),
+            ]
+        case EstforConstants.ANNIV2_MIN_TIER2:
+            return [
+                getPetStat(EstforConstants.PET_ANNIV2_MELEE_TIER2),
+                getPetStat(EstforConstants.PET_ANNIV2_MELEE_AND_DEFENCE_TIER2),
+                getPetStat(EstforConstants.PET_ANNIV2_DEFENCE_TIER2),
+                getPetStat(EstforConstants.PET_ANNIV2_HEALTH_TIER2),
+            ]
+        case EstforConstants.ANNIV2_MIN_TIER3:
+            return [
+                getPetStat(EstforConstants.PET_ANNIV2_MELEE_TIER3),
+                getPetStat(EstforConstants.PET_ANNIV2_MELEE_AND_DEFENCE_TIER3),
+                getPetStat(EstforConstants.PET_ANNIV2_DEFENCE_TIER3),
+                getPetStat(EstforConstants.PET_ANNIV2_HEALTH_TIER3),
+            ]
+        case EstforConstants.ANNIV2_MIN_TIER4:
+            return [
+                getPetStat(EstforConstants.PET_ANNIV2_MELEE_TIER4),
+                getPetStat(EstforConstants.PET_ANNIV2_MELEE_AND_DEFENCE_TIER4),
+                getPetStat(EstforConstants.PET_ANNIV2_DEFENCE_TIER4),
+                getPetStat(EstforConstants.PET_ANNIV2_HEALTH_TIER4),
+            ]
+        case EstforConstants.ANNIV2_MIN_TIER5:
+            return [
+                getPetStat(EstforConstants.PET_ANNIV2_MELEE_TIER5),
+                getPetStat(EstforConstants.PET_ANNIV2_MELEE_AND_DEFENCE_TIER5),
+                getPetStat(EstforConstants.PET_ANNIV2_DEFENCE_TIER5),
+                getPetStat(EstforConstants.PET_ANNIV2_HEALTH_TIER5),
+            ]
+
+        case EstforConstants.ANNIV3_MIN_TIER1:
+            return [
+                getPetStat(EstforConstants.PET_ANNIV3_MELEE_TIER1),
+                getPetStat(EstforConstants.PET_ANNIV3_MELEE_AND_DEFENCE_TIER1),
+                getPetStat(EstforConstants.PET_ANNIV3_DEFENCE_TIER1),
+                getPetStat(EstforConstants.PET_ANNIV3_HEALTH_TIER1),
+            ]
+        case EstforConstants.ANNIV3_MIN_TIER2:
+            return [
+                getPetStat(EstforConstants.PET_ANNIV3_MELEE_TIER2),
+                getPetStat(EstforConstants.PET_ANNIV3_MELEE_AND_DEFENCE_TIER2),
+                getPetStat(EstforConstants.PET_ANNIV3_DEFENCE_TIER2),
+                getPetStat(EstforConstants.PET_ANNIV3_HEALTH_TIER2),
+            ]
+        case EstforConstants.ANNIV3_MIN_TIER3:
+            return [
+                getPetStat(EstforConstants.PET_ANNIV3_MELEE_TIER3),
+                getPetStat(EstforConstants.PET_ANNIV3_MELEE_AND_DEFENCE_TIER3),
+                getPetStat(EstforConstants.PET_ANNIV3_DEFENCE_TIER3),
+                getPetStat(EstforConstants.PET_ANNIV3_HEALTH_TIER3),
+            ]
+        case EstforConstants.ANNIV3_MIN_TIER4:
+            return [
+                getPetStat(EstforConstants.PET_ANNIV3_MELEE_TIER4),
+                getPetStat(EstforConstants.PET_ANNIV3_MELEE_AND_DEFENCE_TIER4),
+                getPetStat(EstforConstants.PET_ANNIV3_DEFENCE_TIER4),
+                getPetStat(EstforConstants.PET_ANNIV3_HEALTH_TIER4),
+            ]
+        case EstforConstants.ANNIV3_MIN_TIER5:
+            return [
+                getPetStat(EstforConstants.PET_ANNIV3_MELEE_TIER5),
+                getPetStat(EstforConstants.PET_ANNIV3_MELEE_AND_DEFENCE_TIER5),
+                getPetStat(EstforConstants.PET_ANNIV3_DEFENCE_TIER5),
+                getPetStat(EstforConstants.PET_ANNIV3_HEALTH_TIER5),
             ]
         default:
             return []

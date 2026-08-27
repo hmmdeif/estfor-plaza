@@ -2,11 +2,15 @@
     <dialog id="action_modal" class="modal">
         <div class="modal-box bg-base-100 border-2 border-primary md:w-4/5 max-w-full">
             <h3 class="font-bold text-lg text-center">{{ skillName }}</h3>
-            <img
-                :src="imgSource"
-                :alt="skillName"
-                class="w-full mx-auto mt-5 max-w-[800px] rounded-lg"
-            />
+            <picture>
+                <source v-if="imgSource?.avif" type="image/avif" :srcset="imgSource.avif" />
+                <img
+                    v-if="imgSource?.webp"
+                    :src="imgSource.webp"
+                    :alt="skillName"
+                    class="w-full mx-auto mt-5 max-w-[800px] rounded-lg"
+                />
+            </picture>
 
             <div class="overflow-x-auto mt-5">
                 <table class="table md:table-md table-xs">
@@ -81,11 +85,12 @@
 <script setup lang="ts">
 import { computed, ref } from "vue"
 import { actionNames, skillNames } from "../../store/skills"
-import { MEDIA_URL, getLevel, useCoreStore, skillToXPMap } from "../../store/core"
+import { getLevel, useCoreStore, skillToXPMap } from "../../store/core"
 import { getItemName } from "../../store/items"
 import { useSearchStore } from "../../store/search"
 import { allActions } from "../../data/actions"
 import { Skill } from "@paintswap/estfor-definitions/types"
+import { landscapeImage } from "../../utils/media"
 import { calculateChance } from "../../utils/player"
 
 const coreStore = useCoreStore()
@@ -129,7 +134,7 @@ const skillName = computed(() => {
 
 const imgSource = computed(() => {
     // @ts-ignore
-    return `${MEDIA_URL}/landscape/${skillNames[skillId.value].toLowerCase()}.jpg`
+    return landscapeImage(String(skillNames[skillId.value] ?? ""))
 })
 
 const openDialog = (_skillId: Skill) => {

@@ -58,7 +58,7 @@
                     <td class="avatar">
                         <div class="mask mask-square rounded-lg w-12 h-12">
                             <img
-                                :src="`https://media.estfor.com/characters/${m.player.avatarId}.jpg`"
+                                :src="characterThumbSource(m.player.avatarId)"
                             />
                         </div>
                     </td>
@@ -92,6 +92,7 @@ import {
     ChevronUpIcon,
 } from "@heroicons/vue/24/solid"
 import { formatDate } from "../../utils/time"
+import { characterThumbSource } from "../../utils/media"
 
 const date = ref(7)
 const raffleEntries = ref<RaffleEntry[]>([])

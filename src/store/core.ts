@@ -32,7 +32,6 @@ import { useBroochStore } from "./brooch"
 import { config } from "../config"
 
 export const NATIVE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
-export const MEDIA_URL = "https://media.estfor.com"
 
 export enum Address {
     estforPlayers,

@@ -5,15 +5,20 @@
         >
             {{ props.name }}
         </div>
-        <img
-            :src="avatarSrc"
-            class="rounded-lg border-solid border-2 border-primary"
-        />
+        <picture>
+            <source v-if="avatarSource?.avif" type="image/avif" :srcset="avatarSource.avif" />
+            <img
+                v-if="avatarSource?.fallback"
+                :src="avatarSource.fallback"
+                class="rounded-lg border-solid border-2 border-primary"
+            />
+        </picture>
     </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue"
+import { characterImage } from "../utils/media"
 
 const props = defineProps({
     id: {
@@ -27,8 +32,8 @@ const props = defineProps({
     },
 })
 
-const avatarSrc = computed(() => {
-    return `https://media.estfor.com/characters/${props.id}.jpg`
+const avatarSource = computed(() => {
+    return characterImage(props.id)
 })
 </script>
 

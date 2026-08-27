@@ -313,12 +313,30 @@ const getExtraName = (tokenId: number): string => {
         case EstforConstants.ANNIV1_MIN_TIER4:
         case EstforConstants.ANNIV1_MIN_TIER5:
             return "Anniversary 1 Pet"
+        case EstforConstants.ANNIV2_MIN_TIER1:
+        case EstforConstants.ANNIV2_MIN_TIER2:
+        case EstforConstants.ANNIV2_MIN_TIER3:
+        case EstforConstants.ANNIV2_MIN_TIER4:
+        case EstforConstants.ANNIV2_MIN_TIER5:
+            return "Anniversary 2 Pet"
+        case EstforConstants.ANNIV3_MIN_TIER1:
+        case EstforConstants.ANNIV3_MIN_TIER2:
+        case EstforConstants.ANNIV3_MIN_TIER3:
+        case EstforConstants.ANNIV3_MIN_TIER4:
+        case EstforConstants.ANNIV3_MIN_TIER5:
+            return "Anniversary 3 Pet"
         case EstforConstants.KRAGSTYR_MIN_TIER1:
         case EstforConstants.KRAGSTYR_MIN_TIER2:
         case EstforConstants.KRAGSTYR_MIN_TIER3:
         case EstforConstants.KRAGSTYR_MIN_TIER4:
         case EstforConstants.KRAGSTYR_MIN_TIER5:
             return "Kragstyr Pet"
+        case EstforConstants.RIFT_MIN_TIER1:
+        case EstforConstants.RIFT_MIN_TIER2:
+        case EstforConstants.RIFT_MIN_TIER3:
+        case EstforConstants.RIFT_MIN_TIER4:
+        case EstforConstants.RIFT_MIN_TIER5:
+                return "Rift Pet"
         default:
             return tokenId?.toString()
     }

@@ -2,11 +2,15 @@
     <dialog id="vrf_action_modal" class="modal">
         <div class="modal-box bg-base-100 border-2 border-primary md:w-4/5 max-w-full">
             <h3 class="font-bold text-lg text-center">{{ skillName }}</h3>
-            <img
-                :src="imgSource"
-                :alt="skillName"
-                class="w-full mx-auto mt-5 max-w-[800px] rounded-lg"
-            />
+            <picture>
+                <source v-if="imgSource?.avif" type="image/avif" :srcset="imgSource.avif" />
+                <img
+                    v-if="imgSource?.webp"
+                    :src="imgSource.webp"
+                    :alt="skillName"
+                    class="w-full mx-auto mt-5 max-w-[800px] rounded-lg"
+                />
+            </picture>
 
             <div class="overflow-x-auto mt-5">
                 <table class="table md:table-md table-xs">
@@ -70,7 +74,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue"
-import { MEDIA_URL } from "../../store/core"
+import { landscapeImage } from "../../utils/media"
 import { getItemName } from "../../store/items"
 import { useSearchStore } from "../../store/search"
 import {
@@ -114,7 +118,7 @@ const actions = computed(() => {
 
 const imgSource = computed(() => {
     // @ts-ignore
-    return `${MEDIA_URL}/landscape/${vrfActionNames[actionType.value].toLowerCase()}.jpg`
+    return landscapeImage(String(vrfActionNames[actionType.value] ?? ""))
 })
 
 const skillName = computed(() => {

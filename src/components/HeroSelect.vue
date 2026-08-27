@@ -54,7 +54,7 @@
                         <tr v-for="h in coreStore.heroRoster" :key="h.id">
                             <td>
                                 <img
-                                    :src="`https://media.estfor.com/characters/${h.avatarId}.jpg`"
+                                    :src="characterThumbSource(h.avatarId)"
                                     class="rounded-lg"
                                 />
                             </td>
@@ -200,6 +200,7 @@ import EmeraldBroochPaywall from "./dialogs/EmeraldBroochPaywall.vue"
 import { Clan, Player } from "@paintswap/estfor-definitions/types"
 import { getDiceRolls, useClanStore } from "../store/clan"
 import ClanSearch from "./inputs/ClanSearch.vue"
+import { characterThumbSource } from "../utils/media"
 
 const app = useAppStore()
 const coreStore = useCoreStore()

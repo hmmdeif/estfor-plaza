@@ -14,20 +14,25 @@
         <template v-for="action in actionsWithItemSearch" :key="action.skill">
             <div class="card bg-base-100-50 shadow-xl rounded-lg">
                 <figure>
-                    <img
-                        class="w-full cursor-pointer"
-                        :src="`${MEDIA_URL}/landscape/${skillNames[
-                            action.skill
-                        ]?.toLowerCase()}.jpg`"
-                        :alt="skillNames[action.skill]"
-                        @click.prevent="
-                            action.relevantAction.actionType === ActionType.actionAndChoice
-                                ? actionAndChoiceInfoRef?.openDialog(action.skill)
-                                : action.relevantAction.actionType === ActionType.action
-                                  ? actionInfoRef?.openDialog(action.skill)
-                                  : actionChoiceInfoRef?.openDialog(action.skill)
-                        "
-                    />
+                    <picture>
+                        <source
+                            v-if="landscape(action.skill)?.avif"
+                            type="image/avif"
+                            :srcset="landscape(action.skill).avif"
+                        />
+                        <img
+                            class="w-full cursor-pointer"
+                            :src="landscape(action.skill)?.webp"
+                            :alt="skillNames[action.skill]"
+                            @click.prevent="
+                                action.relevantAction.actionType === ActionType.actionAndChoice
+                                    ? actionAndChoiceInfoRef?.openDialog(action.skill)
+                                    : action.relevantAction.actionType === ActionType.action
+                                      ? actionInfoRef?.openDialog(action.skill)
+                                      : actionChoiceInfoRef?.openDialog(action.skill)
+                            "
+                        />
+                    </picture>
                 </figure>
                 <div class="card-body">
                     <div class="grid grid-cols-2 gap-2">
@@ -185,13 +190,13 @@
 import { BoostType, Skill } from "@paintswap/estfor-definitions/types"
 import { useSkillStore, RelevantAction, skillNames, ActionType } from "../store/skills"
 import {
-    MEDIA_URL,
     useCoreStore,
     fullAttireMultiplier,
     heroAvatarMultiplier,
     xpBoundaries,
     getLevel,
 } from "../store/core"
+import { landscapeImage } from "../utils/media"
 import { computed, ref } from "vue"
 import BoostPanel from "./BoostPanel.vue"
 import ItemSearch from "./ItemSearch.vue"
@@ -263,6 +268,10 @@ const allActions = computed(() => {
 const actionsWithItemSearch = computed(() => {
     return allActions.value.filter((x) => x.relevantAction.hasItemSearch)
 })
+
+const landscape = (skill: Skill) => {
+    return landscapeImage(String(skillNames[skill] ?? ""))
+}
 
 const hoursUntilNextAction = (relevantAction: RelevantAction) => {
     if (!relevantAction.nextAction) {

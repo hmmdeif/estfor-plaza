@@ -36,7 +36,7 @@
                                             class="mask mask-square rounded-lg w-12 h-12"
                                         >
                                             <img
-                                                :src="`https://media.estfor.com/characters/${w.avatarId}.jpg`"
+                                                :src="characterThumbSource(w.avatarId)"
                                             />
                                         </div>
                                     </td>
@@ -87,7 +87,7 @@
                                             class="mask mask-square rounded-lg w-12 h-12"
                                         >
                                             <img
-                                                :src="`https://media.estfor.com/characters/${l.avatarId}.jpg`"
+                                                :src="characterThumbSource(l.avatarId)"
                                             />
                                         </div>
                                     </td>
@@ -111,6 +111,7 @@
 import { onMounted, ref } from "vue"
 import { getLotteries, getRaffleEntries, getPlayersByIds } from "../utils/api"
 import { Lottery, RaffleEntry } from "@paintswap/estfor-definitions/types"
+import { characterThumbSource } from "../utils/media"
 
 interface LotteryRank {
     playerId: string

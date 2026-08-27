@@ -211,7 +211,7 @@
                                         class="mask mask-square rounded-lg w-12 h-12"
                                     >
                                         <img
-                                            :src="`https://media.estfor.com/characters/${p.avatarId}.jpg`"
+                                            :src="characterThumbSource(p.avatarId)"
                                         />
                                     </div>
                                 </td>
@@ -301,7 +301,7 @@
                                         class="mask mask-square rounded-lg w-12 h-12"
                                     >
                                         <img
-                                            :src="`https://media.estfor.com/characters/${p.avatarId}.jpg`"
+                                            :src="characterThumbSource(p.avatarId)"
                                         />
                                     </div>
                                 </td>
@@ -328,6 +328,7 @@ import {
 import { getClanMembers } from "../utils/api"
 import { Clan, Player } from "@paintswap/estfor-definitions/types"
 import ClanSearch from "./inputs/ClanSearch.vue"
+import { characterThumbSource } from "../utils/media"
 
 const coreStore = useCoreStore()
 const clanStore = useClanStore()

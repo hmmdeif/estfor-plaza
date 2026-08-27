@@ -465,10 +465,11 @@ export const useMonsterStore = defineStore("monsters", {
                         xpPerHour,
                         combatStats: m.combatStats,
                         fishRequiredPerHour: totalFoodRequired,
-                        imgSource: `${MEDIA_URL}/monsters/${
-                            monsterImageMap[m.actionId] ||
-                            "monster_1_9zp1zn5o.jpg"
-                        }`,
+                        imgSource:
+                            monsterThumbSource(
+                                monsterImageMap[m.actionId] ||
+                                    "monster_1_9zp1zn5o.jpg"
+                            ) || "",
                         guaranteedRewards: m.guaranteedRewards,
                         randomRewards: m.randomRewards,
                     })

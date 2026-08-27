@@ -4,11 +4,19 @@
             <h3 class="font-bold text-lg text-center">
                 {{ monsterNames[monster?.actionId] }}
             </h3>
-            <img
-                :src="imgSource"
-                :alt="monsterNames[monster?.actionId]"
-                class="w-full mx-auto mt-5"
-            />
+            <picture>
+                <source
+                    v-if="imgSources.avif"
+                    type="image/avif"
+                    :srcset="imgSources.avif"
+                />
+                <img
+                    v-if="imgSources.fallback"
+                    :src="imgSources.fallback"
+                    :alt="monsterNames[monster?.actionId]"
+                    class="w-full mx-auto mt-5"
+                />
+            </picture>
 
             <div class="text-center mt-5">
                 {{ monster?.info.numSpawned / 1000 }} spawned per hour for
@@ -177,7 +185,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue"
 import { monsterNames, monsterImageMap, useMonsterStore } from "../../store/monsters"
-import { MEDIA_URL } from "../../store/core"
+import { monsterImage } from "../../utils/media"
 import { getItemName } from "../../store/items"
 import { useSearchStore } from "../../store/search"
 
@@ -190,10 +198,10 @@ const monster = computed(() => {
     return monsterStore.monsters.find((x) => x.actionId === monsterId.value)
 })
 
-const imgSource = computed(() => {
-    return `${MEDIA_URL}/monsters/${
+const imgSources = computed(() => {
+    return monsterImage(
         monsterImageMap[monster.value?.actionId] || "monster_1_9zp1zn5o.jpg"
-    }`
+    )
 })
 
 const openDialog = (_monsterId: number) => {

@@ -52,6 +52,21 @@ export const vrfActionIdNames = {
     [EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER3]: "Kragstyr Tier 3",
     [EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER4]: "Kragstyr Tier 4",
     [EstforConstants.INSTANT_VRF_ACTION_KRAGSTYR_EGG_TIER5]: "Kragstyr Tier 5",
+    [EstforConstants.INSTANT_VRF_ACTION_RIFT_EGG_TIER1]: "Rift Tier 1",
+    [EstforConstants.INSTANT_VRF_ACTION_RIFT_EGG_TIER2]: "Rift Tier 2",
+    [EstforConstants.INSTANT_VRF_ACTION_RIFT_EGG_TIER3]: "Rift Tier 3",
+    [EstforConstants.INSTANT_VRF_ACTION_RIFT_EGG_TIER4]: "Rift Tier 4",
+    [EstforConstants.INSTANT_VRF_ACTION_RIFT_EGG_TIER5]: "Rift Tier 5",
+    [EstforConstants.INSTANT_VRF_ACTION_ANNIV2_EGG_TIER1]: "Anniversary 2 Tier 1",
+    [EstforConstants.INSTANT_VRF_ACTION_ANNIV2_EGG_TIER2]: "Anniversary 2 Tier 2",
+    [EstforConstants.INSTANT_VRF_ACTION_ANNIV2_EGG_TIER3]: "Anniversary 2 Tier 3",
+    [EstforConstants.INSTANT_VRF_ACTION_ANNIV2_EGG_TIER4]: "Anniversary 2 Tier 4",
+    [EstforConstants.INSTANT_VRF_ACTION_ANNIV2_EGG_TIER5]: "Anniversary 2 Tier 5",
+    [EstforConstants.INSTANT_VRF_ACTION_ANNIV3_EGG_TIER1]: "Anniversary 3 Tier 1",
+    [EstforConstants.INSTANT_VRF_ACTION_ANNIV3_EGG_TIER2]: "Anniversary 3 Tier 2",
+    [EstforConstants.INSTANT_VRF_ACTION_ANNIV3_EGG_TIER3]: "Anniversary 3 Tier 3",
+    [EstforConstants.INSTANT_VRF_ACTION_ANNIV3_EGG_TIER4]: "Anniversary 3 Tier 4",
+    [EstforConstants.INSTANT_VRF_ACTION_ANNIV3_EGG_TIER5]: "Anniversary 3 Tier 5",
 
     [EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_1]: "Thieving Fishing Chest 1",
     [EstforConstants.INSTANT_VRF_ACTION_THIEVING_FISHING_CHEST_2]: "Thieving Fishing Chest 2",
@@ -114,7 +129,7 @@ export const useVRFActionsStore = defineStore("vrfActions", {
     state: () => ({
         forging: allInstantVRFActions.filter(x => x.actionType === InstantVRFActionType.FORGING),
         generic: allInstantVRFActions.filter(x => x.actionType === InstantVRFActionType.GENERIC),
-        egg: allInstantVRFActions.filter(x => x.actionType === InstantVRFActionType.EGG),        
+        egg: allInstantVRFActions.filter(x => x.actionType === InstantVRFActionType.EGG),
     }) as VRFActionsState,
     getters: {
         getActionsForActionType: (state: VRFActionsState) => {

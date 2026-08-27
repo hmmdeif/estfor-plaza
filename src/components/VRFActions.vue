@@ -13,18 +13,23 @@
         <template v-for="action in actionsWithItemSearch" :key="action.actionType">
             <div class="card bg-base-100-50 shadow-xl rounded-lg">
                 <figure>
-                    <img
-                        class="w-full cursor-pointer"
-                        :src="`${MEDIA_URL}/landscape/${vrfActionNames[
-                            action.actionType
-                        ]?.toLowerCase()}.jpg`"
-                        :alt="vrfActionNamesTitles[action.actionType]"
-                        @click.prevent="
-                            action.actionType === InstantVRFActionType.EGG
-                                ? eggHatchingInfoRef?.openDialog(action.actionType)
-                                : vrfActionInfoRef?.openDialog(action.actionType)
-                        "
-                    />
+                    <picture>
+                        <source
+                            v-if="landscape(action.actionType)?.avif"
+                            type="image/avif"
+                            :srcset="landscape(action.actionType).avif"
+                        />
+                        <img
+                            class="w-full cursor-pointer"
+                            :src="landscape(action.actionType)?.webp"
+                            :alt="vrfActionNamesTitles[action.actionType]"
+                            @click.prevent="
+                                action.actionType === InstantVRFActionType.EGG
+                                    ? eggHatchingInfoRef?.openDialog(action.actionType)
+                                    : vrfActionInfoRef?.openDialog(action.actionType)
+                            "
+                        />
+                    </picture>
                 </figure>
                 <div class="card-body">
                     <div class="grid grid-cols-2 gap-2">
@@ -53,7 +58,7 @@ import ItemSearch from "./ItemSearch.vue"
 import { getItemName } from "../store/items"
 import { useSearchStore } from "../store/search"
 import { useVRFActionsStore, vrfActionNames } from "../store/vrfActions"
-import { MEDIA_URL } from "../store/core"
+import { landscapeImage } from "../utils/media"
 import { decodeItemRewards, decodePetRange } from "../utils/abi"
 import { computed, ref } from "vue"
 import { InstantVRFActionType } from "@paintswap/estfor-definitions/types"
@@ -95,6 +100,10 @@ const vrfActionNamesTitles = computed(() => {
 })
 
 const isEggAction = (actionType: number) => actionType === InstantVRFActionType.EGG
+
+const landscape = (actionType: InstantVRFActionType) => {
+    return landscapeImage(String(vrfActionNames[actionType] ?? ""))
+}
 
 const actionsWithItemSearch = computed(() => {
     return allVrfActions.value.filter((x) =>
