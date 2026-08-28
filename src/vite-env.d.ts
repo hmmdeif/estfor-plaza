@@ -2,7 +2,6 @@
 interface ImportMetaEnv {
     readonly VITE_PROJECT_ID: string
     readonly VITE_SUBGRAPH_URL: string
-    readonly VITE_SONIC_SUBGRAPH_URL: string
 }
 
 interface ImportMeta {

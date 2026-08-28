@@ -70,6 +70,46 @@ import {
     TransferUserItemNFT,
 } from "./models/factory.models"
 import { allItems } from "../data/items"
+import type { FactoryRegistryProxy } from "../utils/factoryRegistry"
+
+const toProxySilos = (
+    registryProxies: FactoryRegistryProxy[],
+    ownerAddress: string
+): ProxySilo[] => {
+    const uniqueProxies = registryProxies.filter(
+        (value, index, allProxies) =>
+            allProxies.findIndex((proxy) => proxy.proxy === value.proxy) === index
+    )
+
+    const proxys = uniqueProxies.map((proxy) => {
+        // Fix for pre-event proxys with the same id.
+        let proxyId = Number(proxy.proxyId)
+        const sameProxyIds = registryProxies
+            .filter((candidate) => candidate.proxyId === proxy.proxyId)
+            .sort((first, second) => first.proxy.localeCompare(second.proxy))
+
+        if (sameProxyIds.length > 1) {
+            proxyId +=
+                sameProxyIds.findIndex((candidate) => candidate.proxy === proxy.proxy) -
+                sameProxyIds.length +
+                1
+        }
+
+        return {
+            address: proxy.proxy,
+            index: proxyId,
+            allPlayers: [],
+            playerId: "",
+            playerState: {} as Player,
+            queuedActions: [] as QueuedAction[],
+            owner: ownerAddress,
+            isPaused: true,
+            savedTransactions: [] as SavedTransaction[],
+        }
+    })
+
+    return proxys.sort((first, second) => first.index - second.index)
+}
 
 export const proxyNeedsItem = (item: UserItemNFT, p: ProxySilo): boolean => {
     for (const a of p.queuedActions) {
@@ -1130,7 +1170,12 @@ export const useFactoryStore = defineStore("factory", {
 
             await this.multicall(selectorArray, chainId, false)
         },
-        async getAllProxyStates(chainId: SonicChainId, proxys: ProxySilo[] = []) {
+        async getAllProxyStates(
+            chainId: SonicChainId,
+            proxys?: ProxySilo[],
+            shouldApply: () => boolean = () => true,
+            expectedAccountAddress?: string
+        ): Promise<boolean> {
             const coreStore = useCoreStore()
             const playerAddress = coreStore.getAddress(
                 Address.estforPlayers,
@@ -1140,23 +1185,29 @@ export const useFactoryStore = defineStore("factory", {
             if (
                 !playerAddress ||
                 !account.isConnected ||
-                account.chainId !== chainId
+                account.chainId !== chainId ||
+                (expectedAccountAddress &&
+                    account.address?.toLowerCase() !==
+                        expectedAccountAddress.toLowerCase())
             ) {
-                return
+                return false
             }
 
-            if (proxys.length === 0) {
-                proxys = this.proxys
-            }
+            const proxysToHydrate = proxys ?? this.proxys
 
             const proxyContract = {
                 abi: epProxyAbi,
                 chainId: chainId,
             }
 
-            const playerPromises: PlayerSearchResult = await getMultiPlayersByOwner(this.proxys.map(p => p.address))
+            const playerPromises: PlayerSearchResult =
+                proxysToHydrate.length > 0
+                    ? await getMultiPlayersByOwner(
+                          proxysToHydrate.map((proxy) => proxy.address)
+                      )
+                    : { players: [] }
 
-            const proxysWithPlayerId = this.proxys.map((p) => {
+            const proxysWithPlayerId = proxysToHydrate.map((p) => {
                 const result = playerPromises.players.filter(
                     (x) =>
                         x.owner?.toLowerCase() === p.address.toLowerCase()
@@ -1175,36 +1226,39 @@ export const useFactoryStore = defineStore("factory", {
             const playerIdsToGet = proxysWithPlayerId
                 .filter((p) => p.playerId !== "")
                 .map((p) => p.playerId)
+            let hydratedProxys: ProxySilo[]
             if (playerIdsToGet.length > 0) {
-                const queuedActionsResult = await searchQueuedActions(playerIdsToGet)
+                const [queuedActionsResult, proxyData, proxyPauseData] =
+                    await Promise.all([
+                        searchQueuedActions(playerIdsToGet),
+                        multicall(config, {
+                            contracts: proxysWithPlayerId.map(
+                                (p) =>
+                                    ({
+                                        ...proxyContract,
+                                        address: p.address,
+                                        functionName:
+                                            "getAllSavedTransactions",
+                                        args: [],
+                                    }) as any
+                            ),
+                            chainId,
+                        }),
+                        multicall(config, {
+                            contracts: proxysWithPlayerId.map(
+                                (p) =>
+                                    ({
+                                        ...proxyContract,
+                                        address: p.address,
+                                        functionName: "isPaused",
+                                        args: [],
+                                    }) as any
+                            ),
+                            chainId,
+                        }),
+                    ])
 
-                const proxyData = await multicall(config, {
-                    contracts: proxysWithPlayerId.map(
-                        (p) =>
-                            ({
-                                ...proxyContract,
-                                address: p.address,
-                                functionName: "getAllSavedTransactions",
-                                args: [],
-                            }) as any
-                    ),
-                    chainId,
-                })
-
-                const proxyPauseData = await multicall(config, {
-                    contracts: proxysWithPlayerId.map(
-                        (p) =>
-                            ({
-                                ...proxyContract,
-                                address: p.address,
-                                functionName: "isPaused",
-                                args: [],
-                            }) as any
-                    ),
-                    chainId,
-                })
-
-                this.proxys = proxysWithPlayerId.map((p, i) => ({
+                hydratedProxys = proxysWithPlayerId.map((p, i) => ({
                     ...p,
                     queuedActions: queuedActionsResult.queuedActions
                         .filter((x) =>
@@ -1216,7 +1270,7 @@ export const useFactoryStore = defineStore("factory", {
                     isPaused: proxyPauseData[i].result as boolean,
                 }))
             } else {
-                this.proxys = proxysWithPlayerId.map((p) => ({
+                hydratedProxys = proxysWithPlayerId.map((p) => ({
                     ...p,
                     queuedActions: [],
                     savedTransactions: [],
@@ -1224,11 +1278,51 @@ export const useFactoryStore = defineStore("factory", {
                 }))
             }
 
-            await this.getBankItems()
-            await this.getTransactionCharge(chainId)
+            const bankIds = hydratedProxys.map((proxy) => proxy.index)
+            bankIds.sort()
+            const bank = hydratedProxys.find(
+                (proxy) => proxy.index === bankIds[0]
+            )
+            const factoryAddress = coreStore.getAddress(
+                Address.factoryRegistry,
+                chainId
+            )
+
+            const [bankItemsResult, transactionCharge] = await Promise.all([
+                bank
+                    ? getUserItemNFTs(bank.address, [])
+                    : Promise.resolve({ userItemNFTs: [] }),
+                factoryAddress
+                    ? readContract(config, {
+                          address: factoryAddress as `0x${string}`,
+                          abi: factoryAbi,
+                          functionName: "transactionCharge",
+                          args: [],
+                          chainId,
+                      })
+                    : Promise.resolve(this.transactionCharge),
+            ])
+
+            const currentAccount = getAccount(config)
+            const capturedAccountAddress =
+                expectedAccountAddress ?? account.address
+            if (
+                !shouldApply() ||
+                !currentAccount.isConnected ||
+                currentAccount.chainId !== chainId ||
+                currentAccount.address?.toLowerCase() !==
+                    capturedAccountAddress?.toLowerCase()
+            ) {
+                return false
+            }
+
+            this.proxys = hydratedProxys
+            this.bankItems = bankItemsResult.userItemNFTs || []
+            this.transactionCharge = transactionCharge as bigint
             this.initialised = true
             this.initialisedAt = new Date()
-            this.initialisedFor = account.address ?? null
+            this.initialisedFor = capturedAccountAddress ?? null
+            return true
         },
         async getTransactionCharge(chainId: SonicChainId) {
             const coreStore = useCoreStore()
@@ -1308,60 +1402,18 @@ export const useFactoryStore = defineStore("factory", {
                 this.currentTransactionNumber = 0
             }
         },
-        async setProxys(proxys: any[]) {
-            const account = getAccount(config)
-
-            this.proxys = proxys
-                .filter((value, index, self) => {
-                    return (
-                        self.findIndex((v) => v.proxy === value.proxy) === index
-                    )
-                })
-                .map((d) => {
-                    // Fix for pre-event proxys with the same id
-                    let proxyId = d.proxyId
-                    let sameProxyIds = proxys.filter(
-                        (p) => p.proxyId === d.proxyId
-                    )
-                    if (sameProxyIds.length > 1) {
-                        sameProxyIds.sort((a, b) => {
-                            if (a.proxy > b.proxy) {
-                                return 1
-                            }
-                            if (a.proxy < b.proxy) {
-                                return -1
-                            }
-                            return 0
-                        })
-                        proxyId = (
-                            Number(proxyId) +
-                            sameProxyIds.findIndex((p) => p.proxy === d.proxy) -
-                            sameProxyIds.length +
-                            1
-                        ).toString()
-                    }
-                    return {
-                        address: d.proxy,
-                        index: proxyId,
-                        allPlayers: [],
-                        playerId: "",
-                        playerState: {} as Player,
-                        queuedActions: [] as QueuedAction[],
-                        owner: account.address as string,
-                        isPaused: true,
-                        savedTransactions: [] as SavedTransaction[],
-                    }
-                })
-
-            this.proxys.sort((a, b) => {
-                if (Number(a.index) > Number(b.index)) {
-                    return 1
-                }
-                if (Number(a.index) < Number(b.index)) {
-                    return -1
-                }
-                return 0
-            })
+        async hydrateProxys(
+            registryProxies: FactoryRegistryProxy[],
+            chainId: SonicChainId,
+            accountAddress: string,
+            shouldApply: () => boolean = () => true
+        ): Promise<boolean> {
+            return this.getAllProxyStates(
+                chainId,
+                toProxySilos(registryProxies, accountAddress),
+                shouldApply,
+                accountAddress
+            )
         },
         setQueuedActions(proxy: string, queuedActions: QueuedAction[]) {
             const proxyToUpdate = this.proxys.find((p) => p.address === proxy)

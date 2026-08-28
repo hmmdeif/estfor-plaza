@@ -7,9 +7,10 @@
         "dev": "vite",
         "build": "pnpm run typecheck && vite build",
         "build:scripts": "node ./scripts/copyDataFiles.mjs && node ./scripts/generateCompactAbis.mjs && node ./scripts/generateItemNames.mjs && node ./scripts/generateBoostItems.mjs",
+        "test": "node --experimental-strip-types --test test/*.test.ts",
         "typecheck": "vue-tsc --noEmit",
-        "lint": "oxlint src scripts vite.config.ts",
-        "format": "oxfmt src scripts vite.config.ts *.json *.md",
+        "lint": "oxlint src scripts test vite.config.ts",
+        "format": "oxfmt src scripts test vite.config.ts *.json *.md",
         "preview": "vite preview"
     },
     "dependencies": {

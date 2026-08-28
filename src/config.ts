@@ -35,3 +35,13 @@ export const config = createConfig({
         ),
     },
 })
+
+// Event scans need the full one-million-block range supported by Sonic's
+// canonical public RPC, so keep this transport separate from the fallback
+// client used by the rest of the app.
+export const siloSyncConfig = createConfig({
+    chains: [sonic],
+    transports: {
+        [sonic.id]: http("https://rpc.soniclabs.com"),
+    },
+})

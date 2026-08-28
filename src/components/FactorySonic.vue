@@ -1,11 +1,9 @@
 <template>
-    <div
-        class="card bg-base-100-50 shadow-xl rounded-lg mt-10 mx-auto w-[760px]"
-    >
+    <div class="card bg-base-100-50 shadow-xl rounded-lg mt-10 mx-auto w-[760px]">
         <div class="card-body">
             <p>
-                Welcome to the Factory floor! Here you can create silos for your
-                Estfor heroes and tell them to do things.
+                Welcome to the Factory floor! Here you can create silos for your Estfor heroes and
+                tell them to do things.
             </p>
             <p v-if="!hasRubyBrooch" class="alert alert-warning my-5">
                 <img
@@ -18,35 +16,66 @@
                     @click.prevent="rubyBroochPaywallRef?.openDialog()"
                 />
                 <span
-                    >As you don't have a Ruby Brooch, you do not get the full
-                    benefits of the Factory - there is a
+                    >As you don't have a Ruby Brooch, you do not get the full benefits of the
+                    Factory - there is a
                     {{
-                        Number(
-                            factoryStore.transactionCharge / BigInt(10 ** 15)
-                        ) / 1000 || "small"
+                        Number(factoryStore.transactionCharge / BigInt(10 ** 15)) / 1000 || "small"
                     }}
-                    S charge per execution, and you cannot batch execute
-                    actions.<br />If you want to get a Ruby Brooch, first get an
-                    Emerald Brooch (click the tree icon in the top left), then
-                    click the Ruby brooch to the left of this message.</span
+                    S charge per execution, and you cannot batch execute actions.<br />If you want
+                    to get a Ruby Brooch, first get an Emerald Brooch (click the tree icon in the
+                    top left), then click the Ruby brooch to the left of this message.</span
                 >
             </p>
+            <div
+                v-if="canSyncSilos"
+                class="alert alert-soft my-5 flex flex-col items-stretch gap-3 border-secondary/50 bg-base-100/80 text-base-content"
+                role="status"
+                aria-live="polite"
+            >
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <p class="font-semibold">Silo event sync</p>
+                        <p class="text-sm">
+                            Synced through block
+                            <span class="font-mono">{{ formatBlock(syncStatus.syncedBlock) }}</span>
+                            of safe target
+                            <span class="font-mono">{{ formatBlock(syncStatus.targetBlock) }}</span>
+                            (latest
+                            <span class="font-mono">{{ formatBlock(syncStatus.latestBlock) }}</span
+                            >).
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        class="btn btn-primary btn-sm min-w-28"
+                        @click="loadProxys"
+                        :disabled="loading || syncing || !factoryAccount.address"
+                    >
+                        <span
+                            v-if="syncing"
+                            class="loading loading-spinner loading-xs"
+                            aria-hidden="true"
+                        ></span>
+                        {{ syncing ? "Syncing..." : "Sync silos" }}
+                    </button>
+                </div>
+                <p class="text-xs">
+                    New silo events are read from Sonic's public RPC after a five-block reorg
+                    buffer.
+                </p>
+                <p v-if="syncError" class="text-sm text-error">
+                    {{ syncError }}
+                </p>
+            </div>
             <div v-if="loading">
                 Loading heroes...
-                <span
-                    class="loading loading-spinner text-white loading-md mx-2"
-                ></span>
+                <span class="loading loading-spinner text-white loading-md mx-2"></span>
             </div>
             <div v-else>
                 <p>
                     You currently have
-                    <span class="text-lg text-success">{{
-                        factoryStore.proxys.length
-                    }}</span>
+                    <span class="text-lg text-success">{{ factoryStore.proxys.length }}</span>
                     silos.
-                </p>
-                <p class="alert alert-warning my-5">
-                    Silo creation is currently extremely slow due to The Graph indexers being slow. It can take up to 15 minutes for your silos to appear. If the transaction was successful please wait for it to appear.
                 </p>
                 <div class="flex justify-start mt-5">
                     <label class="form-control w-full">
@@ -63,11 +92,7 @@
                     </label>
                 </div>
                 <div class="flex">
-                    <button
-                        type="button"
-                        class="btn btn-primary mt-5 me-2"
-                        @click="viewSilos"
-                    >
+                    <button type="button" class="btn btn-primary mt-5 me-2" @click="viewSilos">
                         View Silos
                     </button>
                     <button
@@ -96,45 +121,50 @@
         />
     </div>
     <div class="lg:flex flex-row justify-evenly items-start gap-10">
-        <ItemBank
-            v-if="!loading && factoryStore.proxys.length > 0"
-            :chainId="chainId"
-        />
+        <ItemBank v-if="!loading && factoryStore.proxys.length > 0" :chainId="chainId" />
         <AssignedSilos
             v-if="!loading && factoryStore.assignedProxys.length > 0"
             :chainId="chainId"
         />
     </div>
     <ViewSilos ref="viewSilosRef" :chainId="chainId" />
-    <RubyBroochPaywall
-        ref="rubyBroochPaywallRef"
-        id="factory_ruby_brooch_modal"
-    />
+    <RubyBroochPaywall ref="rubyBroochPaywallRef" id="factory_ruby_brooch_modal" />
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onBeforeMount } from "vue"
+import { computed, ref, onBeforeMount, onBeforeUnmount } from "vue"
 import { useFactoryStore } from "../store/factory"
 import { useAppStore } from "../store/app"
 
 import EmptySilos from "./factory/EmptySilos.vue"
 import UnassignedSilos from "./factory/UnassignedSilos.vue"
 import AssignedSilos from "./factory/AssignedSilos.vue"
-import { getAccount, watchAccount, switchChain } from "@wagmi/core"
+import { getAccount, getPublicClient, watchAccount, switchChain } from "@wagmi/core"
+import type { Address as ViemAddress } from "viem"
 import ItemBank from "./factory/ItemBank.vue"
 import ViewSilos from "./dialogs/ViewSilos.vue"
-import { config, SONIC_CHAIN_ID, type SonicChainId } from "../config"
+import { config, siloSyncConfig, SONIC_CHAIN_ID, type SonicChainId } from "../config"
 import { useBroochStore } from "../store/brooch"
 import RubyBroochPaywall from "./dialogs/RubyBroochPaywall.vue"
 import { sleep } from "../utils/time"
-import { querySubgraph } from "../utils/graphql"
+import { Address, useCoreStore } from "../store/core"
+import { syncFactoryRegistryLogs, type FactoryRegistrySyncStatus } from "../utils/factoryRegistry"
+import { canSyncFactorySilos } from "../utils/factorySync"
 
 const factoryStore = useFactoryStore()
 const app = useAppStore()
 const broochStore = useBroochStore()
+const coreStore = useCoreStore()
 const loading = ref(factoryStore.initialised === false)
 const creating = ref(false)
 const silosToCreate = ref(5)
+const syncing = ref(false)
+const syncStatus = ref<FactoryRegistrySyncStatus>({
+    syncedBlock: null,
+    targetBlock: null,
+    latestBlock: null,
+})
+const syncError = ref<string | null>(null)
 
 const chainId = ref<SonicChainId>(SONIC_CHAIN_ID)
 
@@ -145,75 +175,122 @@ const factoryAccount = ref(getAccount(config))
 
 const rubyBroochPaywallRef = ref<typeof RubyBroochPaywall>()
 
-interface FactoryRegistryCreated {
-    sender: string
-    owner: string
-    proxy: string
-    proxyId: string
-}
-
-interface FactoryRegistryCreatedsData {
-    factoryRegistryCreateds: FactoryRegistryCreated[]
-}
-
-const GET_SONIC_PROXYS = `
-    query getSonicProxys($offset: Int, $acc: String!) {
-        factoryRegistryCreateds(skip: $offset, where: { owner: $acc }) {
-            sender
-            owner
-            proxy
-            proxyId
-        }
-    }
-`
+const canSyncSilos = computed(() =>
+    canSyncFactorySilos({
+        playerId: coreStore.playerId,
+        playerOwner: coreStore.playerState.owner,
+        accountAddress: factoryAccount.value.address,
+    })
+)
 
 let proxyRequestId = 0
 
+const formatBlock = (block: bigint | null): string =>
+    block === null ? "—" : block.toLocaleString()
+
 const loadProxys = async (): Promise<boolean> => {
     const requestId = ++proxyRequestId
-    const acc = factoryAccount.value.address
-    if (!acc) {
+    const account = getAccount(config)
+    const accountAddress = account.address
+    if (!accountAddress) {
+        factoryStore.reset()
+        syncing.value = false
+        syncStatus.value = {
+            syncedBlock: null,
+            targetBlock: null,
+            latestBlock: null,
+        }
+        syncError.value = null
         loading.value = false
         return true
     }
 
     // The store is a singleton, so if it holds data initialised for another
     // wallet (e.g. after disconnect/reconnect) clear it before loading.
-    const account = getAccount(config)
     if (factoryStore.initialised && factoryStore.initialisedFor !== account.address) {
         factoryStore.reset()
         loading.value = true
     }
 
-    try {
-        const proxys: FactoryRegistryCreated[] = []
-        while (true) {
-            const data = await querySubgraph<
-                FactoryRegistryCreatedsData,
-                { offset: number; acc: string }
-            >(import.meta.env.VITE_SONIC_SUBGRAPH_URL, GET_SONIC_PROXYS, {
-                offset: proxys.length,
-                acc,
-            })
-            const page = data.factoryRegistryCreateds
-            proxys.push(...page)
-            if (page.length === 0) {
-                break
-            }
+    if (!canSyncSilos.value) {
+        factoryStore.reset()
+        syncing.value = false
+        syncStatus.value = {
+            syncedBlock: null,
+            targetBlock: null,
+            latestBlock: null,
         }
+        syncError.value = null
+        loading.value = false
+        return true
+    }
+
+    const factoryAddress = coreStore.getAddress(Address.factoryRegistry, chainId.value)
+    if (!factoryAddress) {
+        syncing.value = false
+        loading.value = false
+        syncError.value = "The Sonic factory registry address is unavailable."
+        return false
+    }
+
+    syncing.value = true
+    syncError.value = null
+
+    try {
+        const publicClient = getPublicClient(siloSyncConfig, {
+            chainId: chainId.value,
+        })
+        if (!publicClient) {
+            throw new Error("The Sonic public RPC client is unavailable.")
+        }
+
+        const result = await syncFactoryRegistryLogs({
+            client: publicClient,
+            chainId: chainId.value,
+            factoryAddress: factoryAddress as ViemAddress,
+            account: accountAddress as ViemAddress,
+            shouldContinue: () => {
+                const currentAccount = getAccount(config)
+                return (
+                    requestId === proxyRequestId &&
+                    currentAccount.isConnected &&
+                    currentAccount.address?.toLowerCase() === accountAddress.toLowerCase() &&
+                    canSyncSilos.value
+                )
+            },
+            onProgress(status) {
+                if (requestId !== proxyRequestId) {
+                    return
+                }
+                syncStatus.value = status
+            },
+        })
 
         if (requestId !== proxyRequestId) {
             return true
         }
 
-        await factoryStore.setProxys(proxys)
-        await factoryStore.getAllProxyStates(chainId.value)
+        syncStatus.value = result.status
+        syncError.value = result.error?.message ?? null
+        await factoryStore.hydrateProxys(
+            result.proxies,
+            chainId.value,
+            accountAddress,
+            () => requestId === proxyRequestId
+        )
         return true
     } catch (error) {
         console.error("Failed to load factory silos", error)
+        if (requestId === proxyRequestId) {
+            syncError.value =
+                error instanceof Error
+                    ? error.message
+                    : "Unable to sync silo events from Sonic's public RPC."
+        }
         return false
     } finally {
         if (requestId === proxyRequestId) {
+            syncing.value = false
             loading.value = false
         }
     }
@@ -230,14 +307,12 @@ const createSilos = async () => {
         const originalProxyCount = factoryStore.proxys.length
         await factoryStore.createProxy(silosToCreate.value, chainId.value)
         app.addToast(
-            `${silosToCreate.value} silo${
-                silosToCreate.value > 1 ? "s" : ""
-            } created`,
+            `${silosToCreate.value} silo${silosToCreate.value > 1 ? "s" : ""} created`,
             "alert-success",
             5000
         )
 
-        while (factoryStore.proxys.length === originalProxyCount) {
+        while (canSyncSilos.value && factoryStore.proxys.length === originalProxyCount) {
             if (!(await loadProxys())) {
                 throw new Error("Failed to refresh factory silos")
             }
@@ -255,13 +330,17 @@ const viewSilos = () => {
     viewSilosRef.value?.openDialog()
 }
 
-watchAccount(config, {
+const unwatchAccount = watchAccount(config, {
     onChange() {
         factoryAccount.value = getAccount(config)
         void loadProxys()
     },
 })
 
+onBeforeUnmount(() => {
+    proxyRequestId += 1
+    unwatchAccount()
+})
 
 onBeforeMount(() => {
     const account = getAccount(config)
