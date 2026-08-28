@@ -108,10 +108,6 @@ const routes: Array<RouteRecordRaw> = [
                 path: "factory",
                 component: () => import("../components/FactorySonic.vue"),
             },
-            // {
-            //     path: "brooch-owners",
-            //     component: BroochOwners,
-            // },
             {
                 path: "about",
                 component: About,
