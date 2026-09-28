@@ -25,3 +25,6 @@ dist-ssr
 
 src/data/*
 !src/data/README.md
+
+# Local Amp portal metadata
+.amp/portals/*

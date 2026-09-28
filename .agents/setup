@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+export CI=true
+TIMEFORMAT='Completed in %3R seconds'
+
+echo 'Checking Node.js (>=24) and the pinned pnpm version'
+if ! command -v node >/dev/null || ! node -e 'process.exit(Number(process.versions.node.split(".")[0]) >= 24 ? 0 : 1)'; then
+    time sudo npm install --global node@24
+fi
+pnpm_version="$(node -p 'require("./package.json").packageManager.split("@")[1]')"
+if ! command -v pnpm >/dev/null || [[ "$(pnpm --version)" != "$pnpm_version" ]]; then
+    time sudo npm install --global "pnpm@$pnpm_version"
+fi
+node --version
+pnpm --version
+
+echo 'Initializing the contracts submodule at the committed revision'
+time git submodule update --init --depth 1 estfor-contracts
+
+echo 'Installing locked dependencies (including development tools)'
+time NODE_ENV=development pnpm install --frozen-lockfile
+
+echo 'Generating application data and compact ABIs'
+time pnpm run build:scripts

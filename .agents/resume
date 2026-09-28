@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Dependencies and generated data are restored from the setup snapshot.
+# This app has no local database or per-thread authentication to repair.
+echo 'Orb ready; run pnpm dev to start the app.'
